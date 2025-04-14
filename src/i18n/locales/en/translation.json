@@ -1,0 +1,70 @@
+{
+  "form": {
+    "validation": {
+      "required": {
+        "honorary": "Please select a honorary.",
+        "name": "Please enter a name.",
+        "date": "A date is required.",
+        "sex": "You need to select a sex.",
+        "country": "Please select a country.",
+        "nationality": "Please select a nationality."
+      },
+      "format": {
+        "name": "First name must be at least 2 characters.",
+        "surname": "Surname must be at least 2 characters.",
+        "birthSurname": "Birth surname must be at least 2 characters.",
+        "ssn": "SSN must be in the format yymmdd/1234."
+      }
+    },
+    "labels": {
+      "titleBefore": "Title Before Name",
+      "titleAfter": "Title After Name",
+      "honorific": "Honorific",
+      "name": "First Name",
+      "surname": "Surname",
+      "birthSurname": "Birth Surname",
+      "dob": "Date of Birth",
+      "sex": "Sex",
+      "ssn": "SSN (Social Security Number/Birth number)",
+      "citizenship": "Citizenship",
+      "nationality": "Nationality",
+      "addressInAnotherCountry": "Address In The Country Of Permanent Residence",
+      "isFirstJobInCzechia": "Is This Their First Job In Czechia?",
+      "residencePermitNumber": "Residence Permit Number",
+      "residenceFrom": "Residence Permit From",
+      "residenceUntil": "Residence Permit Until",
+      "typeAndPurposeOfStay": "Type And Purpose Of Stay",
+      "ssnFromInsurance": "Social security number assigned by the insurance company",
+      "insuranceRegNumber": "Insurance registration number",
+      "ssnForeigner": "Social Security Number Foreigner"
+    },
+    "options": {
+      "sex": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "honorific": {
+        "mr": "Mr.",
+        "mrs": "Mrs.",
+        "ms": "Ms.",
+        "miss": "Miss"
+      },
+      "yesNo": {
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    "pickDate": "Pick a Date",
+    "tabs": {
+      "basic": "Basic Information",
+      "foreigner": "Foreigner",
+      "education": "Education"
+    },
+    "buttons": {
+      "next": "Next",
+      "previous": "Previous",
+      "submit": "Submit"
+    }
+  }
+}

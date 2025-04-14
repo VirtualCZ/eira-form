@@ -1,0 +1,70 @@
+{
+  "form": {
+    "validation": {
+      "required": {
+        "honorary": "Prosím vyberte oslovení.",
+        "name": "Prosím zadejte jméno.",
+        "date": "Datum je povinné.",
+        "sex": "Musíte vybrat pohlaví.",
+        "country": "Prosím vyberte zemi.",
+        "nationality": "Prosím vyberte národnost."
+      },
+      "format": {
+        "name": "Jméno musí mít alespoň 2 znaky.",
+        "surname": "Příjmení musí mít alespoň 2 znaky.",
+        "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
+        "ssn": "Rodné číslo musí být ve formátu rrmmdd/1234."
+      }
+    },
+    "labels": {
+      "titleBefore": "Titul před jménem",
+      "titleAfter": "Titul za jménem",
+      "honorific": "Oslovení",
+      "name": "Jméno",
+      "surname": "Příjmení",
+      "birthSurname": "Rodné příjmení",
+      "dob": "Datum narození",
+      "sex": "Pohlaví",
+      "ssn": "Rodné číslo",
+      "citizenship": "Státní příslušnost",
+      "nationality": "Národnost",
+      "addressInAnotherCountry": "Adresa v zemi trvalého pobytu",
+      "isFirstJobInCzechia": "Je toto jejich první práce v ČR?",
+      "residencePermitNumber": "Číslo povolení k pobytu",
+      "residenceFrom": "Povolení k pobytu od",
+      "residenceUntil": "Povolení k pobytu do",
+      "typeAndPurposeOfStay": "Typ a účel pobytu",
+      "ssnFromInsurance": "Číslo pojištěnce přidělené pojišťovnou",
+      "insuranceRegNumber": "Registrační číslo pojištění",
+      "ssnForeigner": "Rodné číslo cizince"
+    },
+    "options": {
+      "sex": {
+        "male": "Muž",
+        "female": "Žena",
+        "other": "Jiné"
+      },
+      "honorific": {
+        "mr": "Pan",
+        "mrs": "Paní",
+        "ms": "Slečna",
+        "miss": "Slečna"
+      },
+      "yesNo": {
+        "yes": "Ano",
+        "no": "Ne"
+      }
+    },
+    "pickDate": "Vybrat datum",
+    "tabs": {
+      "basic": "Základní informace",
+      "foreigner": "Cizinec",
+      "education": "Vzdělání"
+    },
+    "buttons": {
+      "next": "Další",
+      "previous": "Předchozí",
+      "submit": "Odeslat"
+    }
+  }
+}
