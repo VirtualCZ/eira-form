@@ -7,9 +7,13 @@ import { format } from "date-fns"
 import { cn } from '../lib/utils'
 import { FormControl } from "@/components/ui/form"
 import { useTranslation } from "react-i18next"
+import { ControllerRenderProps } from "react-hook-form"
 
+interface DatePickerProps {
+    field: ControllerRenderProps<any, any>
+}
 
-const DatePicker = ({ field }) => {
+const DatePicker = ({ field }: DatePickerProps) => {
     const { t } = useTranslation();
 
     return (
@@ -32,7 +36,7 @@ const DatePicker = ({ field }) => {
                     </Button>
                 </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                     mode="single"
                     selected={field.value}
@@ -47,5 +51,4 @@ const DatePicker = ({ field }) => {
         </Popover>
     )
 }
-
 export default DatePicker;

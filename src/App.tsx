@@ -10,7 +10,7 @@ import { Input } from './components/ui/input'
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,62 +24,72 @@ import { AlertCircle } from "lucide-react"
 import { cn } from "./lib/utils"
 import { useTranslation } from 'react-i18next'
 
-const formSchema = (t: any) => z.object({
-  honorific: z.string({
-    required_error: t('form.validation.required.honorary'),
-  }),
-  name: z.string({
-    required_error: t('form.validation.required.name'),
-  }).min(2, {
-    message: t('form.validation.format.name'),
-  }),
-  surname: z.string().min(2, {
-    message: t('form.validation.format.surname'),
-  }),
-  birthSurname: z.string().min(2, {
-    message: t('form.validation.format.birthSurname'),
-  }).optional(),
-  dob: z.date({
-    required_error: t('form.validation.required.date'),
-  }),
-  sex: z.enum(["male", "female", "other"], {
-    required_error: t('form.validation.required.sex'),
-  }),
-  titleBefore: z.string().optional(),
-  titleAfter: z.string().optional(),
-  ssn: z.string().regex(/^\d{6}\/\d{4}$/, {
-    message: "SSN must be in the format yymmdd/1234.",
-  }),
-  isFirstJobHere: z.string({
-    required_error: "Please select an email to display.",
-  }),
-  citizenship: z.string({
-    required_error: "Please select a country.",
-  }),
-  nationality: z.string({
-    required_error: "Please select a nationality.",
-  }),
-  residenceFrom: z.date({
-    required_error: "A date is required.",
-  }),
-  residenceUntil: z.date({
-    required_error: "A date is required.",
-  }),
-  addressInAnotherCountry: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-})
-
-function onSubmit(values: z.infer<typeof formSchema>) {
-  console.log(values)
-}
-
+// Move the schema creation inside the component
 function App() {
   const { t } = useTranslation();
 
-  const form = useForm<z.infer<ReturnType<typeof formSchema>>>({
-    resolver: zodResolver(formSchema(t)),
+  // Create the schema inside the component
+  const formSchema = z.object({
+    honorific: z.string({
+      required_error: t('form.validation.required.honorary'),
+    }),
+    name: z.string({
+      required_error: t('form.validation.required.name'),
+    }).min(2, {
+      message: t('form.validation.format.name'),
+    }),
+    surname: z.string().min(2, {
+      message: t('form.validation.format.surname'),
+    }),
+    birthSurname: z.string().min(2, {
+      message: t('form.validation.format.birthSurname'),
+    }).optional(),
+    dob: z.date({
+      required_error: t('form.validation.required.date'),
+    }),
+    sex: z.enum(["male", "female", "other"], {
+      required_error: t('form.validation.required.sex'),
+    }),
+    titleBefore: z.string().optional(),
+    titleAfter: z.string().optional(),
+    ssn: z.string().regex(/^\d{6}\/\d{4}$/, {
+      message: "SSN must be in the format yymmdd/1234.",
+    }),
+    isFirstJobInCzechia: z.string({
+      required_error: "Please select an email to display.",
+    }),
+    citizenship: z.string({
+      required_error: "Please select a country.",
+    }),
+    nationality: z.string({
+      required_error: "Please select a nationality.",
+    }),
+    residenceFrom: z.date({
+      required_error: "A date is required.",
+    }),
+    residenceUntil: z.date({
+      required_error: "A date is required.",
+    }),
+    addressInAnotherCountry: z.string().min(2, {
+      message: "Username must be at least 2 characters.",
+    }),
+    residencePermitNumber: z.string().optional(),
+    typeAndPurposeOfStay: z.string().optional(),
+    ssnFromInsurace: z.string().optional(),
+    insuranceRegNumber: z.string().optional(),
+    ssnForeigner: z.string().optional(),
   })
+
+  // Type inference will now work correctly
+  type FormData = z.infer<typeof formSchema>;
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  })
+
+  function onSubmit(values: FormData) {
+    console.log(values)
+  }
 
   // Add state for tab management
   const [activeTab, setActiveTab] = useState("basic")
@@ -103,14 +113,14 @@ function App() {
   // Add this helper function to check for errors in specific tabs
   const hasErrorsInTab = (tabName: string) => {
     const errors = form.formState.errors
-    const basicFields = ['honorific', 'name', 'surname', 'birthSurname', 'dob', 'sex', 'ssn']
-    const foreignerFields = ['citizenship', 'nationality', 'residenceFrom', 'residenceUntil']
+    const basicFields = ['honorific', 'name', 'surname', 'birthSurname', 'dob', 'sex', 'ssn'] as const
+    const foreignerFields = ['citizenship', 'nationality', 'residenceFrom', 'residenceUntil'] as const
 
     const fieldsToCheck =
       tabName === 'basic' ? basicFields :
         tabName === 'foreigner' ? foreignerFields : []
 
-    return fieldsToCheck.some(field => errors[field])
+    return fieldsToCheck.some(field => field in errors)
   }
 
   return (
