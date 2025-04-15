@@ -6,19 +6,11 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import './App.css'
 import { Button } from './components/ui/button'
-import { Input } from './components/ui/input'
 import {
   Form,
-  FormControl,
-  // FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
+  // FormDescription
   FormMessage
 } from './components/ui/form'
-import DatePicker from './customComponents/DatePicker'
-import { RadioGroup, RadioGroupItem } from './components/ui/radio-group'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
 import { AlertCircle } from "lucide-react"
 import { cn } from "./lib/utils"
@@ -276,27 +268,17 @@ function App() {
                     formLabel={t('form.labels.addressInAnotherCountry')}
                     formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormSelect
                     name="isFirstJobInCzechia"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.isFirstJobInCzechia')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="w-full" >
-                              <SelectValue placeholder="-" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="-">-</SelectItem>
-                            <SelectItem value="yes">Yes</SelectItem>
-                            <SelectItem value="no">No</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.isFirstJobInCzechia')}
+                    formControl={form.control}
+                    formTriggerClass='w-full'
+                    options={[
+                      { value: "-", label: "-" },
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') }
+                    ]}
+                    placeholder="-"
                   />
                   <FormInput
                     name="residencePermitNumber"
