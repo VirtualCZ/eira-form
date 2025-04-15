@@ -80,31 +80,27 @@ const FormDateFromTo = <T extends FieldValues>({
         />
       </FormControl>
       {formMessage && (
-        <div>
+        <>
           <FormField
             control={formControl}
             name={nameFrom}
-            render={({ formState }) => (
-              <FormMessage>{formState.errors[nameFrom]?.message}</FormMessage>
-            )}
+            render={() => <FormMessage />}
           />
           <FormField
             control={formControl}
             name={nameTo}
-            render={({ formState }) => (
-              <FormMessage>{formState.errors[nameTo]?.message}</FormMessage>
-            )}
+            render={() => <FormMessage />}
           />
-        </div>
+        </>
       )}
     </FormItem>
   );
 };
 
-interface DatePickerWithRangeProps extends React.HTMLAttributes<HTMLDivElement> {
-  value?: DateRange;
-  onChange?: (date: DateRange | undefined) => void;
-}
+interface DatePickerWithRangeProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+    value?: DateRange;
+    onChange?: (date: DateRange | undefined) => void;
+  }
 
 function DatePickerWithRange({
   className,
