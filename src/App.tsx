@@ -19,6 +19,7 @@ import FormInput from './customComponents/FormInput'
 import FormDate from './customComponents/FormDate'
 import FormRadio from './customComponents/FormRadio'
 import FormSelect from './customComponents/FormSelect'
+import FormDateFromTo from './customComponents/FormDateFromTo'
 
 // Move the schema creation inside the component
 function App() {
@@ -63,10 +64,10 @@ function App() {
       required_error: "Please select a nationality.",
     }),
     residenceFrom: z.date({
-      required_error: "A date is required.",
+      required_error: "A from date is required.",
     }),
     residenceUntil: z.date({
-      required_error: "A date is required.",
+      required_error: "An until date is required.",
     }),
     addressInAnotherCountry: z.string().min(2, {
       message: "Username must be at least 2 characters.",
@@ -285,14 +286,10 @@ function App() {
                     formLabel={t('form.labels.residencePermitNumber')}
                     formControl={form.control}
                   />
-                  <FormDate
-                    name="residenceFrom"
-                    formLabel={t('form.labels.residenceFrom')}
-                    formControl={form.control}
-                  />
-                  <FormDate
-                    name="residenceUntil"
-                    formLabel={t('form.labels.residenceUntil')}
+                  <FormDateFromTo
+                    nameFrom="residenceFrom"
+                    nameTo="residenceUntil"
+                    formLabel={t('form.labels.residencePeriod')}
                     formControl={form.control}
                   />
                   <FormInput
