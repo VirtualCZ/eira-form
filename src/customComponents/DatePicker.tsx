@@ -10,10 +10,11 @@ import { useTranslation } from "react-i18next"
 import { ControllerRenderProps } from "react-hook-form"
 
 interface DatePickerProps {
-    field: ControllerRenderProps<any, any>
+    field: ControllerRenderProps<any, any>,
+    className?: string;
 }
 
-const DatePicker = ({ field }: DatePickerProps) => {
+const DatePicker = ({ field, className }: DatePickerProps) => {
     const { t } = useTranslation();
 
     return (
@@ -24,7 +25,8 @@ const DatePicker = ({ field }: DatePickerProps) => {
                         variant={"outline"}
                         className={cn(
                             "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
+                            className
                         )}
                     >
                         {field.value ? (

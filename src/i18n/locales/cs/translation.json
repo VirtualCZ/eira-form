@@ -60,6 +60,20 @@
         "sk": "Slovensko",
         "uk": "Spojené království",
         "br": "Brazílie"
+      },
+      "nationality": {
+        "czech":"Česká",
+        "moravian":"Moravská",
+        "german":"Německá",
+        "polish":"Polská",
+        "gypsy":"Romská",
+        "russian":"Ruská",
+        "silesian":"Slezská",
+        "slovakian":"Slovenská",
+        "ukrainian":"Ukrajinská",
+        "vietnamese":"Vietnamská",
+        "hungarian":"Maďarská",
+        "khazakh":"Kazašská"
       }
     },
     "pickDate": "Vybrat datum",

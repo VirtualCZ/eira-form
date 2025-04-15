@@ -60,6 +60,20 @@
         "sk": "Slovakia",
         "uk": "United Kingdom",
         "br": "Brazil"
+      },
+      "nationality": {
+        "czech":"Czech",
+        "moravian":"Moravian",
+        "german":"German",
+        "polish":"Polish",
+        "gypsy":"Gypsy",
+        "russian":"Russian",
+        "silesian":"Silesian",
+        "slovakian":"Slovakian",
+        "ukrainian":"Ukrainian",
+        "vietnamese":"Vietnamese",
+        "hungarian":"Hungarian",
+        "khazakh":"Khazakh"
       }
     },
     "pickDate": "Pick a Date",

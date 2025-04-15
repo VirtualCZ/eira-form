@@ -23,6 +23,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
 import { AlertCircle } from "lucide-react"
 import { cn } from "./lib/utils"
 import { useTranslation } from 'react-i18next'
+import FormInput from './customComponents/FormInput'
+import FormDate from './customComponents/FormDate'
+import FormRadio from './customComponents/FormRadio'
+import FormSelect from './customComponents/FormSelect'
 
 // Move the schema creation inside the component
 function App() {
@@ -77,7 +81,7 @@ function App() {
     }),
     residencePermitNumber: z.string().optional(),
     typeAndPurposeOfStay: z.string().optional(),
-    ssnFromInsurace: z.string().optional(),
+    ssnFromInsurance: z.string().optional(),
     insuranceRegNumber: z.string().optional(),
     ssnForeigner: z.string().optional(),
   })
@@ -161,254 +165,116 @@ function App() {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent className="relative overflow-scroll space-y-4 px-2" value="basic">
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="titleBefore"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.titleBefore')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.titleBefore')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="titleAfter"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.titleAfter')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.titleAfter')}
+                    formControl={form.control}
                   />
                   <div className="space-y-2">
                     <div className="flex gap-2">
-
-                      <FormField
-                        control={form.control}
+                      <FormSelect
                         name="honorific"
-                        render={({ field }) => (
-                          <FormItem className="flex-none">
-                            <FormLabel>{t('form.labels.honorific')}</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="--." />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="mr">{t('form.options.honorific.mr')}</SelectItem>
-                                <SelectItem value="mrs">{t('form.options.honorific.mrs')}</SelectItem>
-                                <SelectItem value="ms">{t('form.options.honorific.ms')}</SelectItem>
-                                <SelectItem value="miss">{t('form.options.honorific.miss')}</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
+                        formLabel={t('form.labels.honorific')}
+                        formControl={form.control}
+                        formItemClass="flex-none"
+                        options={[
+                          { value: "mr", label: t('form.options.honorific.mr') },
+                          { value: "mrs", label: t('form.options.honorific.mrs') },
+                          { value: "ms", label: t('form.options.honorific.ms') },
+                          { value: "miss", label: t('form.options.honorific.miss') }
+                        ]}
+                        placeholder="--."
+                        formMessage={false}
                       />
-                      <FormField
-                        control={form.control}
+                      <FormInput
                         name="name"
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>{t('form.labels.name')}</FormLabel>
-                            <FormControl>
-                              <Input placeholder="" {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
+                        formLabel={t('form.labels.name')}
+                        formControl={form.control}
+                        formMessage={false}
+                        formItemClass='flex-1'
                       />
                     </div>
                     <div className="flex gap-2">
-                      <div>
-                        <FormMessage>{form.formState.errors.honorific?.message} {form.formState.errors.name?.message}</FormMessage>
-                      </div>
+                      <FormMessage>{form.formState.errors.honorific?.message} {form.formState.errors.name?.message}</FormMessage>
                     </div>
                   </div>
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="surname"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.surname')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.surname')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="birthSurname"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.birthSurname')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.birthSurname')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormDate
                     name="dob"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.dob')}</FormLabel>
-                        <FormControl>
-                          <DatePicker
-                            field={field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.dob')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormRadio
                     name="sex"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>{t('form.labels.sex')}</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="flex flex-col space-y-1"
-                          >
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="male" />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {t('form.options.sex.male')}
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="female" />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {t('form.options.sex.female')}
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="other" />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {t('form.options.sex.other')}
-                              </FormLabel>
-                            </FormItem>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.sex')}
+                    formControl={form.control}
+                    options={[
+                      { value: "male", label: t('form.options.sex.male') },
+                      { value: "female", label: t('form.options.sex.female') },
+                      { value: "other", label: t('form.options.sex.other') }
+                    ]}
                   />
-
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="ssn"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.ssn')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="250411/1234"
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.ssn')}
+                    formControl={form.control}
+                    formPlaceholder="250411/1234"
                   />
                 </TabsContent>
                 <TabsContent className="relative overflow-scroll space-y-4 px-2" value="foreigner">
-                  <FormField
-                    control={form.control}
+                  <FormSelect
                     name="citizenship"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.citizenship')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="w-full" >
-                              <SelectValue placeholder="-" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="cz">{t('form.options.citizenship.cz')}</SelectItem>
-                            <SelectItem value="sk">{t('form.options.citizenship.sk')}</SelectItem>
-                            <SelectItem value="uk">{t('form.options.citizenship.uk')}</SelectItem>
-                            <SelectItem value="br">{t('form.options.citizenship.br')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.citizenship')}
+                    formControl={form.control}
+                    formTriggerClass='w-full'
+                    options={[
+                      { value: "cz", label: t('form.options.citizenship.cz') },
+                      { value: "sk", label: t('form.options.citizenship.sk') },
+                      { value: "uk", label: t('form.options.citizenship.uk') },
+                      { value: "br", label: t('form.options.citizenship.br') }
+                    ]}
+                    placeholder="-"
                   />
-
-                  <FormField
-                    control={form.control}
+                  <FormSelect
                     name="nationality"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.nationality')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger className="w-full" >
-                              <SelectValue placeholder="-" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="czech">Czech</SelectItem>
-                            <SelectItem value="moravian">Moravian</SelectItem>
-                            <SelectItem value="german">German</SelectItem>
-                            <SelectItem value="polish">Polish</SelectItem>
-                            <SelectItem value="gypsy">Gypsy</SelectItem>
-                            <SelectItem value="russian">Russian</SelectItem>
-                            <SelectItem value="silesian">Silesian</SelectItem>
-                            <SelectItem value="slovakian">Slovenská</SelectItem>
-                            <SelectItem value="ukrainian">Ukrainian</SelectItem>
-                            <SelectItem value="vietnamese">Vietnamese</SelectItem>
-                            <SelectItem value="hungarian">Hungarian</SelectItem>
-                            <SelectItem value="khazakh">Khazakh</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.nationality')}
+                    formControl={form.control}
+                    formTriggerClass='w-full'
+                    options={[
+                      { value: "czech", label: t('form.options.nationality.czech') },
+                      { value: "moravian", label: t('form.options.nationality.moravian') },
+                      { value: "german", label: t('form.options.nationality.german') },
+                      { value: "polish", label: t('form.options.nationality.polish') },
+                      { value: "gypsy", label: t('form.options.nationality.gypsy') },
+                      { value: "russian", label: t('form.options.nationality.russian') },
+                      { value: "silesian", label: t('form.options.nationality.silesian') },
+                      { value: "slovakian", label: t('form.options.nationality.slovakian') },
+                      { value: "ukrainian", label: t('form.options.nationality.ukrainian') },
+                      { value: "vietnamese", label: t('form.options.nationality.vietnamese') },
+                      { value: "hungarian", label: t('form.options.nationality.hungarian') },
+                      { value: "khazakh", label: t('form.options.nationality.khazakh') }
+
+                    ]}
+                    placeholder="-"
                   />
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="addressInAnotherCountry"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.addressInAnotherCountry')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.addressInAnotherCountry')}
+                    formControl={form.control}
                   />
                   <FormField
                     control={form.control}
@@ -432,115 +298,45 @@ function App() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="residencePermitNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.residencePermitNumber')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.residencePermitNumber')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormDate
                     name="residenceFrom"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.residenceFrom')}</FormLabel>
-                        <FormControl>
-                          <DatePicker
-                            field={field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.residenceFrom')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormDate
                     name="residenceUntil"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.residenceUntil')}</FormLabel>
-                        <FormControl>
-                          <DatePicker
-                            field={field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.residenceUntil')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="typeAndPurposeOfStay"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.typeAndPurposeOfStay')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.typeAndPurposeOfStay')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
-                    name="ssnFromInsurace"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.ssnFromInsurance')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                  <FormInput
+                    name="ssnFromInsurance"
+                    formLabel={t('form.labels.ssnFromInsurance')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="insuranceRegNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.insuranceRegNumber')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.insuranceRegNumber')}
+                    formControl={form.control}
                   />
-                  <FormField
-                    control={form.control}
+                  <FormInput
                     name="ssnForeigner"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('form.labels.ssnForeigner')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    formLabel={t('form.labels.ssnForeigner')}
+                    formControl={form.control}
                   />
 
                 </TabsContent>
                 <TabsContent className="relative overflow-scroll space-y-4 px-2" value="education">
-                    <div>Additional fields will be added later..</div>
+                  <div>Additional fields will be added later..</div>
                 </TabsContent>
                 <div className="flex justify-between pt-2 mt-2 border-t">
                   <Button
