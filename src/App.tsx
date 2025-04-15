@@ -76,7 +76,7 @@ function App() {
     typeAndPurposeOfStay: z.string().optional(),
     ssnFromInsurance: z.string().optional(),
     insuranceRegNumber: z.string().optional(),
-    ssnForeigner: z.string().optional(),
+    ssnForeigner: z.string().optional()
   })
 
   // Type inference will now work correctly

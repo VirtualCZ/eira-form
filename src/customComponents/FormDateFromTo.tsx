@@ -1,166 +1,138 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Control, FieldPath, FieldValues, useController } from "react-hook-form";
-import * as React from "react";
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import * as React from "react"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { cn } from "@/lib/utils"
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  useFormState,
+} from "react-hook-form"
+import { DateRange } from "react-day-picker"
+import { useTranslation } from "react-i18next"
 
-interface FormDateFromToProps<T extends FieldValues> {
-  nameFrom: FieldPath<T>;
-  nameTo: FieldPath<T>;
-  formLabel: string;
-  formControl: Control<T>;
-  formItemClass?: string;
-  formFieldClass?: string;
-  formMessage?: boolean;
+type FormDateFromToProps<T extends FieldValues> = {
+  nameFrom: FieldPath<T>
+  nameTo: FieldPath<T>
+  formLabel: string
+  formControl: Control<T>
+  formItemClass?: string
+  formFieldClass?: string
+  formMessage?: boolean
 }
 
-const FormDateFromTo = <T extends FieldValues>({
+export default function FormDateFromTo<T extends FieldValues>({
   nameFrom,
   nameTo,
   formLabel,
   formControl,
   formItemClass,
   formFieldClass,
-  formMessage = true
-}: FormDateFromToProps<T>) => {
-  // Use controllers to get and set values for both fields
-  const { field: fromField } = useController({
-    name: nameFrom,
-    control: formControl
-  });
-  
-  const { field: toField } = useController({
-    name: nameTo,
-    control: formControl
-  });
-
-  // Create a date range from the individual dates
-  const dateRange: DateRange | undefined = React.useMemo(() => {
-    if (fromField.value || toField.value) {
-      return {
-        from: fromField.value,
-        to: toField.value
-      };
-    }
-    return undefined;
-  }, [fromField.value, toField.value]);
-
-  // Handle date range changes
-  const handleDateRangeChange = (range: DateRange | undefined) => {
-    if (range?.from) {
-      fromField.onChange(range.from);
-    } else {
-      fromField.onChange(undefined);
-    }
-    
-    if (range?.to) {
-      toField.onChange(range.to);
-    } else {
-      toField.onChange(undefined);
-    }
-  };
+  formMessage = true,
+}: FormDateFromToProps<T>) {
+  const { t } = useTranslation();
+  const { errors } = useFormState({ control: formControl })
 
   return (
-    <FormItem className={formItemClass}>
-      <FormLabel>{formLabel}</FormLabel>
-      <FormControl>
-        <DatePickerWithRange 
-          value={dateRange} 
-          onChange={handleDateRangeChange}
-          className={formFieldClass}
-        />
-      </FormControl>
-      {formMessage && (
-        <>
-          <FormField
-            control={formControl}
-            name={nameFrom}
-            render={() => <FormMessage />}
-          />
+    <div className="flex flex-col gap-2">
+      <FormField
+        control={formControl}
+        name={nameFrom}
+        render={({ field: fromField }) => (
           <FormField
             control={formControl}
             name={nameTo}
-            render={() => <FormMessage />}
-          />
-        </>
-      )}
-    </FormItem>
-  );
-};
+            render={({ field: toField }) => {
+              const selectedRange: DateRange = {
+                from: fromField.value,
+                to: toField.value,
+              }
 
-interface DatePickerWithRangeProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
-    value?: DateRange;
-    onChange?: (date: DateRange | undefined) => void;
-  }
-
-function DatePickerWithRange({
-  className,
-  value,
-  onChange,
-}: DatePickerWithRangeProps) {
-  const [date, setDate] = React.useState<DateRange | undefined>(value);
-
-  // Update internal state when props change
-  React.useEffect(() => {
-    setDate(value);
-  }, [value]);
-
-  const handleSelect = (selectedDate: DateRange | undefined) => {
-    setDate(selectedDate);
-    if (onChange) {
-      onChange(selectedDate);
-    }
-  };
-
-  return (
-    <div className={cn("grid gap-2", className)}>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant={"outline"}
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
+              return (
+                <FormItem className={cn("w-full", formItemClass)}>
+                  <FormLabel>{formLabel}</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !selectedRange.from && "text-muted-foreground",
+                            formFieldClass
+                          )}
+                          data-error={
+                            errors?.[nameFrom] || errors?.[nameTo] ? "true" : undefined
+                          }
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {selectedRange.from ? (
+                            selectedRange.to ? (
+                              <>
+                                {format(selectedRange.from, "LLL dd, y")} -{" "}
+                                {format(selectedRange.to, "LLL dd, y")}
+                              </>
+                            ) : (
+                              format(selectedRange.from, "LLL dd, y")
+                            )
+                          ) : (
+                            <span>{t('form.pickDate')}</span>
+                          )}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        selected={selectedRange}
+                        onSelect={(range) => {
+                          fromField.onChange(range?.from ?? undefined)
+                          toField.onChange(range?.to ?? undefined)
+                        }}
+                        numberOfMonths={2}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormItem>
               )
-            ) : (
-              <span>Pick a date range</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={handleSelect}
-            numberOfMonths={2}
+            }}
           />
-        </PopoverContent>
-      </Popover>
-    </div>
-  );
-}
+        )}
+      />
+      <FormField
+        control={formControl}
+        name={nameFrom}
+        render={() => (
+          <FormItem className="">
+            {formMessage && <FormMessage />}
+          </FormItem>
+        )}
+      />
 
-export default FormDateFromTo;
+      <FormField
+        control={formControl}
+        name={nameTo}
+        render={() => (
+          <FormItem className="">
+            {formMessage && <FormMessage />}
+          </FormItem>
+        )}
+      />
+    </div>
+  )
+}
