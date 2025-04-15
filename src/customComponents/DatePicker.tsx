@@ -23,7 +23,7 @@ const DatePicker = ({ field }: DatePickerProps) => {
                     <Button
                         variant={"outline"}
                         className={cn(
-                            "w-100 pl-3 text-left font-normal",
+                            "pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground"
                         )}
                     >

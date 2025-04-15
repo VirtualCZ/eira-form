@@ -52,7 +52,9 @@ function App() {
     }),
     titleBefore: z.string().optional(),
     titleAfter: z.string().optional(),
-    ssn: z.string().regex(/^\d{6}\/\d{4}$/, {
+    ssn: z.string({
+      required_error: t('form.validation.required.ssn'),
+    }).regex(/^\d{6}\/\d{4}$/, {
       message: "SSN must be in the format yymmdd/1234.",
     }),
     isFirstJobInCzechia: z.string({
@@ -125,11 +127,11 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col items-center min-h-svh">
-        <div className="form-container">
+      <div className="min-h-svh flex items-center justify-center @container">
+        <div className="form-container @xs:w-[100%] @lg:w-[400px] @2xl:w-[600px] @4xl:w-[800px]">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px] h-full flex flex-col">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
                 <TabsList className="mb-2">
                   <TabsTrigger
                     value="basic"
@@ -158,7 +160,7 @@ function App() {
                   <TabsTrigger value="education">{t('form.tabs.education')}
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent className="relative overflow-scroll space-y-4" value="basic">
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="basic">
                   <FormField
                     control={form.control}
                     name="titleBefore"
@@ -337,7 +339,7 @@ function App() {
                     )}
                   />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4" value="foreigner">
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="foreigner">
                   <FormField
                     control={form.control}
                     name="citizenship"
@@ -346,15 +348,15 @@ function App() {
                         <FormLabel>{t('form.labels.citizenship')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="w-100" >
+                            <SelectTrigger className="w-full" >
                               <SelectValue placeholder="-" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="cz">Czech</SelectItem>
-                            <SelectItem value="sk">Slovak</SelectItem>
-                            <SelectItem value="uk">United Kingdom</SelectItem>
-                            <SelectItem value="br">Brazilian</SelectItem>
+                            <SelectItem value="cz">{t('form.options.citizenship.cz')}</SelectItem>
+                            <SelectItem value="sk">{t('form.options.citizenship.sk')}</SelectItem>
+                            <SelectItem value="uk">{t('form.options.citizenship.uk')}</SelectItem>
+                            <SelectItem value="br">{t('form.options.citizenship.br')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -370,7 +372,7 @@ function App() {
                         <FormLabel>{t('form.labels.nationality')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="w-100" >
+                            <SelectTrigger className="w-full" >
                               <SelectValue placeholder="-" />
                             </SelectTrigger>
                           </FormControl>
@@ -416,7 +418,7 @@ function App() {
                         <FormLabel>{t('form.labels.isFirstJobInCzechia')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger className="w-100" >
+                            <SelectTrigger className="w-full" >
                               <SelectValue placeholder="-" />
                             </SelectTrigger>
                           </FormControl>
@@ -537,8 +539,8 @@ function App() {
                   />
 
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4" value="education">
-                    <div>pikojakovoda</div>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="education">
+                    <div>Additional fields will be added later..</div>
                 </TabsContent>
                 <div className="flex justify-between pt-2 mt-2 border-t">
                   <Button

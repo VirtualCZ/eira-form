@@ -3,6 +3,9 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import Backend from 'i18next-http-backend';
 
+import translationsCs from './locales/cs/translation.json';
+import translationsEn from './locales/en/translation.json';
+
 i18n
     .use(Backend)
     .use(LanguageDetector)
@@ -14,9 +17,10 @@ i18n
         interpolation: {
             escapeValue: false,
         },
-        backend: {
-            loadPath: '/locales/{{lng}}/{{ns}}.json',
-        },
+        resources: {
+            en: { translation: translationsEn },
+            cs: { translation: translationsCs },
+          },
     });
 
 export default i18n;

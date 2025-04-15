@@ -7,7 +7,8 @@
         "date": "Datum je povinné.",
         "sex": "Musíte vybrat pohlaví.",
         "country": "Prosím vyberte zemi.",
-        "nationality": "Prosím vyberte národnost."
+        "nationality": "Prosím vyberte národnost.",
+        "ssn": "Prosím zadejte rodné číslo."
       },
       "format": {
         "name": "Jméno musí mít alespoň 2 znaky.",
@@ -53,6 +54,12 @@
       "yesNo": {
         "yes": "Ano",
         "no": "Ne"
+      },
+      "citizenship": {
+        "cz": "Česká republika",
+        "sk": "Slovensko",
+        "uk": "Spojené království",
+        "br": "Brazílie"
       }
     },
     "pickDate": "Vybrat datum",
