@@ -99,8 +99,12 @@ function App() {
 
     foreignPermanentAddress: z.string(),
     residencePermitNumber: z.string(),
-    residencePermitValidityFrom: z.string(),
-    residencePermitValidityUntil: z.string(),
+    residencePermitValidityFrom: z.date({
+      required_error: t('form.validation.required.date'),
+    }),
+    residencePermitValidityUntil: z.date({
+      required_error: t('form.validation.required.date'),
+    }),
     residencePermitType: z.string(),
     residencePermitPurpose: z.string(),
 
@@ -171,18 +175,74 @@ function App() {
       setActiveTab(tabs[currentIndex - 1])
     }
   }
+  function FormTabsTrigger({
+    value,
+    label,
+    error,
+    ...props
+  }: {
+    value: string
+    label: string
+    error?: boolean
+    [key: string]: any
+  }) {
+    return (
+      <TabsTrigger
+        value={value}
+        className={cn(
+          "flex items-center gap-1",
+          error && "bg-red-50 data-[state=active]:bg-red-100"
+        )}
+        {...props}
+      >
+        {label}
+        {error && <AlertCircle className="w-4 h-4 text-red-500" />}
+      </TabsTrigger>
+    )
+  }
 
-  // Add this helper function to check for errors in specific tabs
+  // Map each tab to its relevant field names
+  const tabFields: Record<string, (keyof FormData)[]> = {
+    personalInformation: [
+      "titleBeforeName", "titleAfterName", "honorific", "firstName", "lastName", "birthSurname",
+      "dateOfBirth", "sex", "placeOfBirth", "maritalStatus", "foreginer", "birthNumber",
+      "foreignBirthNumber", "insuranceBirthNumber", "idCardNumber", "idCardIssuedBy",
+      "passportNumber", "passportIssuedBy", "citizenship", "nationality"
+    ],
+    addresses: [
+      "contactStreet", "contactHouseNumber", "contactOrientationNumber", "contactCity", "contactPostalCode", "contactCountry",
+      "permanentStreet", "permanentHouseNumber", "permanentOrientationNumber", "permanentCity", "permanentPostalCode", "permanentCountry"
+    ],
+    contacts: [
+      "email", "phone", "dataBoxId"
+    ],
+    foreigners: [
+      "foreignPermanentAddress", "residencePermitNumber", "residencePermitValidityFrom", "residencePermitValidityUntil",
+      "residencePermitType", "residencePermitPurpose"
+    ],
+    employment: [
+      "employmentClassification", "jobPosition", "firstJobInCz", "lastEmployer", "lastJobType", "lastJobPeriod"
+    ],
+    educationAndLanguages: [
+      "highestEducationSchool", "fieldOfStudy", "graduationYear", "studyCity", "language", "languageProficiency", "languageExamType"
+    ],
+    healthAndSocialInfo: [
+      "hasDisability", "disabilityType", "disabilityDecisionDate", "receivesPension", "pensionType", "pensionDecisionDate"
+    ],
+    legalInfo: [
+      "activityBan", "bannedActivity", "hasWageDeductions", "wageDeductionDetails"
+    ],
+    familyAndChildren: [
+      "numberOfDependents", "claimChildTaxRelief", "childrenInfo"
+    ],
+    agreements: [
+      "confirmationReadEmployeeDeclaration", "confirmationReadEmailAddressDeclaration"
+    ]
+  }
   const hasErrorsInTab = (tabName: string) => {
     const errors = form.formState.errors
-    const basicFields = ['honorific', 'name', 'surname', 'birthSurname', 'dob', 'sex', 'ssn'] as const
-    const foreignerFields = ['citizenship', 'nationality', 'residenceFrom', 'residenceUntil'] as const
-
-    const fieldsToCheck =
-      tabName === 'personalInformation' ? basicFields :
-        tabName === 'foreigners' ? foreignerFields : []
-
-    return fieldsToCheck.some(field => field in errors)
+    const fields = tabFields[tabName] || []
+    return fields.some(field => !!errors[field])
   }
 
   return (
@@ -191,49 +251,19 @@ function App() {
         <div className="form-container @xs:w-[100%] @lg:w-[400px] @2xl:w-[600px] @4xl:w-[800px]">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+              <Tabs
+                value={activeTab}
+                className="h-full flex flex-col"
+              >
                 <TabsList className="mb-2">
-                  <TabsTrigger
-                    value="personalInformation"
-                    className={cn(
-                      "flex items-center gap-1",
-                      hasErrorsInTab('personalInformation') && "bg-red-50 data-[state=active]:bg-red-100"
-                    )}
-                  >
-                    {t('form.tabs.personalInformation')}
-                    {hasErrorsInTab('personalInformation') && (
-                      <AlertCircle className="w-4 h-4 text-red-500" />
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger value="addresses">{t('form.tabs.addresses')}
-                  </TabsTrigger>
-                  <TabsTrigger value="contacts">{t('form.tabs.contacts')}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="foreigners"
-                    className={cn(
-                      "flex items-center gap-1",
-                      hasErrorsInTab('foreigner') && "bg-red-50 data-[state=active]:bg-red-100"
-                    )}
-                  >
-                    {t('form.tabs.foreigners')}
-                    {hasErrorsInTab('foreigners') && (
-                      <AlertCircle className="w-4 h-4 text-red-500" />
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger value="employment">{t('form.tabs.employment')}
-                  </TabsTrigger>
-                  <TabsTrigger value="educationAndLanguages">{t('form.tabs.educationAndLanguages')}
-                  </TabsTrigger>
-                  <TabsTrigger value="healthAndSocialInfo">{t('form.tabs.healthAndSocialInfo')}
-                  </TabsTrigger>
-                  <TabsTrigger value="legalInfo">{t('form.tabs.legalInfo')}
-                  </TabsTrigger>
-                  <TabsTrigger value="familyAndChildren">{t('form.tabs.familyAndChildren')}
-                  </TabsTrigger>
-                  <TabsTrigger value="agreements">{t('form.tabs.agreements')}
-                  </TabsTrigger>
-
+                  {tabs.map((tab, idx) => (
+                    <FormTabsTrigger
+                      key={tab}
+                      value={tab}
+                      label={t(`form.tabs.${tab}`)}
+                      error={hasErrorsInTab(tab)}
+                    />
+                  ))}
                 </TabsList>
                 <TabsContent className="relative overflow-scroll space-y-4 px-2" value="personalInformation">
                   <FormInput
