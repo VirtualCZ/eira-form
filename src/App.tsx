@@ -285,12 +285,16 @@ function App() {
                     name="residencePermitNumber"
                     formLabel={t('form.labels.residencePermitNumber')}
                     formControl={form.control}
+                    formFieldClass='w-[100%]'
+                    formItemClass="flex-1"
                   />
                   <FormDateFromTo
                     nameFrom="residenceFrom"
                     nameTo="residenceUntil"
                     formLabel={t('form.labels.residencePeriod')}
                     formControl={form.control}
+                    formFieldClass='w-[100%]'
+                    formItemClass="flex-1"
                   />
                   <FormInput
                     name="typeAndPurposeOfStay"

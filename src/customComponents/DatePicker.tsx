@@ -12,9 +12,10 @@ import { ControllerRenderProps } from "react-hook-form"
 interface DatePickerProps {
     field: ControllerRenderProps<any, any>,
     className?: string;
+    disabled?: (date: Date) => boolean;
 }
 
-const DatePicker = ({ field, className }: DatePickerProps) => {
+const DatePicker = ({ field, className, disabled }: DatePickerProps) => {
     const { t } = useTranslation();
 
     return (
@@ -43,10 +44,7 @@ const DatePicker = ({ field, className }: DatePickerProps) => {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    // set a limit to selectable dates
-                    // disabled={(date) =>
-                    //     date > new Date() || date < new Date("1900-01-01")
-                    // }
+                    disabled={disabled}
                     initialFocus
                 />
             </PopoverContent>

@@ -1,13 +1,3 @@
-import * as React from "react"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
@@ -22,8 +12,7 @@ import {
   FieldValues,
   useFormState,
 } from "react-hook-form"
-import { DateRange } from "react-day-picker"
-import { useTranslation } from "react-i18next"
+import DatePicker from "./DatePicker"
 
 type FormDateFromToProps<T extends FieldValues> = {
   nameFrom: FieldPath<T>
@@ -44,95 +33,66 @@ export default function FormDateFromTo<T extends FieldValues>({
   formFieldClass,
   formMessage = true,
 }: FormDateFromToProps<T>) {
-  const { t } = useTranslation();
-  const { errors } = useFormState({ control: formControl })
+  const { errors } = useFormState({ control: formControl });
 
   return (
-    <div className="flex flex-col gap-2">
-      <FormField
-        control={formControl}
-        name={nameFrom}
-        render={({ field: fromField }) => (
-          <FormField
-            control={formControl}
-            name={nameTo}
-            render={({ field: toField }) => {
-              const selectedRange: DateRange = {
-                from: fromField.value,
-                to: toField.value,
-              }
-
-              return (
-                <FormItem className={cn("w-full", formItemClass)}>
-                  <FormLabel>{formLabel}</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !selectedRange.from && "text-muted-foreground",
-                            formFieldClass
-                          )}
-                          data-error={
-                            errors?.[nameFrom] || errors?.[nameTo] ? "true" : undefined
-                          }
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {selectedRange.from ? (
-                            selectedRange.to ? (
-                              <>
-                                {format(selectedRange.from, "LLL dd, y")} -{" "}
-                                {format(selectedRange.to, "LLL dd, y")}
-                              </>
-                            ) : (
-                              format(selectedRange.from, "LLL dd, y")
-                            )
-                          ) : (
-                            <span>{t('form.pickDate')}</span>
-                          )}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="range"
-                        selected={selectedRange}
-                        onSelect={(range) => {
-                          fromField.onChange(range?.from ?? undefined)
-                          toField.onChange(range?.to ?? undefined)
-                        }}
-                        numberOfMonths={2}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormItem>
-              )
-            }}
-          />
-        )}
-      />
-      <FormField
-        control={formControl}
-        name={nameFrom}
-        render={() => (
-          <FormItem className="">
-            {formMessage && <FormMessage />}
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={formControl}
-        name={nameTo}
-        render={() => (
-          <FormItem className="">
-            {formMessage && <FormMessage />}
-          </FormItem>
-        )}
-      />
+    <div className={cn("flex flex-col gap-2", formItemClass)}>
+      {/* First row: Label */}
+      <FormLabel
+        data-error={errors?.[nameFrom] || errors?.[nameTo] ? "true" : undefined}
+      >
+        {formLabel}
+      </FormLabel>
+      {/* Second row: Date pickers */}
+      <div className="flex flex-row gap-2">
+        <FormField
+          control={formControl}
+          name={nameFrom}
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormControl>
+                <DatePicker
+                  field={field}
+                  className={formFieldClass}
+                  disabled={date => {
+                    const toDate = formControl._formValues?.[nameTo];
+                    return toDate ? date > new Date(toDate) : false;
+                  }}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={formControl}
+          name={nameTo}
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormControl>
+                <DatePicker
+                  field={field}
+                  className={formFieldClass}
+                  disabled={date => {
+                    const fromDate = formControl._formValues?.[nameFrom];
+                    return fromDate ? date < new Date(fromDate) : false;
+                  }}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </div>
+      {/* Third row: Error messages */}
+      {formMessage && (
+        <div className="flex flex-row gap-2">
+          {errors?.[nameFrom] && (
+            <FormMessage>{errors[nameFrom]?.message as React.ReactNode}</FormMessage>
+          )}
+          {errors?.[nameTo] && (
+            <FormMessage>{errors[nameTo]?.message as React.ReactNode}</FormMessage>
+          )}
+        </div>
+      )}
     </div>
-  )
+  );
 }
