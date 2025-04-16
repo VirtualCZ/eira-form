@@ -1,6 +1,4 @@
 import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -20,6 +18,8 @@ import FormDate from './customComponents/FormDate'
 import FormRadio from './customComponents/FormRadio'
 import FormSelect from './customComponents/FormSelect'
 import FormDateFromTo from './customComponents/FormDateFromTo'
+import { Textarea } from './components/ui/textarea'
+import FormCheckbox from './customComponents/FormCheckbox'
 
 // Move the schema creation inside the component
 function App() {
@@ -27,59 +27,124 @@ function App() {
 
   // Create the schema inside the component
   const formSchema = z.object({
+    titleBeforeName: z.string().optional(),
+    titleAfterName: z.string().optional(),
     honorific: z.string({
       required_error: t('form.validation.required.honorary'),
     }),
-    name: z.string({
-      required_error: t('form.validation.required.name'),
+    firstName: z.string({
+      required_error: t('form.validation.required.firstName'),
     }).min(2, {
       message: t('form.validation.format.name'),
     }),
-    surname: z.string().min(2, {
-      message: t('form.validation.format.surname'),
+    lastName: z.string().min(2, {
+      message: t('form.validation.format.lastName'),
     }),
     birthSurname: z.string().min(2, {
       message: t('form.validation.format.birthSurname'),
     }).optional(),
-    dob: z.date({
-      required_error: t('form.validation.required.date'),
+    dateOfBirth: z.date({
+      required_error: t('form.validation.required.dateOfBirth'),
     }),
     sex: z.enum(["male", "female", "other"], {
       required_error: t('form.validation.required.sex'),
     }),
-    titleBefore: z.string().optional(),
-    titleAfter: z.string().optional(),
-    ssn: z.string({
-      required_error: t('form.validation.required.ssn'),
+    placeOfBirth: z.string({
+      required_error: t('form.validation.required.placeOfBirth'),
+    }).min(2, {
+      message: "Username must be at least 2 characters.",
+    }),
+    maritalStatus: z.enum(["single", "married", "divorced", "widowed "]),
+
+    foreginer: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.foreginer'),
+    }),
+
+    birthNumber: z.string({
+      required_error: t('form.validation.required.birthNumber'),
     }).regex(/^\d{6}\/\d{4}$/, {
       message: "SSN must be in the format yymmdd/1234.",
     }),
-    isFirstJobInCzechia: z.string({
-      required_error: "Please select an email to display.",
-    }),
+    foreignBirthNumber: z.string(),
+    insuranceBirthNumber: z.string(),
+    idCardNumber: z.string(),
+    idCardIssuedBy: z.string(),
+    passportNumber: z.string(),
+    passportIssuedBy: z.string(),
+
     citizenship: z.string({
-      required_error: "Please select a country.",
+      required_error: t('form.validation.required.citizenship'),
     }),
     nationality: z.string({
       required_error: "Please select a nationality.",
     }),
-    residenceFrom: z.date({
-      required_error: "A from date is required.",
+
+    permanentStreet: z.string(),
+    permanentHouseNumber: z.string(),
+    permanentOrientationNumber: z.string(),
+    permanentCity: z.string(),
+    permanentPostalCode: z.string(),
+    permanentCountry: z.string(),
+
+    contactStreet: z.string(),
+    contactHouseNumber: z.string(),
+    contactOrientationNumber: z.string(),
+    contactCity: z.string(),
+    contactPostalCode: z.string(),
+    contactCountry: z.string(),
+
+    email: z.string(),
+    phone: z.string(),
+    dataBoxId: z.string(),
+
+    foreignPermanentAddress: z.string(),
+    residencePermitNumber: z.string(),
+    residencePermitValidityFrom: z.string(),
+    residencePermitValidityUntil: z.string(),
+    residencePermitType: z.string(),
+    residencePermitPurpose: z.string(),
+
+    employmentClassification: z.string(),
+    jobPosition: z.string(),
+    firstJobInCz: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.firstJobInCz'),
     }),
-    residenceUntil: z.date({
-      required_error: "An until date is required.",
-    }),
-    addressInAnotherCountry: z.string().min(2, {
-      message: "Username must be at least 2 characters.",
-    }),
-    residencePermitNumber: z.string().optional(),
-    typeAndPurposeOfStay: z.string().optional(),
-    ssnFromInsurance: z.string().optional(),
-    insuranceRegNumber: z.string().optional(),
-    ssnForeigner: z.string().optional()
+    lastEmployer: z.string(),
+    lastJobType: z.string(),
+    lastJobPeriod: z.string(),
+
+    bankAccountNumber: z.string(),
+    healthInsurance: z.string(),
+    insuranceRegistrationNumber: z.string(),
+
+    highestEducationSchool: z.string(),
+    fieldOfStudy: z.string(),
+    graduationYear: z.string(),
+    studyCity: z.string(),
+    language: z.string(),
+    languageProficiency: z.string(),
+    languageExamType: z.string(),
+
+    hasDisability: z.string(),
+    disabilityType: z.string(),
+    disabilityDecisionDate: z.string(),
+    receivesPension: z.string(),
+    pensionType: z.string(),
+    pensionDecisionDate: z.string(),
+
+    activityBan: z.string(),
+    bannedActivity: z.string(),
+    hasWageDeductions: z.string(),
+    wageDeductionDetails: z.string(),
+
+    numberOfDependents: z.string(),
+    claimChildTaxRelief: z.string(),
+    childrenInfo: z.string(),
+
+    confirmationReadEmployeeDeclaration: z.boolean(),
+    confirmationReadEmailAddressDeclaration: z.boolean()
   })
 
-  // Type inference will now work correctly
   type FormData = z.infer<typeof formSchema>;
 
   const form = useForm<FormData>({
@@ -90,11 +155,9 @@ function App() {
     console.log(values)
   }
 
-  // Add state for tab management
-  const [activeTab, setActiveTab] = useState("basic")
+  const [activeTab, setActiveTab] = useState("personalInformation")
 
-  // Add tab navigation functions
-  const tabs = ["basic", "foreigner", "education"]
+  const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment", "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren", "agreements"]
   const currentIndex = tabs.indexOf(activeTab)
 
   const handleNext = () => {
@@ -116,8 +179,8 @@ function App() {
     const foreignerFields = ['citizenship', 'nationality', 'residenceFrom', 'residenceUntil'] as const
 
     const fieldsToCheck =
-      tabName === 'basic' ? basicFields :
-        tabName === 'foreigner' ? foreignerFields : []
+      tabName === 'personalInformation' ? basicFields :
+        tabName === 'foreigners' ? foreignerFields : []
 
     return fieldsToCheck.some(field => field in errors)
   }
@@ -131,41 +194,56 @@ function App() {
               <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
                 <TabsList className="mb-2">
                   <TabsTrigger
-                    value="basic"
+                    value="personalInformation"
                     className={cn(
                       "flex items-center gap-1",
-                      hasErrorsInTab('basic') && "bg-red-50 data-[state=active]:bg-red-100"
+                      hasErrorsInTab('personalInformation') && "bg-red-50 data-[state=active]:bg-red-100"
                     )}
                   >
-                    {t('form.tabs.basic')}
-                    {hasErrorsInTab('basic') && (
+                    {t('form.tabs.personalInformation')}
+                    {hasErrorsInTab('personalInformation') && (
                       <AlertCircle className="w-4 h-4 text-red-500" />
                     )}
                   </TabsTrigger>
+                  <TabsTrigger value="addresses">{t('form.tabs.addresses')}
+                  </TabsTrigger>
+                  <TabsTrigger value="contacts">{t('form.tabs.contacts')}
+                  </TabsTrigger>
                   <TabsTrigger
-                    value="foreigner"
+                    value="foreigners"
                     className={cn(
                       "flex items-center gap-1",
                       hasErrorsInTab('foreigner') && "bg-red-50 data-[state=active]:bg-red-100"
                     )}
                   >
-                    {t('form.tabs.foreigner')}
-                    {hasErrorsInTab('foreigner') && (
+                    {t('form.tabs.foreigners')}
+                    {hasErrorsInTab('foreigners') && (
                       <AlertCircle className="w-4 h-4 text-red-500" />
                     )}
                   </TabsTrigger>
-                  <TabsTrigger value="education">{t('form.tabs.education')}
+                  <TabsTrigger value="employment">{t('form.tabs.employment')}
                   </TabsTrigger>
+                  <TabsTrigger value="educationAndLanguages">{t('form.tabs.educationAndLanguages')}
+                  </TabsTrigger>
+                  <TabsTrigger value="healthAndSocialInfo">{t('form.tabs.healthAndSocialInfo')}
+                  </TabsTrigger>
+                  <TabsTrigger value="legalInfo">{t('form.tabs.legalInfo')}
+                  </TabsTrigger>
+                  <TabsTrigger value="familyAndChildren">{t('form.tabs.familyAndChildren')}
+                  </TabsTrigger>
+                  <TabsTrigger value="agreements">{t('form.tabs.agreements')}
+                  </TabsTrigger>
+
                 </TabsList>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="basic">
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="personalInformation">
                   <FormInput
-                    name="titleBefore"
-                    formLabel={t('form.labels.titleBefore')}
+                    name="titleBeforeName"
+                    formLabel={t('form.labels.titleBeforeName')}
                     formControl={form.control}
                   />
                   <FormInput
-                    name="titleAfter"
-                    formLabel={t('form.labels.titleAfter')}
+                    name="titleAfterName"
+                    formLabel={t('form.labels.titleAfterName')}
                     formControl={form.control}
                   />
                   <div className="space-y-2">
@@ -185,20 +263,20 @@ function App() {
                         formMessage={false}
                       />
                       <FormInput
-                        name="name"
-                        formLabel={t('form.labels.name')}
+                        name="firstName"
+                        formLabel={t('form.labels.firstName')}
                         formControl={form.control}
                         formMessage={false}
                         formItemClass='flex-1'
                       />
                     </div>
                     <div className="flex gap-2">
-                      <FormMessage>{form.formState.errors.honorific?.message} {form.formState.errors.name?.message}</FormMessage>
+                      <FormMessage>{form.formState.errors.honorific?.message} {form.formState.errors.firstName?.message}</FormMessage>
                     </div>
                   </div>
                   <FormInput
-                    name="surname"
-                    formLabel={t('form.labels.surname')}
+                    name="lastName"
+                    formLabel={t('form.labels.lastName')}
                     formControl={form.control}
                   />
                   <FormInput
@@ -207,8 +285,8 @@ function App() {
                     formControl={form.control}
                   />
                   <FormDate
-                    name="dob"
-                    formLabel={t('form.labels.dob')}
+                    name="dateOfBirth"
+                    formLabel={t('form.labels.dateOfBirth')}
                     formControl={form.control}
                   />
                   <FormRadio
@@ -222,13 +300,67 @@ function App() {
                     ]}
                   />
                   <FormInput
-                    name="ssn"
-                    formLabel={t('form.labels.ssn')}
+                    name="placeOfBirth"
+                    formLabel={t('form.labels.placeOfBirth')}
+                    formControl={form.control}
+                  />
+                  <FormSelect
+                    name="maritalStatus"
+                    formLabel={t('form.labels.maritalStatus')}
+                    formControl={form.control}
+                    options={[
+                      { value: "single", label: t('form.options.maritalStatus.single') },
+                      { value: "married", label: t('form.options.maritalStatus.married') },
+                      { value: "divorced", label: t('form.options.maritalStatus.divorced') },
+                      { value: "widowed", label: t('form.options.maritalStatus.widowed') }
+                    ]}
+                    formTriggerClass='w-[100%]'
+                  />
+                  <FormRadio
+                    name="foreginer"
+                    formLabel={t('form.labels.foreginer')}
+                    formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
+                  />
+                  <FormInput
+                    name="birthNumber"
+                    formLabel={t('form.labels.birthNumber')}
                     formControl={form.control}
                     formPlaceholder="250411/1234"
                   />
-                </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="foreigner">
+                  <FormInput
+                    name="foreignBirthNumber"
+                    formLabel={t('form.labels.foreignBirthNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="insuranceBirthNumber"
+                    formLabel={t('form.labels.insuranceBirthNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="idCardNumber"
+                    formLabel={t('form.labels.idCardNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="idCardIssuedBy"
+                    formLabel={t('form.labels.idCardIssuedBy')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="passportNumber"
+                    formLabel={t('form.labels.passportNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="passportIssuedBy"
+                    formLabel={t('form.labels.passportIssuedBy')}
+                    formControl={form.control}
+                  />
                   <FormSelect
                     name="citizenship"
                     formLabel={t('form.labels.citizenship')}
@@ -264,63 +396,299 @@ function App() {
                     ]}
                     placeholder="-"
                   />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="addresses">
+                  <h1>{t('form.headlines.permanentAddress')}</h1>
                   <FormInput
-                    name="addressInAnotherCountry"
-                    formLabel={t('form.labels.addressInAnotherCountry')}
+                    name="contactStreet"
+                    formLabel={t('form.labels.street')}
                     formControl={form.control}
                   />
-                  <FormSelect
-                    name="isFirstJobInCzechia"
-                    formLabel={t('form.labels.isFirstJobInCzechia')}
+                  <FormInput
+                    name="contactHouseNumber"
+                    formLabel={t('form.labels.houseNumber')}
                     formControl={form.control}
-                    formTriggerClass='w-full'
-                    options={[
-                      { value: "-", label: "-" },
-                      { value: "yes", label: t('form.options.yesNo.yes') },
-                      { value: "no", label: t('form.options.yesNo.no') }
-                    ]}
-                    placeholder="-"
+                  />
+                  <FormInput
+                    name="contactOrientationNumber"
+                    formLabel={t('form.labels.orientationNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="contactCity"
+                    formLabel={t('form.labels.city')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="contactPostalCode"
+                    formLabel={t('form.labels.postalCode')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="contactCountry"
+                    formLabel={t('form.labels.country')}
+                    formControl={form.control}
+                  />
+                  <h1>{t('form.headlines.contactAddress')}</h1>
+                  <FormInput
+                    name="permanentStreet"
+                    formLabel={t('form.labels.street')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="permanentHouseNumber"
+                    formLabel={t('form.labels.houseNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="permanentOrientationNumber"
+                    formLabel={t('form.labels.orientationNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="permanentCity"
+                    formLabel={t('form.labels.city')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="permanentPostalCode"
+                    formLabel={t('form.labels.postalCode')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="permanentCountry"
+                    formLabel={t('form.labels.country')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="contacts">
+                  <FormInput
+                    name="email"
+                    formLabel={t('form.labels.email')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="phone"
+                    formLabel={t('form.labels.phone')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="dataBoxId"
+                    formLabel={t('form.labels.dataBoxId')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="foreigners">
+                  <FormInput
+                    name="foreignPermanentAddress"
+                    formLabel={t('form.labels.foreignPermanentAddress')}
+                    formControl={form.control}
                   />
                   <FormInput
                     name="residencePermitNumber"
                     formLabel={t('form.labels.residencePermitNumber')}
                     formControl={form.control}
-                    formFieldClass='w-[100%]'
-                    formItemClass="flex-1"
                   />
                   <FormDateFromTo
-                    nameFrom="residenceFrom"
-                    nameTo="residenceUntil"
-                    formLabel={t('form.labels.residencePeriod')}
+                    nameFrom="residencePermitValidityFrom"
+                    nameTo="residencePermitValidityUntil"
+                    formLabel={t('form.labels.residencePermitValidity')}
                     formControl={form.control}
                     formFieldClass='w-[100%]'
                     formItemClass="flex-1"
                   />
                   <FormInput
-                    name="typeAndPurposeOfStay"
-                    formLabel={t('form.labels.typeAndPurposeOfStay')}
+                    name="residencePermitType"
+                    formLabel={t('form.labels.residencePermitType')}
                     formControl={form.control}
                   />
                   <FormInput
-                    name="ssnFromInsurance"
-                    formLabel={t('form.labels.ssnFromInsurance')}
+                    name="residencePermitPurpose"
+                    formLabel={t('form.labels.residencePermitPurpose')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="employment">
+                  <FormInput
+                    name="employmentClassification"
+                    formLabel={t('form.labels.employmentClassification')}
                     formControl={form.control}
                   />
                   <FormInput
-                    name="insuranceRegNumber"
-                    formLabel={t('form.labels.insuranceRegNumber')}
+                    name="jobPosition"
+                    formLabel={t('form.labels.jobPosition')}
+                    formControl={form.control}
+                  />
+                  <FormRadio
+                    name="firstJobInCz"
+                    formLabel={t('form.labels.firstJobInCz')}
+                    formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
+                  />
+                  <FormInput
+                    name="lastEmployer"
+                    formLabel={t('form.labels.lastEmployer')}
                     formControl={form.control}
                   />
                   <FormInput
-                    name="ssnForeigner"
-                    formLabel={t('form.labels.ssnForeigner')}
+                    name="lastJobType"
+                    formLabel={t('form.labels.lastJobType')}
                     formControl={form.control}
                   />
+                  <FormInput
+                    name="lastJobPeriod"
+                    formLabel={t('form.labels.lastJobPeriod')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                // add  bankAccountNumber healthInsurance insuranceRegistrationNumber
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="educationAndLanguages">
+                  <FormInput
+                    name="highestEducationSchool"
+                    formLabel={t('form.labels.highestEducationSchool')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="fieldOfStudy"
+                    formLabel={t('form.labels.fieldOfStudy')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="graduationYear"
+                    formLabel={t('form.labels.graduationYear')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="studyCity"
+                    formLabel={t('form.labels.studyCity')}
+                    formControl={form.control}
+                  />
+                  <h1>{t('form.headlines.languageSkills')}</h1>
+                  <FormInput
+                    name="language"
+                    formLabel={t('form.labels.language')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="languageProficiency"
+                    formLabel={t('form.labels.languageProficiency')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="languageExamType"
+                    formLabel={t('form.labels.languageExamType')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="healthAndSocialInfo">
+                  <FormRadio
+                    name="hasDisability"
+                    formLabel={t('form.labels.hasDisability')}
+                    formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
+                  />
+                  <FormInput
+                    name="disabilityType"
+                    formLabel={t('form.labels.disabilityType')}
+                    formControl={form.control}
+                  />
+                  <FormDate
+                    name="disabilityDecisionDate"
+                    formLabel={t('form.labels.disabilityDecisionDate')}
+                    formControl={form.control}
+                  />
+                  <FormRadio
+                    name="receivesPension"
+                    formLabel={t('form.labels.receivesPension')}
+                    formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
+                  />
+                  <FormInput
+                    name="pensionType"
+                    formLabel={t('form.labels.pensionType')}
+                    formControl={form.control}
+                  />
+                  <FormDate
+                    name="pensionDecisionDate"
+                    formLabel={t('form.labels.pensionDecisionDate')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="legalInfo">
+                  <FormRadio
+                    name="activityBan"
+                    formLabel={t('form.labels.activityBan')}
+                    formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
+                  />
+                  <FormInput
+                    name="bannedActivity"
+                    formLabel={t('form.labels.bannedActivity')}
+                    formControl={form.control}
+                  />
+                  <FormRadio
+                    name="hasWageDeductions"
+                    formLabel={t('form.labels.hasWageDeductions')}
+                    formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
+                  />
+                  <FormInput
+                    name="wageDeductionDetails"
+                    formLabel={t('form.labels.wageDeductionDetails')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="familyAndChildren">
+                  <FormInput
+                    name="numberOfDependents"
+                    formLabel={t('form.labels.numberOfDependents')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="claimChildTaxRelief"
+                    formLabel={t('form.labels.claimChildTaxRelief')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="childrenInfo"
+                    formLabel={t('form.labels.childrenInfo')}
+                    formControl={form.control}
+                  />
+                </TabsContent>
+                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="agreements">
+                <Textarea readOnly>
+                  Awoo agreements
+                </Textarea>
+                <FormCheckbox
+                  name="confirmationReadEmployeeDeclaration"
+                  formLabel={t('form.labels.confirmationReadEmployeeDeclaration')}
+                  formControl={form.control}
+                />
+                <Textarea readOnly>
+                  Awoo agreements
+                </Textarea>
+                <FormCheckbox
+                  name="confirmationReadEmailAddressDeclaration"
+                  formLabel={t('form.labels.confirmationReadEmailAddressDeclaration')}
+                  formControl={form.control}
+                />
+                </TabsContent>
 
-                </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="education">
-                  <div>Additional fields will be added later..</div>
-                </TabsContent>
                 <div className="flex justify-between pt-2 mt-2 border-t">
                   <Button
                     type="button"

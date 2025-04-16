@@ -6,7 +6,7 @@
         "name": "Please enter a name.",
         "date": "A date is required.",
         "sex": "You need to select a sex.",
-        "country": "Please select a country.",
+        "citizenship": "Please select a country.",
         "nationality": "Please select a nationality.",
         "ssn": "Please enter your SSN."
       },
@@ -17,32 +17,94 @@
         "ssn": "SSN must be in the format yymmdd/1234."
       }
     },
+    "headlines": {
+      "permanentAddress": "Permanent Address",
+      "contactAddress": "Contact Address",
+      "languageSkills": "Language experience"
+    },
     "labels": {
-      "titleBefore": "Title Before Name",
-      "titleAfter": "Title After Name",
+      "titleBeforeName": "Title before name",
+      "titleAfterName": "Title after name",
       "honorific": "Honorific",
-      "name": "First Name",
-      "surname": "Surname",
-      "birthSurname": "Birth Surname",
-      "dob": "Date of Birth",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "birthSurname": "Birth surname",
+      "dateOfBirth": "Date of birth",
       "sex": "Sex",
-      "ssn": "SSN (Social Security Number/Birth number)",
+      "placeOfBirth": "Place and country of birth",
+      "maritalStatus": "Marital status",
+
+      "foreginer": "Are you a foreigner?",
+      "birthNumber": "SSN (Social Security Number/Birth number)",
+      "foreignBirthNumber": "Foreign national's birth number",
+      "insuranceBirthNumber": "Insurance-assigned birth number",
+      "idCardNumber": "ID card number",
+      "idCardIssuedBy": "ID card issued by",
+      "passportNumber": "Passport number",
+      "passportIssuedBy": "Passport issued by",
+
       "citizenship": "Citizenship",
       "nationality": "Nationality",
-      "addressInAnotherCountry": "Address In The Country Of Permanent Residence",
-      "isFirstJobInCzechia": "Is This Their First Job In Czechia?",
-      "residencePermitNumber": "Residence Permit Number",
-      "residencePeriod": "Residence Permit From/Until",
-      "typeAndPurposeOfStay": "Type And Purpose Of Stay",
-      "ssnFromInsurance": "Social security number assigned by the insurance company",
-      "insuranceRegNumber": "Insurance registration number",
-      "ssnForeigner": "Social Security Number Foreigner"
+
+      "street": "Street",
+      "houseNumber": "House number",
+      "orientationNumber": "Orientation number",
+      "city": "City/Town",
+      "postalCode": "Postal code",
+      "country": "Country",
+
+      "email": "Email address",
+      "phone": "Phone",
+      "dataBoxId": "Data mailbox ID",
+
+      "foreignPermanentAddress": "Permanent address in home country",
+      "residencePermitNumber": "Residence permit number",
+      "residencePermitValidity": "Residence permit validity (from - to)",
+      "residencePermitType": "Type of residence permit",
+      "residencePermitPurpose": "Purpose of residence permit",
+
+      "employmentClassification": "Employment classification",
+      "jobPosition": "Job position",
+      "firstJobInCz": "Is this your first job in CZ?",
+      "lastEmployer": "Last employer/labor office",
+      "lastJobType": "Type of work (last)",
+      "lastJobPeriod": "From-to (last job)",
+
+      "bankAccountNumber": "Bank account number (with bank code)",
+      "healthInsurance": "Health insurance provider",
+      "insuranceRegistrationNumber": "Insurance registration number",
+
+      "highestEducationSchool": "Highest education - school name",
+      "fieldOfStudy": "Field of study",
+      "graduationYear": "Year of graduation",
+      "studyCity": "City (of study)",
+      "language": "Language",
+      "languageProficiency": "Level of proficiency",
+      "languageExamType": "Type of certificate/test",
+
+      "hasDisability": "Disability",
+      "disabilityType": "Type (of disability)",
+      "disabilityDecisionDate": "Decision date (disability)",
+      "receivesPension": "Pension",
+      "pensionType": "Type (of pension)",
+      "pensionDecisionDate": "Decision date (pension)",
+
+      "activityBan": "Do you have a ban on activity?",
+      "bannedActivity": "What activity is affected",
+      "hasWageDeductions": "Are wage deductions ordered?",
+      "wageDeductionDetails": "By whom, date & reference number of decision",
+
+      "numberOfDependents": "Number of dependents (spouse, children)",
+      "claimChildTaxRelief": "Do you want to claim child tax relief?",
+      "childrenInfo": "Children's names and birth numbers",
+
+      "confirmationReadEmployeeDeclaration": "I confirm that I have read and agree with the employee declaration",
+      "confirmationReadEmailAddressDeclaration": "I confirm that I have read and agree with the declaration regarding employee's email address"
     },
     "options": {
-      "sex": {
-        "male": "Male",
-        "female": "Female",
-        "other": "Other"
+      "yesNo": {
+        "yes": "Yes",
+        "no": "No"
       },
       "honorific": {
         "mr": "Mr.",
@@ -50,9 +112,16 @@
         "ms": "Ms.",
         "miss": "Miss"
       },
-      "yesNo": {
-        "yes": "Yes",
-        "no": "No"
+      "sex": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "maritalStatus": {
+        "single": "Single",
+        "married": "Married",
+        "divorced": "Divorced",
+        "widowed": "Widowed"
       },
       "citizenship": {
         "cz": "Czechia",
@@ -77,9 +146,16 @@
     },
     "pickDate": "Pick a Date",
     "tabs": {
-      "basic": "Basic Information",
-      "foreigner": "Foreigner",
-      "education": "Education"
+      "personalInformation": "Personal Information",
+      "addresses": "Addresses",
+      "contacts": "Contacts",
+      "foreigners": "For Foreign Nationals",
+      "employment": "Employment",
+      "educationAndLanguages": "Education & Languages",
+      "healthAndSocialInfo": "Health & Social Info",
+      "legalInfo": "Legal Info",
+      "familyAndChildren": "Family & Children",
+      "agreements": "Agreements"
     },
     "buttons": {
       "next": "Next",

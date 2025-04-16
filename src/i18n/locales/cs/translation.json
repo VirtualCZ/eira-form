@@ -6,7 +6,7 @@
         "name": "Prosím zadejte jméno.",
         "date": "Datum je povinné.",
         "sex": "Musíte vybrat pohlaví.",
-        "country": "Prosím vyberte zemi.",
+        "citizenship": "Prosím vyberte zemi.",
         "nationality": "Prosím vyberte národnost.",
         "ssn": "Prosím zadejte rodné číslo."
       },
@@ -17,32 +17,94 @@
         "ssn": "Rodné číslo musí být ve formátu rrmmdd/1234."
       }
     },
+    "headlines": {
+      "permanentAddress": "Trvalá adresa",
+      "contactAddress": "Kontaktní adresa",
+      "languageSkills": "Jazykové zkušenosti"
+    },
     "labels": {
-      "titleBefore": "Titul před jménem",
-      "titleAfter": "Titul za jménem",
+      "titleBeforeName": "Titul před jménem",
+      "titleAfterName": "Titul za jménem",
       "honorific": "Oslovení",
-      "name": "Jméno",
-      "surname": "Příjmení",
+      "firstName": "Jméno",
+      "lastName": "Příjmení",
       "birthSurname": "Rodné příjmení",
-      "dob": "Datum narození",
+      "dateOfBirth": "Datum narození",
       "sex": "Pohlaví",
-      "ssn": "Rodné číslo",
+      "placeOfBirth": "Místo a země narození",
+      "maritalStatus": "Rodinný stav",
+
+      "foreginer": "Jste cizinec?",
+      "birthNumber": "Rodné číslo (SSN)",
+      "foreignBirthNumber": "Rodné číslo cizince",
+      "insuranceBirthNumber": "Rodné číslo přidělené pojišťovnou",
+      "idCardNumber": "Číslo obč. průkazu",
+      "idCardIssuedBy": "Občanský průkaz vydal",
+      "passportNumber": "Číslo cestovního dokladu",
+      "passportIssuedBy": "Cestovní doklad vydal",
+
       "citizenship": "Státní příslušnost",
       "nationality": "Národnost",
-      "addressInAnotherCountry": "Adresa v zemi trvalého pobytu",
-      "isFirstJobInCzechia": "Je toto jejich první práce v ČR?",
+
+      "street": "Ulice",
+      "houseNumber": "Číslo popisné",
+      "orientationNumber": "Číslo orientační",
+      "city": "Město/Obec",
+      "postalCode": "PSČ",
+      "country": "Země",
+
+      "email": "Emailová adresa",
+      "phone": "Telefon",
+      "dataBoxId": "ID datové schránky",
+
+      "foreignPermanentAddress": "Trvalá adresa v domovské zemi",
       "residencePermitNumber": "Číslo povolení k pobytu",
-      "residencePeriod": "Povolení k pobytu od/do",
-      "typeAndPurposeOfStay": "Typ a účel pobytu",
-      "ssnFromInsurance": "Číslo pojištěnce přidělené pojišťovnou",
-      "insuranceRegNumber": "Registrační číslo pojištění",
-      "ssnForeigner": "Rodné číslo cizince"
+      "residencePermitValidity": "Platnost povolení k pobytu (od - do)",
+      "residencePermitType": "Typ povolení k pobytu",
+      "residencePermitPurpose": "Účel povolení k pobytu",
+
+      "employmentClassification": "Klasifikace zaměstnání",
+      "jobPosition": "Pracovní pozice",
+      "firstJobInCz": "Je toto vaše první práce v ČR?",
+      "lastEmployer": "Poslední zaměstnavatel/úřad práce",
+      "lastJobType": "Typ poslední práce",
+      "lastJobPeriod": "Období poslední práce (od-do)",
+
+      "bankAccountNumber": "Číslo bankovního účtu (s kódem banky)",
+      "healthInsurance": "Zdravotní pojišťovna",
+      "insuranceRegistrationNumber": "Registrační číslo pojištění",
+
+      "highestEducationSchool": "Nejvyšší dosažené vzdělání - název školy",
+      "fieldOfStudy": "Studijní obor",
+      "graduationYear": "Rok ukončení studia",
+      "studyCity": "Město (studia)",
+      "language": "Jazyk",
+      "languageProficiency": "Úroveň znalosti",
+      "languageExamType": "Typ certifikátu/testu",
+
+      "hasDisability": "Zdravotní postižení",
+      "disabilityType": "Typ postižení",
+      "disabilityDecisionDate": "Datum rozhodnutí (postižení)",
+      "receivesPension": "Důchod",
+      "pensionType": "Typ důchodu",
+      "pensionDecisionDate": "Datum rozhodnutí (důchod)",
+
+      "activityBan": "Máte zákaz činnosti?",
+      "bannedActivity": "Jaká činnost je dotčena",
+      "hasWageDeductions": "Jsou nařízeny srážky ze mzdy?",
+      "wageDeductionDetails": "Kým, datum a číslo rozhodnutí",
+
+      "numberOfDependents": "Počet vyživovaných osob (manžel/ka, děti)",
+      "claimChildTaxRelief": "Chcete uplatnit daňové zvýhodnění na děti?",
+      "childrenInfo": "Jména a rodná čísla dětí",
+
+      "confirmationReadEmployeeDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením zaměstnance",
+      "confirmationReadEmailAddressDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením ohledně emailové adresy zaměstnance"
     },
     "options": {
-      "sex": {
-        "male": "Muž",
-        "female": "Žena",
-        "other": "Jiné"
+      "yesNo": {
+        "yes": "Ano",
+        "no": "Ne"
       },
       "honorific": {
         "mr": "Pan",
@@ -50,9 +112,16 @@
         "ms": "Slečna",
         "miss": "Slečna"
       },
-      "yesNo": {
-        "yes": "Ano",
-        "no": "Ne"
+      "sex": {
+        "male": "Muž",
+        "female": "Žena",
+        "other": "Jiné"
+      },
+      "maritalStatus": {
+        "single": "Svobodný/á",
+        "married": "Ženatý/Vdaná",
+        "divorced": "Rozvedený/á",
+        "widowed": "Ovdovělý/á"
       },
       "citizenship": {
         "cz": "Česká republika",
@@ -61,25 +130,32 @@
         "br": "Brazílie"
       },
       "nationality": {
-        "czech":"Česká",
-        "moravian":"Moravská",
-        "german":"Německá",
-        "polish":"Polská",
-        "gypsy":"Romská",
-        "russian":"Ruská",
-        "silesian":"Slezská",
-        "slovakian":"Slovenská",
-        "ukrainian":"Ukrajinská",
-        "vietnamese":"Vietnamská",
-        "hungarian":"Maďarská",
-        "khazakh":"Kazašská"
+        "czech": "Česká",
+        "moravian": "Moravská",
+        "german": "Německá",
+        "polish": "Polská",
+        "gypsy": "Romská",
+        "russian": "Ruská",
+        "silesian": "Slezská",
+        "slovakian": "Slovenská",
+        "ukrainian": "Ukrajinská",
+        "vietnamese": "Vietnamská",
+        "hungarian": "Maďarská",
+        "khazakh": "Kazašská"
       }
     },
     "pickDate": "Vybrat datum",
     "tabs": {
-      "basic": "Základní informace",
-      "foreigner": "Cizinec",
-      "education": "Vzdělání"
+      "personalInformation": "Osobní údaje",
+      "addresses": "Adresy",
+      "contacts": "Kontakty",
+      "foreigners": "Pro cizince",
+      "employment": "Zaměstnání",
+      "educationAndLanguages": "Vzdělání a jazyky",
+      "healthAndSocialInfo": "Zdravotní a sociální informace",
+      "legalInfo": "Právní informace",
+      "familyAndChildren": "Rodina a děti",
+      "agreements": "Souhlasy"
     },
     "buttons": {
       "next": "Další",
