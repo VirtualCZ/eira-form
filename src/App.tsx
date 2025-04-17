@@ -20,6 +20,7 @@ import FormSelect from './customComponents/FormSelect'
 import FormDateFromTo from './customComponents/FormDateFromTo'
 import { Textarea } from './components/ui/textarea'
 import FormCheckbox from './customComponents/FormCheckbox'
+import { FormTable } from './customComponents/FormTable'
 
 // Move the schema creation inside the component
 function App() {
@@ -125,9 +126,24 @@ function App() {
     fieldOfStudy: z.string(),
     graduationYear: z.string(),
     studyCity: z.string(),
-    language: z.string(),
-    languageProficiency: z.string(),
-    languageExamType: z.string(),
+
+    languageSkills: z.array(z.object({
+      language: z.string({
+        required_error: t('form.validation.required.firstName'),
+      }).min(1, {
+        message: t('form.validation.format.name'),
+      }),
+      languageProficiency: z.string({
+        required_error: t('form.validation.required.firstName'),
+      }).min(1, {
+        message: t('form.validation.format.name'),
+      }),
+      languageExamType: z.string({
+        required_error: t('form.validation.required.firstName'),
+      }).min(1, {
+        message: t('form.validation.format.name'),
+      }),
+    })).optional(),
 
     hasDisability: z.string(),
     disabilityType: z.string(),
@@ -142,7 +158,9 @@ function App() {
     wageDeductionDetails: z.string(),
 
     numberOfDependents: z.string(),
-    claimChildTaxRelief: z.string(),
+    claimChildTaxRelief: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.claimChildTaxRelief'),
+    }),
     childrenInfo: z.string(),
 
     confirmationReadEmployeeDeclaration: z.boolean(),
@@ -153,8 +171,8 @@ function App() {
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-  })
-
+    mode: "onChange", // Add this line
+  });
   function onSubmit(values: FormData) {
     console.log(values)
   }
@@ -224,7 +242,7 @@ function App() {
       "employmentClassification", "jobPosition", "firstJobInCz", "lastEmployer", "lastJobType", "lastJobPeriod"
     ],
     educationAndLanguages: [
-      "highestEducationSchool", "fieldOfStudy", "graduationYear", "studyCity", "language", "languageProficiency", "languageExamType"
+      "highestEducationSchool", "fieldOfStudy", "graduationYear", "studyCity", "languageSkills"
     ],
     healthAndSocialInfo: [
       "hasDisability", "disabilityType", "disabilityDecisionDate", "receivesPension", "pensionType", "pensionDecisionDate"
@@ -253,6 +271,7 @@ function App() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
               <Tabs
                 value={activeTab}
+                onValueChange={setActiveTab}
                 className="h-full flex flex-col"
               >
                 <TabsList className="mb-2">
@@ -596,21 +615,31 @@ function App() {
                     formLabel={t('form.labels.studyCity')}
                     formControl={form.control}
                   />
-                  <h1>{t('form.headlines.languageSkills')}</h1>
-                  <FormInput
-                    name="language"
-                    formLabel={t('form.labels.language')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="languageProficiency"
-                    formLabel={t('form.labels.languageProficiency')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="languageExamType"
-                    formLabel={t('form.labels.languageExamType')}
-                    formControl={form.control}
+                  <FormTable
+                    name="languageSkills"
+                    label={t('form.headlines.languageSkills')}
+                    control={form.control}
+                    columns={[
+                      {
+                        name: "language",
+                        label: t('form.labels.language'),
+                        placeholder: "",
+                        errorPath: "language"
+                      },
+                      {
+                        name: "languageProficiency",
+                        label: t('form.labels.languageProficiency'),
+                        placeholder: "",
+                        errorPath: "languageProficiency"
+                      },
+                      {
+                        name: "languageExamType",
+                        label: t('form.labels.languageExamType'),
+                        placeholder: "",
+                        errorPath: "languageExamType"
+                      },
+                    ]}
+                    errors={Array.isArray(form.formState.errors.languageSkills) ? form.formState.errors.languageSkills : undefined}
                   />
                 </TabsContent>
                 <TabsContent className="relative overflow-scroll space-y-4 px-2" value="healthAndSocialInfo">
@@ -689,10 +718,14 @@ function App() {
                     formLabel={t('form.labels.numberOfDependents')}
                     formControl={form.control}
                   />
-                  <FormInput
+                  <FormRadio
                     name="claimChildTaxRelief"
                     formLabel={t('form.labels.claimChildTaxRelief')}
                     formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
                   />
                   <FormInput
                     name="childrenInfo"
@@ -701,22 +734,20 @@ function App() {
                   />
                 </TabsContent>
                 <TabsContent className="relative overflow-scroll space-y-4 px-2" value="agreements">
-                <Textarea readOnly>
-                  Awoo agreements
-                </Textarea>
-                <FormCheckbox
-                  name="confirmationReadEmployeeDeclaration"
-                  formLabel={t('form.labels.confirmationReadEmployeeDeclaration')}
-                  formControl={form.control}
-                />
-                <Textarea readOnly>
-                  Awoo agreements
-                </Textarea>
-                <FormCheckbox
-                  name="confirmationReadEmailAddressDeclaration"
-                  formLabel={t('form.labels.confirmationReadEmailAddressDeclaration')}
-                  formControl={form.control}
-                />
+                  <Textarea readOnly
+                    value="Awoo agreements" />
+                  <FormCheckbox
+                    name="confirmationReadEmployeeDeclaration"
+                    formLabel={t('form.labels.confirmationReadEmployeeDeclaration')}
+                    formControl={form.control}
+                  />
+                  <Textarea readOnly
+                    value="Awoo agreements" />
+                  <FormCheckbox
+                    name="confirmationReadEmailAddressDeclaration"
+                    formLabel={t('form.labels.confirmationReadEmailAddressDeclaration')}
+                    formControl={form.control}
+                  />
                 </TabsContent>
 
                 <div className="flex justify-between pt-2 mt-2 border-t">
