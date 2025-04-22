@@ -275,7 +275,7 @@ function App() {
                 className="h-full flex flex-col"
               >
                 <TabsList className="mb-2">
-                  {tabs.map((tab, idx) => (
+                  {tabs.map((tab) => (
                     <FormTabsTrigger
                       key={tab}
                       value={tab}
