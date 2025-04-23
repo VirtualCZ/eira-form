@@ -10,7 +10,8 @@ import {
   FormMessage
 } from './components/ui/form'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
+import { useRef } from 'react'
 import { cn } from "./lib/utils"
 import { useTranslation } from 'react-i18next'
 import FormInput from './customComponents/FormInput'
@@ -25,6 +26,17 @@ import { FormTable } from './customComponents/FormTable'
 // Move the schema creation inside the component
 function App() {
   const { t } = useTranslation();
+
+  const tabsListRef = useRef<HTMLDivElement>(null);
+  const scrollTabs = (direction: "left" | "right") => {
+    if (tabsListRef.current) {
+      const scrollAmount = 120;
+      tabsListRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
+  };
 
   // Create the schema inside the component
   const formSchema = z.object({
@@ -274,16 +286,45 @@ function App() {
                 onValueChange={setActiveTab}
                 className="h-full flex flex-col"
               >
-                <TabsList className="mb-2">
-                  {tabs.map((tab) => (
-                    <FormTabsTrigger
-                      key={tab}
-                      value={tab}
-                      label={t(`form.tabs.${tab}`)}
-                      error={hasErrorsInTab(tab)}
-                    />
-                  ))}
-                </TabsList>
+                <div className="relative flex items-center gap-2 mb-2">
+                  <button
+                    type="button"
+                    className="p-1"
+                    onClick={() => scrollTabs("left")}
+                    aria-label="Scroll left"
+                  >
+                    <ChevronLeft />
+                  </button>
+
+                  <div
+                    ref={tabsListRef}
+                    className="flex-1 overflow-x-auto scrollbar-hide"
+                    style={{
+                      scrollbarWidth: "none",
+                      msOverflowStyle: "none"
+                    }}
+                  >
+                    <TabsList className="flex w-max min-w-full space-x-2">
+                      {tabs.map((tab) => (
+                        <FormTabsTrigger
+                          key={tab}
+                          value={tab}
+                          label={t(`form.tabs.${tab}`)}
+                          error={hasErrorsInTab(tab)}
+                        />
+                      ))}
+                    </TabsList>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="p-1"
+                    onClick={() => scrollTabs("right")}
+                    aria-label="Scroll right"
+                  >
+                    <ChevronRight />
+                  </button>
+                </div>
                 <TabsContent className="relative overflow-scroll space-y-4 px-2" value="personalInformation">
                   <FormInput
                     name="titleBeforeName"
@@ -770,7 +811,7 @@ function App() {
             </form>
           </Form>
         </div>
-      </div>
+      </div >
     </>
   )
 }
