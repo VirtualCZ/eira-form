@@ -23,7 +23,6 @@ import { Textarea } from './components/ui/textarea'
 import FormCheckbox from './customComponents/FormCheckbox'
 import { FormTable } from './customComponents/FormTable'
 
-// Move the schema creation inside the component
 function App() {
   const { t } = useTranslation();
 
@@ -38,7 +37,6 @@ function App() {
     }
   };
 
-  // Create the schema inside the component
   const formSchema = z.object({
     titleBeforeName: z.string().optional(),
     titleAfterName: z.string().optional(),
@@ -48,9 +46,11 @@ function App() {
     firstName: z.string({
       required_error: t('form.validation.required.firstName'),
     }).min(2, {
-      message: t('form.validation.format.name'),
+      message: t('form.validation.format.firstName'),
     }),
-    lastName: z.string().min(2, {
+    lastName: z.string({
+      required_error: t('form.validation.required.lastName'),
+    }).min(2, {
       message: t('form.validation.format.lastName'),
     }),
     birthSurname: z.string().min(2, {
@@ -65,118 +65,237 @@ function App() {
     placeOfBirth: z.string({
       required_error: t('form.validation.required.placeOfBirth'),
     }).min(2, {
-      message: "Username must be at least 2 characters.",
+      message: t('form.validation.format.placeOfBirth'),
     }),
-    maritalStatus: z.enum(["single", "married", "divorced", "widowed "]),
+    maritalStatus: z.enum(
+      ["single", "married", "divorced", "widowed "], {
+      required_error: t('form.validation.required.maritalStatus'),
+    }),
 
-    foreginer: z.enum(["yes", "no"], {
-      required_error: t('form.validation.required.foreginer'),
+    foreigner: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.foreigner'),
     }),
 
     birthNumber: z.string({
       required_error: t('form.validation.required.birthNumber'),
     }).regex(/^\d{6}\/\d{4}$/, {
-      message: "SSN must be in the format yymmdd/1234.",
+      message: t('form.validation.format.birthNumber'),
     }),
-    foreignBirthNumber: z.string(),
-    insuranceBirthNumber: z.string(),
-    idCardNumber: z.string(),
-    idCardIssuedBy: z.string(),
-    passportNumber: z.string(),
-    passportIssuedBy: z.string(),
-
-    citizenship: z.string({
-      required_error: t('form.validation.required.citizenship'),
+    foreignBirthNumber: z.string().optional(),
+    insuranceBirthNumber: z.number().optional(),
+    idCardNumber: z.string({
+      required_error: t('form.validation.required.idCardNumber'),
+    }).min(1, {
+      message: t('form.validation.format.idCardNumber'),
     }),
-    nationality: z.string({
-      required_error: "Please select a nationality.",
+    idCardIssuedBy: z.string({
+      required_error: t('form.validation.required.idCardIssuedBy'),
+    }).min(1, {
+      message: t('form.validation.format.idCardIssuedBy'),
+    }),
+    passportNumber: z.string().optional(),
+    passportIssuedBy: z.string().optional(),
+
+    citizenship: z.string().optional(),
+    nationality: z.string().optional(),
+
+    permanentStreet: z.string({
+      required_error: t('form.validation.required.permanentStreet'),
+    }).min(1, {
+      message: t('form.validation.format.permanentStreet'),
+    }),
+    permanentHouseNumber: z.string({
+      required_error: t('form.validation.required.permanentHouseNumber'),
+    }).min(1, {
+      message: t('form.validation.format.permanentHouseNumber'),
+    }),
+    permanentOrientationNumber: z.string().optional(),
+    permanentCity: z.string({
+      required_error: t('form.validation.required.permanentCity'),
+    }).min(1, {
+      message: t('form.validation.format.permanentCity'),
+    }),
+    permanentPostalCode: z.number({
+      required_error: t('form.validation.required.permanentPostalCode'),
+    }).min(1, {
+      message: t('form.validation.format.permanentPostalCode'),
+    }),
+    permanentCountry: z.string({
+      required_error: t('form.validation.required.permanentCountry'),
+    }).min(1, {
+      message: t('form.validation.format.permanentCountry'),
     }),
 
-    permanentStreet: z.string(),
-    permanentHouseNumber: z.string(),
-    permanentOrientationNumber: z.string(),
-    permanentCity: z.string(),
-    permanentPostalCode: z.string(),
-    permanentCountry: z.string(),
+    contactStreet: z.string().optional(),
+    contactHouseNumber: z.number().optional(),
+    contactOrientationNumber: z.string().optional(),
+    contactCity: z.string().optional(),
+    contactPostalCode: z.number().optional(),
+    contactCountry: z.string().optional(),
 
-    contactStreet: z.string(),
-    contactHouseNumber: z.string(),
-    contactOrientationNumber: z.string(),
-    contactCity: z.string(),
-    contactPostalCode: z.string(),
-    contactCountry: z.string(),
-
-    email: z.string(),
-    phone: z.string(),
-    dataBoxId: z.string(),
-
-    foreignPermanentAddress: z.string(),
-    residencePermitNumber: z.string(),
-    residencePermitValidityFrom: z.date({
-      required_error: t('form.validation.required.date'),
+    email: z.string({
+      required_error: t('form.validation.required.email'),
+    }).email().min(5, {
+      message: t('form.validation.format.email'),
     }),
-    residencePermitValidityUntil: z.date({
-      required_error: t('form.validation.required.date'),
+    phone: z.number({
+      required_error: t('form.validation.required.phone'),
+    }).refine(val => val >= 100000000 && val <= 999999999, {
+      message: t('form.validation.format.graduationYear'),
     }),
-    residencePermitType: z.string(),
-    residencePermitPurpose: z.string(),
+    dataBoxId: z.string().optional(),
 
-    employmentClassification: z.string(),
-    jobPosition: z.string(),
-    firstJobInCz: z.enum(["yes", "no"], {
-      required_error: t('form.validation.required.firstJobInCz'),
+    foreignPermanentAddress: z.string().optional(),
+    residencePermitNumber: z.number().optional(),
+    residencePermitValidityFrom: z.date().optional(),
+    residencePermitValidityUntil: z.date().optional(),
+    residencePermitType: z.string().optional(),
+    residencePermitPurpose: z.string().optional(),
+
+    employmentClassification: z.string({
+      required_error: t('form.validation.required.employmentClassification'),
+    }).min(2, {
+      message: t('form.validation.format.employmentClassification'),
     }),
-    lastEmployer: z.string(),
-    lastJobType: z.string(),
-    lastJobPeriod: z.string(),
+    jobPosition: z.string({
+      required_error: t('form.validation.required.jobPosition'),
+    }).min(2, {
+      message: t('form.validation.format.jobPosition'),
+    }),
+    firstJobInCz: z.enum(["yes", "no"]).optional(),
+    lastEmployer: z.string({
+      required_error: t('form.validation.required.lastEmployer'),
+    }),
+    lastJobType: z.string({
+      required_error: t('form.validation.required.lastJobType'),
+    }).min(2, {
+      message: t('form.validation.format.lastJobType'),
+    }),
+    lastJobPeriodFrom: z.date(
+      {
+        required_error: t('form.validation.required.lastJobPeriodFrom'),
+      }
+    ),
+    lastJobPeriodTo: z.date(
+      {
+        required_error: t('form.validation.required.lastJobPeriodTo'),
+      }
+    ),
+    bankingInstitutionName: z.string({
+      required_error: t('form.validation.required.bankingInstitutionName'),
+    }).min(2, {
+      message: t('form.validation.format.bankingInstitutionName'),
+    }),
+    bankAccountNumber: z.number({
+      required_error: t('form.validation.required.bankAccountNumber'),
+    }).min(8, {
+      message: t('form.validation.format.bankAccountNumber'),
+    }),
+    bankCode: z.enum(["-", "0100", "0300", "0600", "0710", "0800", "2010", "2060", "2070", "2100", "2200", "2220", "2250", "2260", "2275", "2600", "2700", "3030", "3050", "3060", "3500", "4000", "4300", "5500", "5800", "6000", "6100", "6200", "6210", "6300", "6700", "6800", "7910", "7950", "7960", "7970", "7990", "8030", "8040", "8060", "8090", "8150", "8190", "8198", "8199", "8200", "8220", "8230", "8240", "8250", "8255", "8265", "8270", "8280", "8291", "8293", "8299", "8500"],
+      {
+        required_error: t('form.validation.required.bankCode'),
+      }
+    ),
+    healthInsurance: z.enum(["-", "111", "201", "205", "207", "208", "211", "213", "333", "747"],
+      {
+        required_error: t('form.validation.required.healthInsurance'),
+      }
+    ),
 
-    bankAccountNumber: z.string(),
-    healthInsurance: z.string(),
-    insuranceRegistrationNumber: z.string(),
+    insuranceRegistrationNumber: z.number().optional(),
 
-    highestEducationSchool: z.string(),
-    fieldOfStudy: z.string(),
-    graduationYear: z.string(),
-    studyCity: z.string(),
+    highestEducation: z.enum(["basicEducation", "vocationalWithoutMatura", "secondaryOrVocationalWithMatura", "higherVocational", "bachelor", "universityOrHigher", "mbaOrPostgraduate"], {
+      required_error: t('form.validation.required.highestEducation'),
+    }),
+    highestEducationSchool: z.string({
+      required_error: t('form.validation.required.highestEducationSchool'),
+    }).min(1, {
+      message: t('form.validation.format.highestEducationSchool'),
+    }),
+    fieldOfStudy: z.string({
+      required_error: t('form.validation.required.fieldOfStudy'),
+    }).min(1, {
+      message: t('form.validation.format.fieldOfStudy'),
+    }),
+    graduationYear: z.number({
+      required_error: t('form.validation.required.graduationYear'),
+    }).refine(val => val >= 1000 && val <= 9999, {
+      message: t('form.validation.format.graduationYear'),
+    }),
+    studyCity: z.string({
+      required_error: t('form.validation.required.studyCity'),
+    }).min(2, {
+      message: t('form.validation.format.studyCity'),
+    }),
 
     languageSkills: z.array(z.object({
       language: z.string({
-        required_error: t('form.validation.required.firstName'),
+        required_error: t('form.validation.required.language'),
       }).min(1, {
-        message: t('form.validation.format.name'),
+        message: t('form.validation.format.language'),
       }),
-      languageProficiency: z.string({
-        required_error: t('form.validation.required.firstName'),
-      }).min(1, {
-        message: t('form.validation.format.name'),
-      }),
+      languageProficiency: z.enum(["-", "A1", "A2", "B1", "B2", "C1", "C2", "native"],
+        {
+          required_error: t('form.validation.required.languageProficiency'),
+        }
+      ),
       languageExamType: z.string({
-        required_error: t('form.validation.required.firstName'),
+        required_error: t('form.validation.required.languageExamType'),
       }).min(1, {
-        message: t('form.validation.format.name'),
+        message: t('form.validation.format.languageExamType'),
       }),
     })).optional(),
+    hasDisability: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.hasDisability'),
+    }),
+    disabilityType: z.string().optional(),
+    disabilityDecisionDate: z.date().optional(),
+    receivesPension: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.receivesPension'),
+    }),
+    pensionType: z.enum(["-", "oldAgePension", "earlyOldAgePension", "fullDisabilityPension", "partialDisabilityPension", "widowsPension", "widowersPension", "orphansPension"],
+      {
+        required_error: t('form.validation.required.pensionType'),
+      }
+    ).optional(),
+    pensionDecisionDate: z.date().optional(),
 
-    hasDisability: z.string(),
-    disabilityType: z.string(),
-    disabilityDecisionDate: z.string(),
-    receivesPension: z.string(),
-    pensionType: z.string(),
-    pensionDecisionDate: z.string(),
+    activityBan: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.activityBan'),
+    }),
+    bannedActivity: z.string().optional(),
+    hasWageDeductions: z.enum(["yes", "no"], {
+      required_error: t('form.validation.required.hasWageDeductions'),
+    }),
+    wageDeductionDetails: z.string().optional(),
 
-    activityBan: z.string(),
-    bannedActivity: z.string(),
-    hasWageDeductions: z.string(),
-    wageDeductionDetails: z.string(),
-
-    numberOfDependents: z.string(),
+    numberOfDependents: z.number({
+      required_error: t('form.validation.required.numberOfDependents'),
+    }).min(1, {
+      message: t('form.validation.format.numberOfDependents'),
+    }),
     claimChildTaxRelief: z.enum(["yes", "no"], {
       required_error: t('form.validation.required.claimChildTaxRelief'),
     }),
-    childrenInfo: z.string(),
+    childrenInfo: z.array(z.object({
+      childrenInfoFullName: z.string({
+        required_error: t('form.validation.required.childrenInfoFullName'),
+      }).min(1, {
+        message: t('form.validation.format.childrenInfoFullName'),
+      }),
+      childrenInfoBirthNumber: z.string({
+        required_error: t('form.validation.required.childrenInfoBirthNumber'),
+      }).min(1, {
+        message: t('form.validation.format.childrenInfoBirthNumber'),
+      }),
+    })).optional(),
 
-    confirmationReadEmployeeDeclaration: z.boolean(),
-    confirmationReadEmailAddressDeclaration: z.boolean()
+    confirmationReadEmployeeDeclaration: z.boolean({
+      required_error: t('form.validation.required.confirmationReadEmployeeDeclaration')
+    }),
+    confirmationReadEmailAddressDeclaration: z.boolean({
+      required_error: t('form.validation.required.confirmationReadEmailAddressDeclaration')
+    })
   })
 
   type FormData = z.infer<typeof formSchema>;
@@ -235,13 +354,14 @@ function App() {
   const tabFields: Record<string, (keyof FormData)[]> = {
     personalInformation: [
       "titleBeforeName", "titleAfterName", "honorific", "firstName", "lastName", "birthSurname",
-      "dateOfBirth", "sex", "placeOfBirth", "maritalStatus", "foreginer", "birthNumber",
+      "dateOfBirth", "sex", "placeOfBirth", "maritalStatus", "foreigner", "birthNumber",
       "foreignBirthNumber", "insuranceBirthNumber", "idCardNumber", "idCardIssuedBy",
-      "passportNumber", "passportIssuedBy", "citizenship", "nationality"
+      "passportNumber", "passportIssuedBy", "citizenship", "nationality",
+      "bankingInstitutionName", "bankAccountNumber", "bankCode", "healthInsurance", "insuranceRegistrationNumber"
     ],
     addresses: [
-      "contactStreet", "contactHouseNumber", "contactOrientationNumber", "contactCity", "contactPostalCode", "contactCountry",
-      "permanentStreet", "permanentHouseNumber", "permanentOrientationNumber", "permanentCity", "permanentPostalCode", "permanentCountry"
+      "permanentStreet", "permanentHouseNumber", "permanentOrientationNumber", "permanentCity", "permanentPostalCode", "permanentCountry",
+      "contactStreet", "contactHouseNumber", "contactOrientationNumber", "contactCity", "contactPostalCode", "contactCountry"
     ],
     contacts: [
       "email", "phone", "dataBoxId"
@@ -251,10 +371,10 @@ function App() {
       "residencePermitType", "residencePermitPurpose"
     ],
     employment: [
-      "employmentClassification", "jobPosition", "firstJobInCz", "lastEmployer", "lastJobType", "lastJobPeriod"
+      "employmentClassification", "jobPosition", "firstJobInCz", "lastEmployer", "lastJobType", "lastJobPeriodFrom", "lastJobPeriodTo"
     ],
     educationAndLanguages: [
-      "highestEducationSchool", "fieldOfStudy", "graduationYear", "studyCity", "languageSkills"
+      "highestEducation", "highestEducationSchool", "fieldOfStudy", "graduationYear", "studyCity", "languageSkills"
     ],
     healthAndSocialInfo: [
       "hasDisability", "disabilityType", "disabilityDecisionDate", "receivesPension", "pensionType", "pensionDecisionDate"
@@ -325,7 +445,7 @@ function App() {
                     <ChevronRight />
                   </button>
                 </div>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="personalInformation">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="personalInformation">
                   <FormInput
                     name="titleBeforeName"
                     formLabel={t('form.labels.titleBeforeName')}
@@ -407,8 +527,8 @@ function App() {
                     formTriggerClass='w-[100%]'
                   />
                   <FormRadio
-                    name="foreginer"
-                    formLabel={t('form.labels.foreginer')}
+                    name="foreigner"
+                    formLabel={t('form.labels.foreigner')}
                     formControl={form.control}
                     options={[
                       { value: "yes", label: t('form.options.yesNo.yes') },
@@ -486,40 +606,112 @@ function App() {
                     ]}
                     placeholder="-"
                   />
+                  <FormInput
+                    name="bankingInstitutionName"
+                    formLabel={t('form.labels.bankingInstitutionName')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="bankAccountNumber"
+                    formLabel={t('form.labels.bankAccountNumber')}
+                    formControl={form.control}
+                    inputType='number'
+                  />
+                  <FormSelect
+                    name="bankCode"
+                    formLabel={t('form.labels.bankCode')}
+                    formControl={form.control}
+                    formTriggerClass='w-full'
+                    options={[
+                      { value: "-", label: "-" },
+                      { value: "0100", label: "0100" },
+                      { value: "0300", label: "0300" },
+                      { value: "0600", label: "0600" },
+                      { value: "0710", label: "0710" },
+                      { value: "0800", label: "0800" },
+                      { value: "2010", label: "2010" },
+                      { value: "2060", label: "2060" },
+                      { value: "2070", label: "2070" },
+                      { value: "2100", label: "2100" },
+                      { value: "2200", label: "2200" },
+                      { value: "2220", label: "2220" },
+                      { value: "2250", label: "2250" },
+                      { value: "2260", label: "2260" },
+                      { value: "2275", label: "2275" },
+                      { value: "2600", label: "2600" },
+                      { value: "2700", label: "2700" },
+                      { value: "3030", label: "3030" },
+                      { value: "3050", label: "3050" },
+                      { value: "3060", label: "3060" },
+                      { value: "3500", label: "3500" },
+                      { value: "4000", label: "4000" },
+                      { value: "4300", label: "4300" },
+                      { value: "5500", label: "5500" },
+                      { value: "5800", label: "5800" },
+                      { value: "6000", label: "6000" },
+                      { value: "6100", label: "6100" },
+                      { value: "6200", label: "6200" },
+                      { value: "6210", label: "6210" },
+                      { value: "6300", label: "6300" },
+                      { value: "6700", label: "6700" },
+                      { value: "6800", label: "6800" },
+                      { value: "7910", label: "7910" },
+                      { value: "7950", label: "7950" },
+                      { value: "7960", label: "7960" },
+                      { value: "7970", label: "7970" },
+                      { value: "7990", label: "7990" },
+                      { value: "8030", label: "8030" },
+                      { value: "8040", label: "8040" },
+                      { value: "8060", label: "8060" },
+                      { value: "8090", label: "8090" },
+                      { value: "8150", label: "8150" },
+                      { value: "8190", label: "8190" },
+                      { value: "8198", label: "8198" },
+                      { value: "8199", label: "8199" },
+                      { value: "8200", label: "8200" },
+                      { value: "8220", label: "8220" },
+                      { value: "8230", label: "8230" },
+                      { value: "8240", label: "8240" },
+                      { value: "8250", label: "8250" },
+                      { value: "8255", label: "8255" },
+                      { value: "8265", label: "8265" },
+                      { value: "8270", label: "8270" },
+                      { value: "8280", label: "8280" },
+                      { value: "8291", label: "8291" },
+                      { value: "8293", label: "8293" },
+                      { value: "8299", label: "8299" },
+                      { value: "8500", label: "8500" },
+                    ]}
+                    placeholder="-"
+                  />
+                  <FormSelect
+                    name="healthInsurance"
+                    formLabel={t('form.labels.healthInsurance')}
+                    formControl={form.control}
+                    formTriggerClass='w-full'
+                    options={[
+                      { value: "-", label: "-" },
+                      { value: "111", label: "111 Všeobecná zdravotní pojišťovna České republiky" },
+                      { value: "201", label: "201 Vojenská zdravotní pojišťovna České republiky" },
+                      { value: "205", label: "205 Česká průmyslová zdravotní pojišťovna" },
+                      { value: "207", label: "207 Oborová zdravotní pojišťovna zaměstnanců bank a pojišťoven" },
+                      { value: "208", label: "208 Zaměstnanecká pojišťovna ŠKODA, Mladá Boleslav" },
+                      { value: "211", label: "211 Zdravotní pojišťovna ministerstva vnitra České republiky" },
+                      { value: "213", label: "213 Revírní bratrská pokladna, Ostrava" },
+                      { value: "333", label: "333 Pojišťovna VZP pro cizince" },
+                      { value: "747", label: "747 Pojišťovna Maxima" }
+                    ]}
+                    placeholder="-"
+                  />
+                  <FormInput
+                    name="insuranceRegistrationNumber"
+                    formLabel={t('form.labels.insuranceRegistrationNumber')}
+                    formControl={form.control}
+                    inputType='number'
+                  />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="addresses">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="addresses">
                   <h1>{t('form.headlines.permanentAddress')}</h1>
-                  <FormInput
-                    name="contactStreet"
-                    formLabel={t('form.labels.street')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactHouseNumber"
-                    formLabel={t('form.labels.houseNumber')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactOrientationNumber"
-                    formLabel={t('form.labels.orientationNumber')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactCity"
-                    formLabel={t('form.labels.city')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactPostalCode"
-                    formLabel={t('form.labels.postalCode')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactCountry"
-                    formLabel={t('form.labels.country')}
-                    formControl={form.control}
-                  />
-                  <h1>{t('form.headlines.contactAddress')}</h1>
                   <FormInput
                     name="permanentStreet"
                     formLabel={t('form.labels.street')}
@@ -544,14 +736,47 @@ function App() {
                     name="permanentPostalCode"
                     formLabel={t('form.labels.postalCode')}
                     formControl={form.control}
+                    inputType='number'
                   />
                   <FormInput
                     name="permanentCountry"
                     formLabel={t('form.labels.country')}
                     formControl={form.control}
                   />
+                  <h1>{t('form.headlines.contactAddress')}</h1>
+                  <FormInput
+                    name="contactStreet"
+                    formLabel={t('form.labels.street')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="contactHouseNumber"
+                    formLabel={t('form.labels.houseNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="contactOrientationNumber"
+                    formLabel={t('form.labels.orientationNumber')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="contactCity"
+                    formLabel={t('form.labels.city')}
+                    formControl={form.control}
+                  />
+                  <FormInput
+                    name="contactPostalCode"
+                    formLabel={t('form.labels.postalCode')}
+                    formControl={form.control}
+                    inputType='number'
+                  />
+                  <FormInput
+                    name="contactCountry"
+                    formLabel={t('form.labels.country')}
+                    formControl={form.control}
+                  />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="contacts">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="contacts">
                   <FormInput
                     name="email"
                     formLabel={t('form.labels.email')}
@@ -561,6 +786,7 @@ function App() {
                     name="phone"
                     formLabel={t('form.labels.phone')}
                     formControl={form.control}
+                    inputType='number'
                   />
                   <FormInput
                     name="dataBoxId"
@@ -568,7 +794,7 @@ function App() {
                     formControl={form.control}
                   />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="foreigners">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="foreigners">
                   <FormInput
                     name="foreignPermanentAddress"
                     formLabel={t('form.labels.foreignPermanentAddress')}
@@ -578,6 +804,7 @@ function App() {
                     name="residencePermitNumber"
                     formLabel={t('form.labels.residencePermitNumber')}
                     formControl={form.control}
+                    inputType='number'
                   />
                   <FormDateFromTo
                     nameFrom="residencePermitValidityFrom"
@@ -598,7 +825,7 @@ function App() {
                     formControl={form.control}
                   />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="employment">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="employment">
                   <FormInput
                     name="employmentClassification"
                     formLabel={t('form.labels.employmentClassification')}
@@ -628,14 +855,31 @@ function App() {
                     formLabel={t('form.labels.lastJobType')}
                     formControl={form.control}
                   />
-                  <FormInput
-                    name="lastJobPeriod"
+                  <FormDateFromTo
+                    nameFrom="lastJobPeriodFrom"
+                    nameTo="lastJobPeriodTo"
                     formLabel={t('form.labels.lastJobPeriod')}
                     formControl={form.control}
+                    formFieldClass='w-[100%]'
+                    formItemClass="flex-1"
                   />
                 </TabsContent>
-                // add  bankAccountNumber healthInsurance insuranceRegistrationNumber
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="educationAndLanguages">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="educationAndLanguages">
+                  <FormSelect
+                    name="highestEducation"
+                    formLabel={t('form.labels.highestEducation')}
+                    formControl={form.control}
+                    formTriggerClass='w-full'
+                    options={[
+                      { value: "basicEducation", label: t('form.options.highestEducation.basicEducation') },
+                      { value: "vocationalWithoutMatura", label: t('form.options.highestEducation.vocationalWithoutMatura') },
+                      { value: "secondaryOrVocationalWithMatura", label: t('form.options.highestEducation.secondaryOrVocationalWithMatura') },
+                      { value: "higherVocational", label: t('form.options.highestEducation.higherVocational') },
+                      { value: "bachelor", label: t('form.options.highestEducation.bachelor') },
+                      { value: "universityOrHigher", label: t('form.options.highestEducation.universityOrHigher') },
+                      { value: "mbaOrPostgraduate", label: t('form.options.highestEducation.mbaOrPostgraduate') },
+                    ]}
+                  />
                   <FormInput
                     name="highestEducationSchool"
                     formLabel={t('form.labels.highestEducationSchool')}
@@ -650,6 +894,7 @@ function App() {
                     name="graduationYear"
                     formLabel={t('form.labels.graduationYear')}
                     formControl={form.control}
+                    inputType='number'
                   />
                   <FormInput
                     name="studyCity"
@@ -683,7 +928,7 @@ function App() {
                     errors={Array.isArray(form.formState.errors.languageSkills) ? form.formState.errors.languageSkills : undefined}
                   />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="healthAndSocialInfo">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="healthAndSocialInfo">
                   <FormRadio
                     name="hasDisability"
                     formLabel={t('form.labels.hasDisability')}
@@ -712,10 +957,23 @@ function App() {
                       { value: "no", label: t('form.options.yesNo.no') },
                     ]}
                   />
-                  <FormInput
+                  <FormSelect
                     name="pensionType"
                     formLabel={t('form.labels.pensionType')}
                     formControl={form.control}
+                    formTriggerClass='w-full'
+                    options={[
+                      { value: "-", label: t('form.options.pensionType.none') },
+                      { value: "oldAgePension", label: t('form.options.pensionType.oldAgePension') },
+                      { value: "earlyOldAgePension", label: t('form.options.pensionType.earlyOldAgePension') },
+                      { value: "fullDisabilityPension", label: t('form.options.pensionType.fullDisabilityPension') },
+                      { value: "partialDisabilityPension", label: t('form.options.pensionType.partialDisabilityPension') },
+                      { value: "widowsPension", label: t('form.options.pensionType.widowsPension') },
+                      { value: "widowersPension", label: t('form.options.pensionType.widowersPension') },
+                      { value: "orphansPension", label: t('form.options.pensionType.orphansPension') }
+                    ]}
+                    placeholder="--."
+                    formMessage={false}
                   />
                   <FormDate
                     name="pensionDecisionDate"
@@ -723,7 +981,7 @@ function App() {
                     formControl={form.control}
                   />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="legalInfo">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="legalInfo">
                   <FormRadio
                     name="activityBan"
                     formLabel={t('form.labels.activityBan')}
@@ -753,11 +1011,12 @@ function App() {
                     formControl={form.control}
                   />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="familyAndChildren">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="familyAndChildren">
                   <FormInput
                     name="numberOfDependents"
                     formLabel={t('form.labels.numberOfDependents')}
                     formControl={form.control}
+                    inputType="number"
                   />
                   <FormRadio
                     name="claimChildTaxRelief"
@@ -768,13 +1027,28 @@ function App() {
                       { value: "no", label: t('form.options.yesNo.no') },
                     ]}
                   />
-                  <FormInput
+                  <FormTable
                     name="childrenInfo"
-                    formLabel={t('form.labels.childrenInfo')}
-                    formControl={form.control}
+                    label={t('form.headlines.childrenInfo')}
+                    control={form.control}
+                    columns={[
+                      {
+                        name: "childrenInfoFullName",
+                        label: t('form.labels.childrenInfoFullName'),
+                        placeholder: "",
+                        errorPath: "childrenInfoFullName"
+                      },
+                      {
+                        name: "childrenInfoBirthNumber",
+                        label: t('form.labels.childrenInfoBirthNumber'),
+                        placeholder: "",
+                        errorPath: "childrenInfoBirthNumber"
+                      }
+                    ]}
+                    errors={Array.isArray(form.formState.errors.childrenInfo) ? form.formState.errors.childrenInfo : undefined}
                   />
                 </TabsContent>
-                <TabsContent className="relative overflow-scroll space-y-4 px-2" value="agreements">
+                <TabsContent className="relative overflow-scroll space-y-4 p-2" value="agreements">
                   <Textarea readOnly
                     value="Awoo agreements" />
                   <FormCheckbox

@@ -9,7 +9,8 @@ interface FormInputProps<T extends FieldValues> {
     formMessage?: boolean,
     formControl: Control<T>,
     formItemClass?: string,
-    formFieldClass?: string
+    formFieldClass?: string,
+    inputType?: React.HTMLInputTypeAttribute
 }
 
 const FormInput = <T extends FieldValues>({
@@ -19,7 +20,8 @@ const FormInput = <T extends FieldValues>({
     formMessage = true, 
     formControl,
     formItemClass,
-    formFieldClass
+    formFieldClass,
+    inputType = "text"
 }: FormInputProps<T>) => {
     return (
         <FormField
@@ -34,7 +36,18 @@ const FormInput = <T extends FieldValues>({
                         <Input
                             className={formFieldClass}
                             placeholder={formPlaceholder}
-                            {...field} />
+                            type={inputType}
+                            {...field}
+                            onChange={e => {
+                                if (inputType === "number") {
+                                    const value = e.target.value;
+                                    field.onChange(value === "" ? undefined : Number(value));
+                                } else {
+                                    field.onChange(e);
+                                }
+                            }}
+                            value={inputType === "number" && field.value === undefined ? "" : field.value}
+                        />
                     </FormControl>
                     {formMessage ? <FormMessage /> : null}
                 </FormItem>
