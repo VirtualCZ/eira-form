@@ -141,7 +141,7 @@ function App() {
     phone: z.number({
       required_error: t('form.validation.required.phone'),
     }).refine(val => val >= 100000000 && val <= 999999999, {
-      message: t('form.validation.format.graduationYear'),
+      message: t('form.validation.format.phone'),
     }),
     dataBoxId: z.string().optional(),
 
@@ -304,8 +304,43 @@ function App() {
     resolver: zodResolver(formSchema),
     mode: "onChange", // Add this line
   });
-  function onSubmit(values: FormData) {
-    console.log(values)
+
+  function exportJSON(data: any, filename = "form-data.json") {
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  async function onSubmit(values: FormData) {
+    try {
+      const response = await fetch("https://gas.eira.com/webdav/mobile/checkPingOnlyJSON?aa=1", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Basic " + btoa(`${import.meta.env.VITE_GAS_NAME}:${import.meta.env.VITE_GAS_PASS}`)
+        },
+        body: JSON.stringify(values)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Submission successful:", result);
+      // Optionally, show a success message to the user here
+    } catch (error) {
+      console.error("Submission failed:", error);
+      // Optionally, show an error message to the user here
+    }
   }
 
   const [activeTab, setActiveTab] = useState("personalInformation")
@@ -550,6 +585,7 @@ function App() {
                     name="insuranceBirthNumber"
                     formLabel={t('form.labels.insuranceBirthNumber')}
                     formControl={form.control}
+                    inputType='number'
                   />
                   <FormInput
                     name="idCardNumber"
