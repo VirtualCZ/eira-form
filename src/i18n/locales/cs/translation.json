@@ -81,7 +81,10 @@
         "studyCity": "Město studia musí mít alespoň 2 znaky.",
         "language": "Jazyk musí mít alespoň 1 znak.",
         "languageExamType": "Typ jazykové zkoušky musí mít alespoň 1 znak.",
-        "numberOfDependents": "Počet vyživovaných dětí musí být alespoň 1."
+        "numberOfDependents": "Počet vyživovaných dětí musí být alespoň 1.",
+        "placeOfBirth": "Místo narození musí mít alespoň 1 znak.",
+        "childrenInfoFullName": "Jméno a příjmení dítěte musí mít alespoň 1 znak.",
+        "childrenInfoBirthNumber": "Rodné číslo dítěte musí mít alespoň 1 znak."
       }
     },
     "headlines": {
@@ -162,6 +165,8 @@
       "childrenInfo": "Jména a rodná čísla dětí",
       "childrenInfoFullName": "Jméno a příjmení dítěte",
       "childrenInfoBirthNumber": "Rodné číslo dítěte",
+      "residencePermitValidity": "Platnost povolení k pobytu",
+      "lastJobPeriod": "Období poslední práce",
       "confirmationReadEmployeeDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením zaměstnance",
       "confirmationReadEmailAddressDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením ohledně emailové adresy zaměstnance"
     },
@@ -206,6 +211,15 @@
         "vietnamese": "Vietnamská",
         "hungarian": "Maďarská",
         "khazakh": "Kazašská"
+      },
+      "highestEducation": {
+        "basicEducation": "Základní vzdělání",
+        "vocationalWithoutMatura": "Odborné vyučení bez maturity",
+        "secondaryOrVocationalWithMatura": "Středoškolské nebo odborné vyučení s maturitou",
+        "higherVocational": "Vyšší odborné",
+        "bachelor": "Bakalářské",
+        "universityOrHigher": "Vysokoškolské/univerzitní",
+        "mbaOrPostgraduate": "MBA, MBT, postgraduální studium"
       },
       "pensionType": {
         "none": "Žádný",

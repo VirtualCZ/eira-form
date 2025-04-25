@@ -81,7 +81,10 @@
         "studyCity": "City of study must be at least 2 characters.",
         "language": "Language must be at least 1 character.",
         "languageExamType": "Type of language exam must be at least 1 character.",
-        "numberOfDependents": "Number of dependents must be at least 1."
+        "numberOfDependents": "Number of dependents must be at least 1.",
+        "placeOfBirth": "Place of birth must be at least 1 character.",
+        "childrenInfoFullName": "Child's full name must be at least 1 character.",
+        "childrenInfoBirthNumber": "Child's birth number must be at least 1 character."
       }
     },
     "headlines": {
@@ -162,6 +165,8 @@
       "childrenInfo": "Children's names and birth numbers",
       "childrenInfoFullName": "Child's full name",
       "childrenInfoBirthNumber": "Child's birth number",
+      "residencePermitValidity": "Residence permit validity",
+      "lastJobPeriod": "Last job period",
       "confirmationReadEmployeeDeclaration": "I confirm that I have read and agree with the employee declaration",
       "confirmationReadEmailAddressDeclaration": "I confirm that I have read and agree with the employee email address declaration"
     },
@@ -206,6 +211,15 @@
         "vietnamese": "Vietnamese",
         "hungarian": "Hungarian",
         "khazakh": "Kazakh"
+      },
+      "highestEducation": {
+        "basicEducation": "Basic education",
+        "vocationalWithoutMatura": "Vocational training without Matura",
+        "secondaryOrVocationalWithMatura": "Secondary school or vocational training with Matura",
+        "higherVocational": "Higher vocational",
+        "bachelor": "Bachelor's",
+        "universityOrHigher": "University/higher education",
+        "mbaOrPostgraduate": "MBA, MBT, postgraduate studies"
       },
       "pensionType": {
         "none": "None",
