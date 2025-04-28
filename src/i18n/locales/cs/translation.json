@@ -72,7 +72,7 @@
         "permanentPostalCode": "PSČ musí mít alespoň 1 číslici.",
         "permanentCountry": "Země musí mít alespoň 1 znak.",
         "email": "Emailová adresa musí být platná.",
-        "phone": "Telefon musí mít alespoň 9 číslic.",
+        "phone": "Musí být v mezinárodním formátu s kódem země (např. +420123456789).",
         "employmentClassification": "Klasifikace zaměstnání musí mít alespoň 2 znaky.",
         "jobPosition": "Pracovní pozice musí mít alespoň 2 znaky.",
         "lastJobType": "Typ poslední práce musí mít alespoň 2 znaky.",

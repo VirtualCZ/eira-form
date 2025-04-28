@@ -138,9 +138,9 @@ function App() {
     }).email().min(5, {
       message: t('form.validation.format.email'),
     }),
-    phone: z.number({
+    phone: z.string({
       required_error: t('form.validation.required.phone'),
-    }).refine(val => val >= 100000000 && val <= 999999999, {
+    }).refine(val => /^\+\d{1,3}\d{6,}$/.test(val), {
       message: t('form.validation.format.phone'),
     }),
     dataBoxId: z.string().optional(),
@@ -822,7 +822,6 @@ function App() {
                     name="phone"
                     formLabel={t('form.labels.phone')}
                     formControl={form.control}
-                    inputType='number'
                   />
                   <FormInput
                     name="dataBoxId"
