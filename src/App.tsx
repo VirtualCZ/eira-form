@@ -305,19 +305,19 @@ function App() {
     mode: "onChange", // Add this line
   });
 
-  function exportJSON(data: any, filename = "form-data.json") {
-    const jsonStr = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+  // function exportJSON(data: any, filename = "form-data.json") {
+  //   const jsonStr = JSON.stringify(data, null, 2);
+  //   const blob = new Blob([jsonStr], { type: "application/json" });
+  //   const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+  //   const a = document.createElement("a");
+  //   a.href = url;
+  //   a.download = filename;
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   document.body.removeChild(a);
+  //   URL.revokeObjectURL(url);
+  // }
 
   async function onSubmit(values: FormData) {
     try {
@@ -939,26 +939,37 @@ function App() {
                   />
                   <FormTable
                     name="languageSkills"
+                    formControl={form.control}
                     label={t('form.headlines.languageSkills')}
-                    control={form.control}
                     columns={[
                       {
                         name: "language",
                         label: t('form.labels.language'),
                         placeholder: "",
-                        errorPath: "language"
+                        errorPath: "language",
+                        type: "text"
                       },
                       {
                         name: "languageProficiency",
                         label: t('form.labels.languageProficiency'),
-                        placeholder: "",
-                        errorPath: "languageProficiency"
+                        errorPath: "languageProficiency",
+                        type: "select",
+                        options: [
+                          { value: "A1", label: "A1" },
+                          { value: "A2", label: "A2" },
+                          { value: "B1", label: "B1" },
+                          { value: "B2", label: "B2" },
+                          { value: "C1", label: "C1" },
+                          { value: "C2", label: "C2" },
+                          { value: "native", label: t('form.options.languageProficiency.native') }
+                        ]
                       },
                       {
                         name: "languageExamType",
                         label: t('form.labels.languageExamType'),
                         placeholder: "",
-                        errorPath: "languageExamType"
+                        errorPath: "languageExamType",
+                        type: "text"
                       },
                     ]}
                     errors={Array.isArray(form.formState.errors.languageSkills) ? form.formState.errors.languageSkills : undefined}
@@ -1066,7 +1077,7 @@ function App() {
                   <FormTable
                     name="childrenInfo"
                     label={t('form.headlines.childrenInfo')}
-                    control={form.control}
+                    formControl={form.control}
                     columns={[
                       {
                         name: "childrenInfoFullName",

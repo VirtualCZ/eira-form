@@ -1,5 +1,8 @@
 {
   "form": {
+    "errors": {
+      "tableIncomplete": "Please fill out all required fields."
+    },
     "validation": {
       "required": {
         "honorary": "Please select a salutation.",
@@ -137,7 +140,7 @@
       "lastJobPeriodFrom": "Last job period from",
       "lastJobPeriodTo": "Last job period to",
       "bankingInstitutionName": "Bank name",
-      "bankAccountNumber": "Bank account number (with bank code)",
+      "bankAccountNumber": "Bank account number",
       "bankCode": "Bank code",
       "healthInsurance": "Health insurance",
       "insuranceRegistrationNumber": "Insurance registration number",
@@ -230,6 +233,9 @@
         "widowsPension": "Widow's pension",
         "widowersPension": "Widower's pension",
         "orphansPension": "Orphan's pension"
+      },
+      "languageProficiency": {
+        "native": "Native speaker"
       }
     },
     "pickDate": "Pick a date",

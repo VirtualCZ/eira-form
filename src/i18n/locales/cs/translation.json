@@ -1,5 +1,8 @@
 {
   "form": {
+    "errors": {
+      "tableIncomplete": "Prosím vyplňte všechny povinná pole."
+    },
     "validation": {
       "required": {
         "honorary": "Prosím vyberte oslovení.",
@@ -137,7 +140,7 @@
       "lastJobPeriodFrom": "Období poslední práce od",
       "lastJobPeriodTo": "Období poslední práce do",
       "bankingInstitutionName": "Název bankovní instituce",
-      "bankAccountNumber": "Číslo bankovního účtu (s kódem banky)",
+      "bankAccountNumber": "Číslo bankovního účtu",
       "bankCode": "Kód banky",
       "healthInsurance": "Zdravotní pojišťovna",
       "insuranceRegistrationNumber": "Registrační číslo pojištění",
@@ -230,6 +233,9 @@
         "widowsPension": "Vdovský důchod",
         "widowersPension": "Vdovecký důchod",
         "orphansPension": "Sirotčí důchod"
+      },
+      "languageProficiency": {
+        "native": "Rodilý mluvčí"
       }
     },
     "pickDate": "Vybrat datum",
