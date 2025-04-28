@@ -22,6 +22,7 @@ import FormDateFromTo from './customComponents/FormDateFromTo'
 import { Textarea } from './components/ui/textarea'
 import FormCheckbox from './customComponents/FormCheckbox'
 import { FormTable } from './customComponents/FormTable'
+import FormPhotoUpload from './customComponents/FormPhotoUpload'
 
 function App() {
   const { t } = useTranslation();
@@ -88,6 +89,7 @@ function App() {
     }).min(1, {
       message: t('form.validation.format.idCardNumber'),
     }),
+    photos: z.array(z.instanceof(File)).optional(),
     idCardIssuedBy: z.string({
       required_error: t('form.validation.required.idCardIssuedBy'),
     }).min(1, {
@@ -320,6 +322,7 @@ function App() {
   // }
 
   async function onSubmit(values: FormData) {
+    // console.log(values)
     try {
       const response = await fetch("https://gas.eira.com/webdav/mobile/checkPingOnlyJSON?aa=1", {
         method: "POST",
@@ -427,11 +430,11 @@ function App() {
   const hasErrorsInTab = (tabName: string) => {
     const errors = form.formState.errors
     const fields = tabFields[tabName] || []
-    
+
     if (tabName === "foreigners" && form.watch("foreigner") !== "yes") {
       return false
     }
-    
+
     return fields.some(field => !!errors[field])
   }
 
@@ -603,6 +606,11 @@ function App() {
                     name="idCardIssuedBy"
                     formLabel={t('form.labels.idCardIssuedBy')}
                     formControl={form.control}
+                  />
+                  <FormPhotoUpload
+                    name="photos"
+                    formControl={form.control}
+                    label={t('form.labels.photos')}
                   />
                   <FormInput
                     name="passportNumber"

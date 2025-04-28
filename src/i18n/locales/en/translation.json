@@ -113,6 +113,7 @@
       "insuranceBirthNumber": "Insurance-assigned birth number",
       "idCardNumber": "ID card number",
       "idCardIssuedBy": "ID card issued by",
+      "photos": "Upload photos",
       "passportNumber": "Passport number",
       "passportIssuedBy": "Passport issued by",
       "citizenship": "Citizenship",
