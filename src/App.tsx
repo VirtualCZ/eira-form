@@ -427,6 +427,11 @@ function App() {
   const hasErrorsInTab = (tabName: string) => {
     const errors = form.formState.errors
     const fields = tabFields[tabName] || []
+    
+    if (tabName === "foreigners" && form.watch("foreigner") !== "yes") {
+      return false
+    }
+    
     return fields.some(field => !!errors[field])
   }
 
@@ -461,12 +466,14 @@ function App() {
                   >
                     <TabsList className="flex w-max min-w-full space-x-2">
                       {tabs.map((tab) => (
-                        <FormTabsTrigger
-                          key={tab}
-                          value={tab}
-                          label={t(`form.tabs.${tab}`)}
-                          error={hasErrorsInTab(tab)}
-                        />
+                        (tab !== "foreigners" || form.watch("foreigner") === "yes") && (
+                          <FormTabsTrigger
+                            key={tab}
+                            value={tab}
+                            label={t(`form.tabs.${tab}`)}
+                            error={hasErrorsInTab(tab)}
+                          />
+                        )
                       ))}
                     </TabsList>
                   </div>
