@@ -28,15 +28,6 @@ function App() {
   const { t } = useTranslation();
 
   const tabsListRef = useRef<HTMLDivElement>(null);
-  const scrollTabs = (direction: "left" | "right") => {
-    if (tabsListRef.current) {
-      const scrollAmount = 120;
-      tabsListRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth"
-      });
-    }
-  };
 
   const formSchema = z.object({
     titleBeforeName: z.string().optional(),
@@ -308,6 +299,29 @@ function App() {
     defaultValues: JSON.parse(localStorage.getItem('formData') || '{}'),
   });
 
+  const scrollTabs = (direction: "left" | "right") => {
+    if (tabsListRef.current) {
+      const scrollAmount = 120;
+      tabsListRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  const scrollToTab = (tab: string) => {
+    setTimeout(() => {
+      const tabElement = document.querySelector(`[data-value="${tab}"]`);
+      if (tabElement) {
+        tabElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        });
+      }
+    }, 200); // Increased delay to ensure DOM updates
+  };
+
   // function exportJSON(data: any, filename = "form-data.json") {
   //   const jsonStr = JSON.stringify(data, null, 2);
   //   const blob = new Blob([jsonStr], { type: "application/json" });
@@ -345,7 +359,7 @@ function App() {
         throw new Error(`Server responded with status ${response.status}`);
       }
 
-    localStorage.removeItem('formData');
+      localStorage.removeItem('formData');
       const result = await response.json();
       console.log("Submission successful:", result);
       // Optionally, show a success message to the user here
@@ -362,15 +376,20 @@ function App() {
 
   const handleNext = () => {
     if (currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1])
+      const newTab = tabs[currentIndex + 1]
+      setActiveTab(newTab)
+      scrollToTab(newTab)
     }
   }
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1])
+      const newTab = tabs[currentIndex - 1]
+      setActiveTab(newTab)
+      scrollToTab(newTab)
     }
   }
+
   function FormTabsTrigger({
     value,
     label,
@@ -385,6 +404,7 @@ function App() {
     return (
       <TabsTrigger
         value={value}
+        data-value={value}
         className={cn(
           "flex items-center gap-1",
           error && "bg-red-50 data-[state=active]:bg-red-100"
@@ -470,11 +490,7 @@ function App() {
 
                   <div
                     ref={tabsListRef}
-                    className="flex-1 overflow-x-auto scrollbar-hide"
-                    style={{
-                      scrollbarWidth: "none",
-                      msOverflowStyle: "none"
-                    }}
+                    className="flex-1 overflow-x-auto no-scrollbar"
                   >
                     <TabsList className="flex w-max min-w-full space-x-2">
                       {tabs.map((tab) => (
