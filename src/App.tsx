@@ -341,19 +341,34 @@ function App() {
     }, 200); // Increased delay to ensure DOM updates
   };
 
-  // function exportJSON(data: any, filename = "form-data.json") {
-  //   const jsonStr = JSON.stringify(data, null, 2);
-  //   const blob = new Blob([jsonStr], { type: "application/json" });
-  //   const url = URL.createObjectURL(blob);
-
-  //   const a = document.createElement("a");
-  //   a.href = url;
-  //   a.download = filename;
-  //   document.body.appendChild(a);
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  // }
+  async function exportJSON(data: any, filename = "form-data.json") {
+    // Convert photos to Base64
+    const photosBase64 = data.photos 
+      ? await Promise.all(
+          data.photos.map((file: File) => new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          }))
+        )
+      : undefined;
+  
+    const payload = {
+      ...data,
+      photos: photosBase64
+    };
+  
+    const jsonStr = JSON.stringify(payload, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   useEffect(() => {
     const subscription = form.watch((value) => {
@@ -364,8 +379,9 @@ function App() {
   }, [form.watch]);
 
   async function onSubmit(values: FormData) {
-    console.log("mrdka");
     try {
+      await exportJSON(values);
+
       const response = await fetch("https://gas.eira.com/webdav/mobile/checkPingOnlyJSON?aa=1", {
         method: "POST",
         headers: {
