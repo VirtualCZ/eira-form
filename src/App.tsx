@@ -27,6 +27,8 @@ import FormPhotoUpload from './customComponents/FormPhotoUpload'
 function App() {
   const { t } = useTranslation();
 
+  const [canScroll, setCanScroll] = useState({ left: false, right: true });
+
   const tabsListRef = useRef<HTMLDivElement>(null);
 
   const formSchema = z.object({
@@ -299,6 +301,22 @@ function App() {
     defaultValues: JSON.parse(localStorage.getItem('formData') || '{}'),
   });
 
+  useEffect(() => {
+    const container = tabsListRef.current;
+    if (!container) return;
+
+    const checkScroll = () => {
+      const canScrollLeft = container.scrollLeft > 0;
+      const canScrollRight = container.scrollLeft + container.clientWidth < container.scrollWidth;
+      setCanScroll({ left: canScrollLeft, right: canScrollRight });
+    };
+
+    container.addEventListener('scroll', checkScroll);
+    checkScroll(); // Initial check
+
+    return () => container.removeEventListener('scroll', checkScroll);
+  }, []);
+
   const scrollTabs = (direction: "left" | "right") => {
     if (tabsListRef.current) {
       const scrollAmount = 120;
@@ -483,9 +501,10 @@ function App() {
                     type="button"
                     className="p-1"
                     onClick={() => scrollTabs("left")}
+                    disabled={!canScroll.left}
                     aria-label="Scroll left"
                   >
-                    <ChevronLeft />
+                    <ChevronLeft className={cn(!canScroll.left && "opacity-50")} />
                   </button>
 
                   <div
@@ -505,14 +524,14 @@ function App() {
                       ))}
                     </TabsList>
                   </div>
-
                   <button
                     type="button"
                     className="p-1"
                     onClick={() => scrollTabs("right")}
+                    disabled={!canScroll.right}
                     aria-label="Scroll right"
                   >
-                    <ChevronRight />
+                    <ChevronRight className={cn(!canScroll.right && "opacity-50")} />
                   </button>
                 </div>
                 <TabsContent className="relative overflow-scroll space-y-4 p-2" value="personalInformation">
