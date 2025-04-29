@@ -255,7 +255,8 @@
     "buttons": {
       "next": "Next",
       "previous": "Previous",
-      "submit": "Submit"
+      "submit": "Submit",
+      "clearForm": "Clear form"
     }
   }
 }

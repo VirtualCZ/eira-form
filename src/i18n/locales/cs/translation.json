@@ -255,7 +255,8 @@
     "buttons": {
       "next": "Další",
       "previous": "Předchozí",
-      "submit": "Odeslat"
+      "submit": "Odeslat",
+      "clearForm": "Vyčistit formulář"
     }
   }
 }

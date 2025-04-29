@@ -27,6 +27,7 @@ import FormPhotoUpload from './customComponents/FormPhotoUpload'
 function App() {
   const { t } = useTranslation();
 
+  const [activeTab, setActiveTab] = useState("personalInformation")
   const [canScroll, setCanScroll] = useState({ left: false, right: true });
 
   const tabsListRef = useRef<HTMLDivElement>(null);
@@ -285,11 +286,11 @@ function App() {
       }),
     })).optional(),
 
-    confirmationReadEmployeeDeclaration: z.boolean({
-      required_error: t('form.validation.required.confirmationReadEmployeeDeclaration')
+    confirmationReadEmployeeDeclaration: z.boolean().refine(val => val === true, {
+      message: t('form.validation.required.confirmationReadEmployeeDeclaration')
     }),
-    confirmationReadEmailAddressDeclaration: z.boolean({
-      required_error: t('form.validation.required.confirmationReadEmailAddressDeclaration')
+    confirmationReadEmailAddressDeclaration: z.boolean().refine(val => val === true, {
+      message: t('form.validation.required.confirmationReadEmailAddressDeclaration')
     })
   })
 
@@ -312,7 +313,7 @@ function App() {
     };
 
     container.addEventListener('scroll', checkScroll);
-    checkScroll(); // Initial check
+    checkScroll();
 
     return () => container.removeEventListener('scroll', checkScroll);
   }, []);
@@ -357,12 +358,13 @@ function App() {
   useEffect(() => {
     const subscription = form.watch((value) => {
       localStorage.setItem('formData', JSON.stringify(value));
+      // console.log(form.getValues());
     });
     return () => subscription.unsubscribe();
   }, [form.watch]);
 
   async function onSubmit(values: FormData) {
-    // console.log(values)
+    console.log("mrdka");
     try {
       const response = await fetch("https://gas.eira.com/webdav/mobile/checkPingOnlyJSON?aa=1", {
         method: "POST",
@@ -377,7 +379,7 @@ function App() {
         throw new Error(`Server responded with status ${response.status}`);
       }
 
-      localStorage.removeItem('formData');
+      handleClear();
       const result = await response.json();
       console.log("Submission successful:", result);
       // Optionally, show a success message to the user here
@@ -387,26 +389,46 @@ function App() {
     }
   }
 
-  const [activeTab, setActiveTab] = useState("personalInformation")
+  const handleClear = () => {
+    form.reset();
+    localStorage.removeItem('formData');
+    setActiveTab("personalInformation"); // Add this line
+  };
 
   const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment", "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren", "agreements"]
   const currentIndex = tabs.indexOf(activeTab)
 
-  const handleNext = () => {
-    if (currentIndex < tabs.length - 1) {
-      const newTab = tabs[currentIndex + 1]
-      setActiveTab(newTab)
-      scrollToTab(newTab)
-    }
-  }
+  const handleNext = async () => {
+    const filteredTabs = tabs.filter(tab =>
+      tab !== "foreigners" || form.watch("foreigner") === "yes"
+    );
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      const newTab = tabs[currentIndex - 1]
-      setActiveTab(newTab)
-      scrollToTab(newTab)
+    if (currentIndex < filteredTabs.length - 1) {
+      const currentTab = activeTab;
+      await form.trigger(tabFields[currentTab]);
+
+      const newIndex = filteredTabs.indexOf(activeTab) + 1;
+      const newTab = filteredTabs[newIndex];
+      setActiveTab(newTab);
+      scrollToTab(newTab);
     }
-  }
+  };
+
+  const handlePrevious = async () => {
+    const filteredTabs = tabs.filter(tab =>
+      tab !== "foreigners" || form.watch("foreigner") === "yes"
+    );
+
+    if (currentIndex > 0) {
+      const currentTab = activeTab;
+      await form.trigger(tabFields[currentTab]);
+
+      const newIndex = filteredTabs.indexOf(activeTab) - 1;
+      const newTab = filteredTabs[newIndex];
+      setActiveTab(newTab);
+      scrollToTab(newTab);
+    }
+  };
 
   function FormTabsTrigger({
     value,
@@ -479,7 +501,7 @@ function App() {
     const fields = tabFields[tabName] || []
 
     if (tabName === "foreigners" && form.watch("foreigner") !== "yes") {
-      return false
+      return fields.some(field => !!errors[field])
     }
 
     return fields.some(field => !!errors[field])
@@ -493,7 +515,11 @@ function App() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
               <Tabs
                 value={activeTab}
-                onValueChange={setActiveTab}
+                onValueChange={async (newTab) => {
+                  if (newTab === "foreigners" && form.watch("foreigner") !== "yes") return;
+                  await form.trigger(tabFields[activeTab]);
+                  setActiveTab(newTab);
+                }}
                 className="h-full flex flex-col"
               >
                 <div className="relative flex items-center gap-2 mb-2">
@@ -513,14 +539,13 @@ function App() {
                   >
                     <TabsList className="flex w-max min-w-full space-x-2">
                       {tabs.map((tab) => (
-                        (tab !== "foreigners" || form.watch("foreigner") === "yes") && (
-                          <FormTabsTrigger
-                            key={tab}
-                            value={tab}
-                            label={t(`form.tabs.${tab}`)}
-                            error={hasErrorsInTab(tab)}
-                          />
-                        )
+                        <FormTabsTrigger
+                          key={tab}
+                          value={tab}
+                          label={t(`form.tabs.${tab}`)}
+                          error={hasErrorsInTab(tab)}
+                          disabled={tab === "foreigners" && form.watch("foreigner") === "no"}
+                        />
                       ))}
                     </TabsList>
                   </div>
@@ -1168,6 +1193,15 @@ function App() {
                     formLabel={t('form.labels.confirmationReadEmailAddressDeclaration')}
                     formControl={form.control}
                   />
+
+                  <div className="flex gap-2 mt-4">
+                    <Button type="button" variant="destructive" onClick={handleClear}>
+                      {t('form.buttons.clearForm')}
+                    </Button>
+                    <Button type="submit">
+                      {t('form.buttons.submit')}
+                    </Button>
+                  </div>
                 </TabsContent>
 
                 <div className="flex justify-between pt-2 mt-2 border-t">
