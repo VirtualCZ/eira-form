@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -304,7 +304,8 @@ function App() {
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    mode: "onChange", // Add this line
+    mode: "onChange",
+    defaultValues: JSON.parse(localStorage.getItem('formData') || '{}'),
   });
 
   // function exportJSON(data: any, filename = "form-data.json") {
@@ -320,6 +321,13 @@ function App() {
   //   document.body.removeChild(a);
   //   URL.revokeObjectURL(url);
   // }
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      localStorage.setItem('formData', JSON.stringify(value));
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
 
   async function onSubmit(values: FormData) {
     // console.log(values)
@@ -337,6 +345,7 @@ function App() {
         throw new Error(`Server responded with status ${response.status}`);
       }
 
+    localStorage.removeItem('formData');
       const result = await response.json();
       console.log("Submission successful:", result);
       // Optionally, show a success message to the user here
