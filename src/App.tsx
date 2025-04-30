@@ -83,7 +83,6 @@ function App() {
     }).min(1, {
       message: t('form.validation.format.idCardNumber'),
     }),
-    photos: z.array(z.instanceof(File)).optional(),
     idCardIssuedBy: z.string({
       required_error: t('form.validation.required.idCardIssuedBy'),
     }).min(1, {
@@ -121,6 +120,8 @@ function App() {
     }).min(1, {
       message: t('form.validation.format.permanentCountry'),
     }),
+
+    contactSameAsPermanentAddress: z.enum(["yes", "no"]).optional(),
 
     contactStreet: z.string().optional(),
     contactHouseNumber: z.number().optional(),
@@ -286,6 +287,12 @@ function App() {
       }),
     })).optional(),
 
+    foodPass: z.array(z.instanceof(File)).optional(),
+    travelDocumentCopy: z.array(z.instanceof(File)).optional(),
+    residencePermitCopy: z.array(z.instanceof(File)).optional(),
+    educationCertificate: z.array(z.instanceof(File)).optional(),
+    wageDeductionDecision: z.array(z.instanceof(File)).optional(),
+
     confirmationReadEmployeeDeclaration: z.boolean().refine(val => val === true, {
       message: t('form.validation.required.confirmationReadEmployeeDeclaration')
     }),
@@ -342,22 +349,35 @@ function App() {
   };
 
   async function exportJSON(data: any, filename = "form-data.json") {
-    // Convert photos to Base64
-    const photosBase64 = data.photos 
-      ? await Promise.all(
-          data.photos.map((file: File) => new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(file);
-          }))
+    // Define all document fields that need conversion
+    const photoFields = [
+      'photos',
+      'travelDocumentCopy',
+      'residencePermitCopy',
+      'educationCertificate',
+      'wageDeductionDecision',
+      'foodPass'
+    ];
+
+    // Convert all document fields to Base64 in parallel
+    const convertedFields = await Promise.all(photoFields.map(async (field) => {
+      const files = data[field];
+      const converted = files?.length
+        ? await Promise.all(files.map((file: File) => new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        }))
         )
-      : undefined;
-  
+        : undefined;
+      return [field, converted];
+    }));
+
     const payload = {
       ...data,
-      photos: photosBase64
+      ...Object.fromEntries(convertedFields)
     };
-  
+
     const jsonStr = JSON.stringify(payload, null, 2);
     const blob = new Blob([jsonStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -411,20 +431,19 @@ function App() {
     setActiveTab("personalInformation"); // Add this line
   };
 
-  const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment", "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren", "agreements"]
+  const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment", "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren", "documents", "agreements"]
   const currentIndex = tabs.indexOf(activeTab)
 
   const handleNext = async () => {
     const filteredTabs = tabs.filter(tab =>
       tab !== "foreigners" || form.watch("foreigner") === "yes"
     );
-
-    if (currentIndex < filteredTabs.length - 1) {
-      const currentTab = activeTab;
-      await form.trigger(tabFields[currentTab]);
-
-      const newIndex = filteredTabs.indexOf(activeTab) + 1;
-      const newTab = filteredTabs[newIndex];
+    
+    const currentFilteredIndex = filteredTabs.indexOf(activeTab);
+    
+    if (currentFilteredIndex < filteredTabs.length - 1) {
+      await form.trigger(tabFields[activeTab]);
+      const newTab = filteredTabs[currentFilteredIndex + 1];
       setActiveTab(newTab);
       scrollToTab(newTab);
     }
@@ -434,13 +453,12 @@ function App() {
     const filteredTabs = tabs.filter(tab =>
       tab !== "foreigners" || form.watch("foreigner") === "yes"
     );
-
-    if (currentIndex > 0) {
-      const currentTab = activeTab;
-      await form.trigger(tabFields[currentTab]);
-
-      const newIndex = filteredTabs.indexOf(activeTab) - 1;
-      const newTab = filteredTabs[newIndex];
+    
+    const currentFilteredIndex = filteredTabs.indexOf(activeTab);
+    
+    if (currentFilteredIndex > 0) {
+      await form.trigger(tabFields[activeTab]);
+      const newTab = filteredTabs[currentFilteredIndex - 1];
       setActiveTab(newTab);
       scrollToTab(newTab);
     }
@@ -484,6 +502,7 @@ function App() {
     ],
     addresses: [
       "permanentStreet", "permanentHouseNumber", "permanentOrientationNumber", "permanentCity", "permanentPostalCode", "permanentCountry",
+      "contactSameAsPermanentAddress",
       "contactStreet", "contactHouseNumber", "contactOrientationNumber", "contactCity", "contactPostalCode", "contactCountry"
     ],
     contacts: [
@@ -507,6 +526,10 @@ function App() {
     ],
     familyAndChildren: [
       "numberOfDependents", "claimChildTaxRelief", "childrenInfo"
+    ],
+    documents: [
+      "travelDocumentCopy", "residencePermitCopy", "educationCertificate",
+      "wageDeductionDecision", "foodPass"
     ],
     agreements: [
       "confirmationReadEmployeeDeclaration", "confirmationReadEmailAddressDeclaration"
@@ -692,11 +715,6 @@ function App() {
                     formLabel={t('form.labels.idCardIssuedBy')}
                     formControl={form.control}
                   />
-                  <FormPhotoUpload
-                    name="photos"
-                    formControl={form.control}
-                    label={t('form.labels.photos')}
-                  />
                   <FormInput
                     name="passportNumber"
                     formLabel={t('form.labels.passportNumber')}
@@ -879,38 +897,51 @@ function App() {
                     formLabel={t('form.labels.country')}
                     formControl={form.control}
                   />
-                  <h1>{t('form.headlines.contactAddress')}</h1>
-                  <FormInput
-                    name="contactStreet"
-                    formLabel={t('form.labels.street')}
+                  <FormRadio
+                    name="contactSameAsPermanentAddress"
+                    formLabel={t('form.labels.contactSameAsPermanentAddress')}
                     formControl={form.control}
+                    options={[
+                      { value: "yes", label: t('form.options.yesNo.yes') },
+                      { value: "no", label: t('form.options.yesNo.no') },
+                    ]}
                   />
-                  <FormInput
-                    name="contactHouseNumber"
-                    formLabel={t('form.labels.houseNumber')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactOrientationNumber"
-                    formLabel={t('form.labels.orientationNumber')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactCity"
-                    formLabel={t('form.labels.city')}
-                    formControl={form.control}
-                  />
-                  <FormInput
-                    name="contactPostalCode"
-                    formLabel={t('form.labels.postalCode')}
-                    formControl={form.control}
-                    inputType='number'
-                  />
-                  <FormInput
-                    name="contactCountry"
-                    formLabel={t('form.labels.country')}
-                    formControl={form.control}
-                  />
+                  {form.watch("contactSameAsPermanentAddress") === "no" && (
+                    <>
+                      <h1>{t('form.headlines.contactAddress')}</h1>
+                      <FormInput
+                        name="contactStreet"
+                        formLabel={t('form.labels.street')}
+                        formControl={form.control}
+                      />
+                      <FormInput
+                        name="contactHouseNumber"
+                        formLabel={t('form.labels.houseNumber')}
+                        formControl={form.control}
+                      />
+                      <FormInput
+                        name="contactOrientationNumber"
+                        formLabel={t('form.labels.orientationNumber')}
+                        formControl={form.control}
+                      />
+                      <FormInput
+                        name="contactCity"
+                        formLabel={t('form.labels.city')}
+                        formControl={form.control}
+                      />
+                      <FormInput
+                        name="contactPostalCode"
+                        formLabel={t('form.labels.postalCode')}
+                        formControl={form.control}
+                        inputType='number'
+                      />
+                      <FormInput
+                        name="contactCountry"
+                        formLabel={t('form.labels.country')}
+                        formControl={form.control}
+                      />
+                    </>
+                  )}
                 </TabsContent>
                 <TabsContent className="relative overflow-scroll space-y-4 p-2" value="contacts">
                   <FormInput
@@ -1193,6 +1224,39 @@ function App() {
                     ]}
                     errors={Array.isArray(form.formState.errors.childrenInfo) ? form.formState.errors.childrenInfo : undefined}
                   />
+                </TabsContent>
+                <TabsContent value="documents">
+                  <div className="grid grid-cols-1 gap-4 mb-4">
+                    {form.watch("foreigner") === "yes" && (
+                      <>
+                        <FormPhotoUpload
+                          name="travelDocumentCopy"
+                          label={t('form.labels.travelDocumentCopy')}
+                          formControl={form.control}
+                        />
+                        <FormPhotoUpload
+                          name="residencePermitCopy"
+                          label={t('form.labels.residencePermitCopy')}
+                          formControl={form.control}
+                        />
+                      </>
+                    )}
+                    <FormPhotoUpload
+                      name="educationCertificate"
+                      label={t('form.labels.educationCertificate')}
+                      formControl={form.control}
+                    />
+                    <FormPhotoUpload
+                      name="wageDeductionDecision"
+                      label={t('form.labels.wageDeductionDecision')}
+                      formControl={form.control}
+                    />
+                    <FormPhotoUpload
+                      name="foodPass"
+                      label={t('form.labels.foodPass')}
+                      formControl={form.control}
+                    />
+                  </div>
                 </TabsContent>
                 <TabsContent className="relative overflow-scroll space-y-4 p-2" value="agreements">
                   <Textarea readOnly

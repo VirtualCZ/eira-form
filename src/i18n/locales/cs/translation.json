@@ -124,6 +124,7 @@
       "city": "Město/Obec",
       "postalCode": "PSČ",
       "permanentCountry": "Země",
+      "contactSameAsPermanentAddress": "Je kontaktní adresa stejná jako trvalá?",
       "email": "Emailová adresa",
       "phone": "Telefon",
       "dataBoxId": "ID datové schránky",
@@ -171,6 +172,9 @@
       "childrenInfoBirthNumber": "Rodné číslo dítěte",
       "residencePermitValidity": "Platnost povolení k pobytu",
       "lastJobPeriod": "Období poslední práce",
+      "wageDeductionDecision": "Potvrzení o srážkách ze mzdy",
+      "foodPass": "Potravinářský průkaz",
+      "educationCertificate": "Vzdělací certifikát",
       "confirmationReadEmployeeDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením zaměstnance",
       "confirmationReadEmailAddressDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením ohledně emailové adresy zaměstnance"
     },
@@ -250,6 +254,7 @@
       "healthAndSocialInfo": "Zdravotní a sociální informace",
       "legalInfo": "Právní informace",
       "familyAndChildren": "Rodina a děti",
+      "documents": "Dokumenty",
       "agreements": "Souhlasy"
     },
     "buttons": {

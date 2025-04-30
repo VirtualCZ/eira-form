@@ -8,6 +8,7 @@ import { cn } from '../lib/utils'
 import { FormControl } from "@/components/ui/form"
 import { useTranslation } from "react-i18next"
 import { ControllerRenderProps } from "react-hook-form"
+import { useState } from "react"
 
 interface DatePickerProps {
     field: ControllerRenderProps<any, any>,
@@ -17,9 +18,10 @@ interface DatePickerProps {
 
 const DatePicker = ({ field, className, disabled }: DatePickerProps) => {
     const { t } = useTranslation();
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <Popover>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
                 <FormControl>
                     <Button
@@ -43,7 +45,10 @@ const DatePicker = ({ field, className, disabled }: DatePickerProps) => {
                 <Calendar
                     mode="single"
                     selected={field.value}
-                    onSelect={field.onChange}
+                    onSelect={(date) => {
+                        field.onChange(date);
+                        setIsOpen(false);
+                    }}
                     disabled={disabled}
                     initialFocus
                 />

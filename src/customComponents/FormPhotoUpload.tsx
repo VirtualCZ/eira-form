@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 interface FormPhotoUploadProps<T extends FieldValues> {
-  name: Path<T>
-  formControl: Control<T>
-  label: string
+  name: Path<T>;
+  formControl: Control<T>;
+  label: string;
 }
 
 export default function FormPhotoUpload<T extends FieldValues>({
@@ -14,9 +14,9 @@ export default function FormPhotoUpload<T extends FieldValues>({
   label
 }: FormPhotoUploadProps<T>) {
   const { field } = useController({
-    name: name as Path<T>,  // Add type assertion here
+    name: name,
     control: formControl
-  })
+  });
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])

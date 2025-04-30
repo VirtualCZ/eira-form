@@ -124,6 +124,7 @@
       "city": "City/Town",
       "postalCode": "Postal code",
       "country": "Country",
+      "contactSameAsPermanentAddress": "Is the contact address the same as the permanent address?",
       "email": "Email address",
       "phone": "Phone",
       "dataBoxId": "Data box ID",
@@ -171,6 +172,9 @@
       "childrenInfoBirthNumber": "Child's birth number",
       "residencePermitValidity": "Residence permit validity",
       "lastJobPeriod": "Last job period",
+      "educationCertificate": "Education certificate",
+      "wageDeductionDecision": "Wage deduction decision confirmation",
+      "foodPass": "Food pass",
       "confirmationReadEmployeeDeclaration": "I confirm that I have read and agree with the employee declaration",
       "confirmationReadEmailAddressDeclaration": "I confirm that I have read and agree with the employee email address declaration"
     },
@@ -250,6 +254,7 @@
       "healthAndSocialInfo": "Health and social information",
       "legalInfo": "Legal information",
       "familyAndChildren": "Family and children",
+      "documents": "Documents",
       "agreements": "Consents"
     },
     "buttons": {
