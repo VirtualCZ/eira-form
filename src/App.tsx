@@ -23,6 +23,7 @@ import { Textarea } from './components/ui/textarea'
 import FormCheckbox from './customComponents/FormCheckbox'
 import { FormTable } from './customComponents/FormTable'
 import FormPhotoUpload from './customComponents/FormPhotoUpload'
+import LanguageSwitcher from './customComponents/LanguageSwitcher'
 
 function App() {
   const { t } = useTranslation();
@@ -78,16 +79,16 @@ function App() {
     }),
     foreignBirthNumber: z.string().optional(),
     insuranceBirthNumber: z.number().optional(),
-    idCardNumber: z.string({
-      required_error: t('form.validation.required.idCardNumber'),
-    }).min(1, {
-      message: t('form.validation.format.idCardNumber'),
-    }),
-    idCardIssuedBy: z.string({
-      required_error: t('form.validation.required.idCardIssuedBy'),
-    }).min(1, {
-      message: t('form.validation.format.idCardIssuedBy'),
-    }),
+    // idCardNumber: z.string({
+    //   required_error: t('form.validation.required.idCardNumber'),
+    // }).min(1, {
+    //   message: t('form.validation.format.idCardNumber'),
+    // }),
+    // idCardIssuedBy: z.string({
+    //   required_error: t('form.validation.required.idCardIssuedBy'),
+    // }).min(1, {
+    //   message: t('form.validation.format.idCardIssuedBy'),
+    // }),
     passportNumber: z.string().optional(),
     passportIssuedBy: z.string().optional(),
 
@@ -268,8 +269,6 @@ function App() {
 
     numberOfDependents: z.number({
       required_error: t('form.validation.required.numberOfDependents'),
-    }).min(1, {
-      message: t('form.validation.format.numberOfDependents'),
     }),
     claimChildTaxRelief: z.enum(["yes", "no"], {
       required_error: t('form.validation.required.claimChildTaxRelief'),
@@ -438,9 +437,9 @@ function App() {
     const filteredTabs = tabs.filter(tab =>
       tab !== "foreigners" || form.watch("foreigner") === "yes"
     );
-    
+
     const currentFilteredIndex = filteredTabs.indexOf(activeTab);
-    
+
     if (currentFilteredIndex < filteredTabs.length - 1) {
       await form.trigger(tabFields[activeTab]);
       const newTab = filteredTabs[currentFilteredIndex + 1];
@@ -453,9 +452,9 @@ function App() {
     const filteredTabs = tabs.filter(tab =>
       tab !== "foreigners" || form.watch("foreigner") === "yes"
     );
-    
+
     const currentFilteredIndex = filteredTabs.indexOf(activeTab);
-    
+
     if (currentFilteredIndex > 0) {
       await form.trigger(tabFields[activeTab]);
       const newTab = filteredTabs[currentFilteredIndex - 1];
@@ -496,7 +495,7 @@ function App() {
     personalInformation: [
       "titleBeforeName", "titleAfterName", "honorific", "firstName", "lastName", "birthSurname",
       "dateOfBirth", "sex", "placeOfBirth", "maritalStatus", "foreigner", "birthNumber",
-      "foreignBirthNumber", "insuranceBirthNumber", "idCardNumber", "idCardIssuedBy",
+      "foreignBirthNumber", "insuranceBirthNumber",
       "passportNumber", "passportIssuedBy", "citizenship", "nationality",
       "bankingInstitutionName", "bankAccountNumber", "bankCode", "healthInsurance", "insuranceRegistrationNumber"
     ],
@@ -599,6 +598,7 @@ function App() {
                   </button>
                 </div>
                 <TabsContent className="relative overflow-scroll space-y-4 p-2" value="personalInformation">
+                  <LanguageSwitcher />
                   <FormInput
                     name="titleBeforeName"
                     formLabel={t('form.labels.titleBeforeName')}
@@ -705,7 +705,7 @@ function App() {
                     formControl={form.control}
                     inputType='number'
                   />
-                  <FormInput
+                  {/* <FormInput
                     name="idCardNumber"
                     formLabel={t('form.labels.idCardNumber')}
                     formControl={form.control}
@@ -714,7 +714,7 @@ function App() {
                     name="idCardIssuedBy"
                     formLabel={t('form.labels.idCardIssuedBy')}
                     formControl={form.control}
-                  />
+                  /> */}
                   <FormInput
                     name="passportNumber"
                     formLabel={t('form.labels.passportNumber')}
@@ -1168,11 +1168,14 @@ function App() {
                       { value: "no", label: t('form.options.yesNo.no') },
                     ]}
                   />
-                  <FormInput
-                    name="bannedActivity"
-                    formLabel={t('form.labels.bannedActivity')}
-                    formControl={form.control}
-                  />
+                  {form.watch("activityBan") === "yes" && (
+                    <FormInput
+                      name="bannedActivity"
+                      formLabel={t('form.labels.bannedActivity')}
+                      formControl={form.control}
+                    />
+                  )}
+
                   <FormRadio
                     name="hasWageDeductions"
                     formLabel={t('form.labels.hasWageDeductions')}
@@ -1182,11 +1185,13 @@ function App() {
                       { value: "no", label: t('form.options.yesNo.no') },
                     ]}
                   />
-                  <FormInput
-                    name="wageDeductionDetails"
-                    formLabel={t('form.labels.wageDeductionDetails')}
-                    formControl={form.control}
-                  />
+                  {form.watch("hasWageDeductions") === "yes" && (
+                    <FormInput
+                      name="wageDeductionDetails"
+                      formLabel={t('form.labels.wageDeductionDetails')}
+                      formControl={form.control}
+                    />
+                  )}
                 </TabsContent>
                 <TabsContent className="relative overflow-scroll space-y-4 p-2" value="familyAndChildren">
                   <FormInput

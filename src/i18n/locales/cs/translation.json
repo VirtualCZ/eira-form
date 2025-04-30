@@ -84,7 +84,6 @@
         "studyCity": "Město studia musí mít alespoň 2 znaky.",
         "language": "Jazyk musí mít alespoň 1 znak.",
         "languageExamType": "Typ jazykové zkoušky musí mít alespoň 1 znak.",
-        "numberOfDependents": "Počet vyživovaných dětí musí být alespoň 1.",
         "placeOfBirth": "Místo narození musí mít alespoň 1 znak.",
         "childrenInfoFullName": "Jméno a příjmení dítěte musí mít alespoň 1 znak.",
         "childrenInfoBirthNumber": "Rodné číslo dítěte musí mít alespoň 1 znak."
