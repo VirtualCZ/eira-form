@@ -401,7 +401,7 @@ function App() {
     try {
       await exportJSON(values);
 
-      const response = await fetch("https://gas.eira.com/webdav/mobile/checkPingOnlyJSON?aa=1", {
+      const response = await fetch("https://gas.eira.com/rest/im/gas/v1/createHrRequest", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
