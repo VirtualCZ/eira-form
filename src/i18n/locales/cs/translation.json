@@ -122,7 +122,7 @@
       "orientationNumber": "Číslo orientační",
       "city": "Město/Obec",
       "postalCode": "PSČ",
-      "permanentCountry": "Země",
+      "country": "Země",
       "contactSameAsPermanentAddress": "Je kontaktní adresa stejná jako trvalá?",
       "email": "Emailová adresa",
       "phone": "Telefon",

@@ -96,28 +96,28 @@ function App() {
     nationality: z.string().optional(),
 
     permanentStreet: z.string({
-      required_error: t('form.validation.required.permanentStreet'),
+      required_error: t('form.validation.required.street'),
     }).min(1, {
       message: t('form.validation.format.permanentStreet'),
     }),
     permanentHouseNumber: z.string({
-      required_error: t('form.validation.required.permanentHouseNumber'),
+      required_error: t('form.validation.required.houseNumber'),
     }).min(1, {
       message: t('form.validation.format.permanentHouseNumber'),
     }),
     permanentOrientationNumber: z.string().optional(),
     permanentCity: z.string({
-      required_error: t('form.validation.required.permanentCity'),
+      required_error: t('form.validation.required.city'),
     }).min(1, {
       message: t('form.validation.format.permanentCity'),
     }),
     permanentPostalCode: z.number({
-      required_error: t('form.validation.required.permanentPostalCode'),
+      required_error: t('form.validation.required.postalCode'),
     }).min(1, {
       message: t('form.validation.format.permanentPostalCode'),
     }),
     permanentCountry: z.string({
-      required_error: t('form.validation.required.permanentCountry'),
+      required_error: t('form.validation.required.country'),
     }).min(1, {
       message: t('form.validation.format.permanentCountry'),
     }),
