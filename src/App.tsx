@@ -383,6 +383,19 @@ function App() {
     return () => subscription.unsubscribe();
   }, [form.watch]);
 
+  const exportJSON = (data: any, filename = "form-data.json") => {
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   async function onSubmit(values: FormData) {
     try {
 
@@ -1291,7 +1304,7 @@ function App() {
                   handlePrevious={handlePrevious}
                   handleNext={handleNext}
                   handleClear={handleClear}
-
+                  onExportJSON={() => exportJSON(form.getValues())}
                 />
               </Tabs>
             </form>

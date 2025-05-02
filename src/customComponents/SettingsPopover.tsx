@@ -4,21 +4,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popove
 import { Settings } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 
-export default function SettingsPopover({ onClear }: { onClear: () => void }) {
+export default function SettingsPopover({ onClear, onExportJSON }: { 
+  onClear: () => void,
+  onExportJSON: () => void 
+}) {
   const { t } = useTranslation();
-
-  async function exportJSON(data: any, filename = "form-data.json") {
-    const jsonStr = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
 
   return (
     <Popover>
@@ -37,7 +27,7 @@ export default function SettingsPopover({ onClear }: { onClear: () => void }) {
         </Button>
         <Button
           variant="outline"
-          onClick={exportJSON}
+          onClick={onExportJSON}
           className="w-full"
         >
           {t('form.buttons.exportJSON')}

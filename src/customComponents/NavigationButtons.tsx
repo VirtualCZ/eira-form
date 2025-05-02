@@ -7,11 +7,13 @@ export default function NavigationButtons({
     handlePrevious,
     handleNext,
     handleClear,
+    onExportJSON,
 }: {
     activeTab: string
     handlePrevious: () => void
     handleNext: () => void
     handleClear: () => void
+    onExportJSON: () => void
 }) {
     const { t } = useTranslation();
     const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment",
@@ -36,7 +38,10 @@ export default function NavigationButtons({
                             {t('form.buttons.previous')}
                         </Button>
                         <div className="flex gap-2">
-                            <SettingsPopover onClear={handleClear} />
+                            <SettingsPopover
+                                onClear={handleClear}
+                                onExportJSON={onExportJSON}
+                            />
                             <Button type="submit">{t('form.buttons.submit')}</Button>
                         </div>
                     </div>
@@ -52,7 +57,10 @@ export default function NavigationButtons({
                         {t('form.buttons.previous')}
                     </Button>
                     <div className="flex gap-2">
-                        <SettingsPopover onClear={handleClear} />
+                        <SettingsPopover
+                            onExportJSON={onExportJSON} 
+                            onClear={handleClear} 
+                        />
                         <Button
                             type="button"
                             onClick={handleNext}
