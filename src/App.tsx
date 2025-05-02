@@ -24,6 +24,7 @@ import FormCheckbox from './customComponents/FormCheckbox'
 import { FormTable } from './customComponents/FormTable'
 import FormPhotoUpload from './customComponents/FormPhotoUpload'
 import SettingsPopover from './customComponents/SettingsPopover'
+import NavigationButtons from './customComponents/NavigationButtons'
 
 function App() {
   const { t } = useTranslation();
@@ -64,7 +65,7 @@ function App() {
       message: t('form.validation.format.placeOfBirth'),
     }),
     maritalStatus: z.enum(
-      ["single", "married", "divorced", "widowed "], {
+      ["single", "married", "divorced", "widowed"], {
       required_error: t('form.validation.required.maritalStatus'),
     }),
 
@@ -100,7 +101,7 @@ function App() {
     }).min(1, {
       message: t('form.validation.format.permanentStreet'),
     }),
-    permanentHouseNumber: z.string({
+    permanentHouseNumber: z.number({
       required_error: t('form.validation.required.houseNumber'),
     }).min(1, {
       message: t('form.validation.format.permanentHouseNumber'),
@@ -431,7 +432,6 @@ function App() {
   };
 
   const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment", "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren", "documents", "agreements"]
-  const currentIndex = tabs.indexOf(activeTab)
 
   const handleNext = async () => {
     const filteredTabs = tabs.filter(tab =>
@@ -874,6 +874,7 @@ function App() {
                     name="permanentHouseNumber"
                     formLabel={t('form.labels.houseNumber')}
                     formControl={form.control}
+                    inputType='number'
                   />
                   <FormInput
                     name="permanentOrientationNumber"
@@ -917,6 +918,7 @@ function App() {
                         name="contactHouseNumber"
                         formLabel={t('form.labels.houseNumber')}
                         formControl={form.control}
+                        inputType='number'
                       />
                       <FormInput
                         name="contactOrientationNumber"
@@ -1299,40 +1301,12 @@ function App() {
                     formControl={form.control}
                   />
                 </TabsContent>
-
-                <div className="flex flex-col justify-between pt-2 mt-2 border-t">
-                  {activeTab === "agreements" ? (
-                    <p className="text-sm text-gray-600 text-center">
-                      Poté co stisknete toto tlačítko, bude formulář odeslán do systému společnosti Axxoss.
-                      Následně vám bude do e-mailu/sms zaslán odkaz na podepsání tohoto dotazníku.
-                    </p>
-                  ) : null}
-                  <div className='flex justify-between'>
-                    <div className='flex gap-2'>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handlePrevious}
-                      >
-                        {t('form.buttons.previous')}
-                      </Button>
-                      <SettingsPopover onClear={handleClear} />
-                    </div>
-                    {activeTab === "agreements" ? (
-                      <Button
-                        type="submit">
-                        {t('form.buttons.submit')}
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        onClick={handleNext}
-                      >
-                        {t('form.buttons.next')}
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                <NavigationButtons
+                  activeTab={activeTab}
+                  handlePrevious={handlePrevious}
+                  handleNext={handleNext}
+                  handleClear={handleClear}
+                />
               </Tabs>
             </form>
           </Form>
