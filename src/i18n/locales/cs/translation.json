@@ -171,9 +171,11 @@
       "childrenInfoBirthNumber": "Rodné číslo dítěte",
       "residencePermitValidity": "Platnost povolení k pobytu",
       "lastJobPeriod": "Období poslední práce",
-      "wageDeductionDecision": "Potvrzení o srážkách ze mzdy",
-      "foodPass": "Potravinářský průkaz",
-      "educationCertificate": "Vzdělací certifikát",
+      "residencePermitCopy": "Foto potvrzení o povolení k pobytu",
+      "travelDocumentCopy": "Foto cestovního dokladu",
+      "wageDeductionDecision": "Foto potvrzení o srážkách ze mzdy",
+      "foodPass": "Foto potravinářského průkazu",
+      "educationCertificate": "Foto vzdělacího certifikátu",
       "confirmationReadEmployeeDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením zaměstnance",
       "confirmationReadEmailAddressDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením ohledně emailové adresy zaměstnance"
     },
@@ -260,7 +262,8 @@
       "next": "Další",
       "previous": "Předchozí",
       "submit": "Odeslat",
-      "clearForm": "Vyčistit formulář"
+      "clearForm": "Vyčistit formulář",
+      "exportJSON": "Exportovat jako JSON"
     }
   }
 }

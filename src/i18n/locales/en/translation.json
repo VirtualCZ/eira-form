@@ -171,9 +171,11 @@
       "childrenInfoBirthNumber": "Child's birth number",
       "residencePermitValidity": "Residence permit validity",
       "lastJobPeriod": "Last job period",
-      "educationCertificate": "Education certificate",
-      "wageDeductionDecision": "Wage deduction decision confirmation",
-      "foodPass": "Food pass",
+      "residencePermitCopy": "Photo of residence permit",
+      "travelDocumentCopy": "Photo of travel document",
+      "educationCertificate": "Photo of education certificate",
+      "wageDeductionDecision": "Photo of wage deduction decision confirmation",
+      "foodPass": "Photo of food pass",
       "confirmationReadEmployeeDeclaration": "I confirm that I have read and agree with the employee declaration",
       "confirmationReadEmailAddressDeclaration": "I confirm that I have read and agree with the employee email address declaration"
     },
@@ -260,7 +262,8 @@
       "next": "Next",
       "previous": "Previous",
       "submit": "Submit",
-      "clearForm": "Clear form"
+      "clearForm": "Clear form",
+      "exportJSON": "Export form JSON"
     }
   }
 }

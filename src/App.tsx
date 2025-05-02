@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import './App.css'
-import { Button } from './components/ui/button'
 import {
   Form,
   // FormDescription
@@ -23,7 +22,6 @@ import { Textarea } from './components/ui/textarea'
 import FormCheckbox from './customComponents/FormCheckbox'
 import { FormTable } from './customComponents/FormTable'
 import FormPhotoUpload from './customComponents/FormPhotoUpload'
-import SettingsPopover from './customComponents/SettingsPopover'
 import NavigationButtons from './customComponents/NavigationButtons'
 
 function App() {
@@ -287,11 +285,11 @@ function App() {
       }),
     })).optional(),
 
-    foodPass: z.array(z.instanceof(File)).optional(),
-    travelDocumentCopy: z.array(z.instanceof(File)).optional(),
-    residencePermitCopy: z.array(z.instanceof(File)).optional(),
-    educationCertificate: z.array(z.instanceof(File)).optional(),
-    wageDeductionDecision: z.array(z.instanceof(File)).optional(),
+    foodPass: z.array(z.string()).optional(),
+    travelDocumentCopy: z.array(z.string()).optional(),
+    residencePermitCopy: z.array(z.string()).optional(),
+    educationCertificate: z.array(z.string()).optional(),
+    wageDeductionDecision: z.array(z.string()).optional(),
 
     confirmationReadEmployeeDeclaration: z.boolean().refine(val => val === true, {
       message: t('form.validation.required.confirmationReadEmployeeDeclaration')
@@ -348,48 +346,6 @@ function App() {
     }, 200); // Increased delay to ensure DOM updates
   };
 
-  async function exportJSON(data: any, filename = "form-data.json") {
-    // Define all document fields that need conversion
-    const photoFields = [
-      'photos',
-      'travelDocumentCopy',
-      'residencePermitCopy',
-      'educationCertificate',
-      'wageDeductionDecision',
-      'foodPass'
-    ];
-
-    // Convert all document fields to Base64 in parallel
-    const convertedFields = await Promise.all(photoFields.map(async (field) => {
-      const files = data[field];
-      const converted = files?.length
-        ? await Promise.all(files.map((file: File) => new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(file);
-        }))
-        )
-        : undefined;
-      return [field, converted];
-    }));
-
-    const payload = {
-      ...data,
-      ...Object.fromEntries(convertedFields)
-    };
-
-    const jsonStr = JSON.stringify(payload, null, 2);
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
   useEffect(() => {
     const subscription = form.watch((value) => {
       localStorage.setItem('formData', JSON.stringify(value));
@@ -400,7 +356,6 @@ function App() {
 
   async function onSubmit(values: FormData) {
     try {
-      await exportJSON(values);
 
       const response = await fetch("https://gas.eira.com/rest/im/gas/v1/createHrRequest", {
         method: "POST",
@@ -1306,6 +1261,7 @@ function App() {
                   handlePrevious={handlePrevious}
                   handleNext={handleNext}
                   handleClear={handleClear}
+                  
                 />
               </Tabs>
             </form>

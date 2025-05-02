@@ -17,11 +17,30 @@ export default function FormPhotoUpload<T extends FieldValues>({
     name: name,
     control: formControl
   });
-  
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    field.onChange([...(field.value || []), ...files])
-  }
+
+  // Helper to convert File to base64 string
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Handles both File and base64 string arrays
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    // Convert all files to base64
+    const base64Files = await Promise.all(files.map(fileToBase64));
+    // Merge with existing base64 strings (if any)
+    field.onChange([...(field.value || []), ...base64Files]);
+  };
+
+  // Handles removal by index
+  const handleRemove = (index: number) => {
+    field.onChange((field.value || []).filter((_: any, i: number) => i !== index));
+  };
 
   return (
     <div className="space-y-2">
@@ -34,10 +53,10 @@ export default function FormPhotoUpload<T extends FieldValues>({
         onChange={handleFileChange}
       />
       <div className="flex gap-2 flex-wrap">
-        {(field.value || []).map((file: File, index: number) => (
+        {(field.value || []).map((item: any, index: number) => (
           <div key={index} className="relative">
-            <img 
-              src={URL.createObjectURL(file)}
+            <img
+              src={typeof item === "string" ? item : URL.createObjectURL(item)}
               className="h-20 w-20 object-cover rounded"
               alt={`Upload ${index + 1}`}
             />
@@ -46,9 +65,7 @@ export default function FormPhotoUpload<T extends FieldValues>({
               variant="destructive"
               size="sm"
               className="absolute top-0 right-0 p-1 h-6 w-6"
-              onClick={() => field.onChange(
-                field.value.filter((_: File, i: number) => i !== index)
-              )}
+              onClick={() => handleRemove(index)}
             >
               ×
             </Button>
@@ -56,5 +73,5 @@ export default function FormPhotoUpload<T extends FieldValues>({
         ))}
       </div>
     </div>
-  )
+  );
 }
