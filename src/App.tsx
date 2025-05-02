@@ -29,6 +29,7 @@ function App() {
 
   const [activeTab, setActiveTab] = useState("personalInformation")
   const [canScroll, setCanScroll] = useState({ left: false, right: true });
+  const [formKey, setFormKey] = useState(0);
 
   const tabsListRef = useRef<HTMLDivElement>(null);
 
@@ -301,11 +302,38 @@ function App() {
 
   type FormData = z.infer<typeof formSchema>;
 
+  const dateFields = [
+    "dateOfBirth",
+    "residencePermitValidityFrom",
+    "residencePermitValidityUntil",
+    "lastJobPeriodFrom",
+    "lastJobPeriodTo",
+    "disabilityDecisionDate",
+    "pensionDecisionDate"
+  ];
+
+  const rawDefaultValues = JSON.parse(localStorage.getItem('formData') || '{}');
+  const defaultValues = reviveDates(rawDefaultValues, dateFields);
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
-    defaultValues: JSON.parse(localStorage.getItem('formData') || '{}'),
+    defaultValues,
   });
+
+  function reviveDates(obj: any, dateKeys: string[]): any {
+    if (!obj || typeof obj !== 'object') return obj;
+    for (const key in obj) {
+      if (!obj.hasOwnProperty(key)) continue;
+      if (dateKeys.includes(key) && typeof obj[key] === 'string') {
+        const d = new Date(obj[key]);
+        if (!isNaN(d.getTime())) obj[key] = d;
+      } else if (typeof obj[key] === 'object') {
+        obj[key] = reviveDates(obj[key], dateKeys);
+      }
+    }
+    return obj;
+  }
 
   useEffect(() => {
     const container = tabsListRef.current;
@@ -347,6 +375,7 @@ function App() {
   };
 
   useEffect(() => {
+    console.log("ran useffect save")
     const subscription = form.watch((value) => {
       localStorage.setItem('formData', JSON.stringify(value));
       // console.log(form.getValues());
@@ -381,9 +410,10 @@ function App() {
   }
 
   const handleClear = () => {
-    form.reset();
     localStorage.removeItem('formData');
-    setActiveTab("personalInformation"); // Add this line
+    form.reset({});
+    setActiveTab("personalInformation");
+    setFormKey(prev => prev + 1); // Force remount
   };
 
   const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment", "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren", "documents", "agreements"]
@@ -504,7 +534,7 @@ function App() {
     <>
       <div className="min-h-svh flex items-center justify-center @container">
         <div className="form-container @xs:w-[100%] @lg:w-[400px] @2xl:w-[600px] @4xl:w-[800px]">
-          <Form {...form}>
+          <Form {...form} key={formKey}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
               <Tabs
                 value={activeTab}
@@ -537,7 +567,7 @@ function App() {
                           value={tab}
                           label={t(`form.tabs.${tab}`)}
                           error={hasErrorsInTab(tab)}
-                          disabled={tab === "foreigners" && form.watch("foreigner") === "no"}
+                          disabled={tab === "foreigners" && form.watch("foreigner") !== "yes"}
                         />
                       ))}
                     </TabsList>
@@ -1261,7 +1291,7 @@ function App() {
                   handlePrevious={handlePrevious}
                   handleNext={handleNext}
                   handleClear={handleClear}
-                  
+
                 />
               </Tabs>
             </form>
