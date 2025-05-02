@@ -23,7 +23,7 @@ import { Textarea } from './components/ui/textarea'
 import FormCheckbox from './customComponents/FormCheckbox'
 import { FormTable } from './customComponents/FormTable'
 import FormPhotoUpload from './customComponents/FormPhotoUpload'
-import LanguageSwitcher from './customComponents/LanguageSwitcher'
+import SettingsPopover from './customComponents/SettingsPopover'
 
 function App() {
   const { t } = useTranslation();
@@ -598,7 +598,6 @@ function App() {
                   </button>
                 </div>
                 <TabsContent className="relative overflow-scroll space-y-4 p-2" value="personalInformation">
-                  <LanguageSwitcher />
                   <FormInput
                     name="titleBeforeName"
                     formLabel={t('form.labels.titleBeforeName')}
@@ -1299,37 +1298,45 @@ function App() {
                     formLabel={t('form.labels.confirmationReadEmailAddressDeclaration')}
                     formControl={form.control}
                   />
-
-                  <div className="flex gap-2 mt-4">
-                    <Button type="button" variant="destructive" onClick={handleClear}>
-                      {t('form.buttons.clearForm')}
-                    </Button>
-                    <Button type="submit">
-                      {t('form.buttons.submit')}
-                    </Button>
-                  </div>
                 </TabsContent>
 
-                <div className="flex justify-between pt-2 mt-2 border-t">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handlePrevious}
-                    disabled={currentIndex === 0}
-                  >
-                    {t('form.buttons.previous')}
-                  </Button>
-                  <Button
-                    type={currentIndex === tabs.length - 1 ? "submit" : "button"}
-                    onClick={currentIndex === tabs.length - 1 ? undefined : handleNext}
-                  >
-                    {currentIndex === tabs.length - 1 ? t('form.buttons.submit') : t('form.buttons.next')}
-                  </Button>
+                <div className="flex flex-col justify-between pt-2 mt-2 border-t">
+                  {activeTab === "agreements" ? (
+                    <p className="text-sm text-gray-600 text-center">
+                      Poté co stisknete toto tlačítko, bude formulář odeslán do systému společnosti Axxoss.
+                      Následně vám bude do e-mailu/sms zaslán odkaz na podepsání tohoto dotazníku.
+                    </p>
+                  ) : null}
+                  <div className='flex justify-between'>
+                    <div className='flex gap-2'>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handlePrevious}
+                      >
+                        {t('form.buttons.previous')}
+                      </Button>
+                      <SettingsPopover onClear={handleClear} />
+                    </div>
+                    {activeTab === "agreements" ? (
+                      <Button
+                        type="submit">
+                        {t('form.buttons.submit')}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        onClick={handleNext}
+                      >
+                        {t('form.buttons.next')}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </Tabs>
             </form>
           </Form>
-        </div>
+        </div >
       </div >
     </>
   )
