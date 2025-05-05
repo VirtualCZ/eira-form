@@ -3,8 +3,6 @@
   height: 100svh; /* Fallback for browsers that don't support svh */
   display: flex;
   flex-direction: column;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .form-content {
