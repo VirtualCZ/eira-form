@@ -56,6 +56,7 @@
         "claimChildTaxRelief": "Please select if you claim child tax relief.",
         "childrenInfoFullName": "Child's full name is required.",
         "childrenInfoBirthNumber": "Child's birth number is required.",
+        "educationCertificate": "Photo of education certificate is required.",
         "confirmationReadEmployeeDeclaration": "You must confirm reading the employee declaration.",
         "confirmationReadEmailAddressDeclaration": "You must confirm reading the email address declaration."
       },

@@ -13,7 +13,7 @@ export default function FormPhotoUpload<T extends FieldValues>({
   formControl,
   label
 }: FormPhotoUploadProps<T>) {
-  const { field } = useController({
+  const { field, fieldState } = useController({
     name: name,
     control: formControl
   });
@@ -44,14 +44,24 @@ export default function FormPhotoUpload<T extends FieldValues>({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm">{label}</label>
+      <label
+        className={`block text-sm ${fieldState.error ? 'text-destructive' : ''}`}
+        data-error={!!fieldState.error}
+      >
+        {label}
+      </label>
       <Input
         type="file"
         multiple
         accept="image/*"
         onChange={handleFileChange}
-        className="w-full"
+        className={fieldState.error ? "border-destructive" : ""}
       />
+      {fieldState.error && (
+        <p className="text-[0.8rem] font-medium text-destructive">
+          {fieldState.error.message}
+        </p>
+      )}
       <div className="flex gap-2 flex-wrap">
         {(field.value || []).map((item: any, index: number) => (
           <div key={index} className="relative">

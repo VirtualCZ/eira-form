@@ -56,6 +56,7 @@
         "claimChildTaxRelief": "Vyberte, zda uplatňujete daňové zvýhodnění na dítě.",
         "childrenInfoFullName": "Jméno dítěte je povinné.",
         "childrenInfoBirthNumber": "Rodné číslo dítěte je povinné.",
+        "educationCertificate" :"Foto vzdělacího certifikátu je povinné",
         "confirmationReadEmployeeDeclaration": "Musíte potvrdit přečtení prohlášení zaměstnance.",
         "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese."
       },
