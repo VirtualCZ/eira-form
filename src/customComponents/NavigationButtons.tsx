@@ -24,7 +24,7 @@ export default function NavigationButtons({
     return (
         <>
             {activeTab === "agreements" ? (
-                <div className="flex flex-col pt-2 mt-2 border-t">
+                <div className="flex flex-col px-2 pt-2 mt-2 border-t">
                     <p className="text-sm text-gray-600 text-center">
                         Poté co stisknete toto tlačítko, bude formulář odeslán do systému společnosti Axxoss.
                         Následně vám bude do e-mailu/sms zaslán odkaz na podepsání tohoto dotazníku.
@@ -47,7 +47,7 @@ export default function NavigationButtons({
                     </div>
                 </div>
             ) : (
-                <div className="flex justify-between pt-2 mt-2 border-t">
+                <div className="flex justify-between px-2 pt-2 mt-2 border-t">
                     <Button
                         type="button"
                         variant="outline"
