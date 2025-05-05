@@ -1233,7 +1233,7 @@ function App() {
                     </>
                   )}
                 </TabsContent>
-                <TabsContent value="documents">
+                <TabsContent className="flex flex-col overflow-scroll space-y-4 p-2" value="documents">
                   <div className="grid grid-cols-1 gap-4 mb-4">
                     {form.watch("foreigner") === "yes" && (
                       <>
