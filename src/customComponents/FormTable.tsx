@@ -5,6 +5,7 @@ import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { useRef, useState } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useTranslation } from 'react-i18next';  // Replace i18next import
+import { Trash2 } from "lucide-react";
 
 interface Column<T> {
   name: keyof T;
@@ -73,108 +74,123 @@ export function FormTable<T extends FieldValues>({
 
   return (
     <div className="flex flex-col gap-2">
-      {label && (
-        <label className={`text-sm ${errors && errors.length > 0 ? "text-destructive" : ""}`}>
-          {label}
-        </label>
-      )}
-      <table className="w-full border">
-        <thead>
-          <tr>
-            {columns.map((col) => (
-              <th key={String(col.name)} className="px-2 py-1">{col.label}</th>
+      <label className={`text-sm ${errors && errors.length > 0 ? "text-destructive" : ""}`}>
+        {label}
+      </label>
+      <div className="overflow-x-auto border rounded-md">
+        <table className="w-full">
+          <thead>
+            <tr>
+              {columns.map((col) => (
+                <th
+                  key={String(col.name)}
+                  className="px-2 py-1 text-left"  // Removed min-width
+                >
+                  {col.label}
+                </th>
+              ))}
+              <th className="sticky right-0 bg-white w-[40px]"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {fields.map((field, rowIdx) => (
+              <tr key={field.id}>
+                {columns.map((col) => (
+                  <td
+                    key={String(col.name)}
+                    className="px-1 py-1"  // Removed min-width
+                  >
+                    {col.type === "select" && col.options ? (
+                      <FormField
+                        name={`${name}.${rowIdx}.${String(col.name)}` as Path<T>}
+                        control={control}
+                        render={({ field: rhfField }) => (
+                          <Select value={rhfField.value} onValueChange={rhfField.onChange}>
+                            <SelectTrigger className="w-[100%]">
+                              <SelectValue placeholder={col.placeholder || col.label} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {col.options?.map(opt => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                    ) : (
+                      <FormField
+                        name={`${name}.${rowIdx}.${String(col.name)}` as Path<T>}
+                        control={control}
+                        render={({ field: rhfField }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input {...rhfField} placeholder={col.placeholder} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </td>
+                ))}
+                <td className="sticky right-0 bg-white w-[40px]">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="p-2 h-8 w-8"
+                    onClick={() => remove(rowIdx)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </td>
+              </tr>
             ))}
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {fields.map((field, rowIdx) => (
-            <tr key={field.id}>
+
+            <tr>
               {columns.map((col) => (
                 <td key={String(col.name)} className="px-1 py-1">
                   {col.type === "select" && col.options ? (
-                    <FormField
-                      name={`${name}.${rowIdx}.${String(col.name)}` as Path<T>}
-                      control={control}
-                      render={({ field: rhfField }) => (
-                        <Select value={rhfField.value} onValueChange={rhfField.onChange}>
-                          <SelectTrigger className="w-[100%]">
-                            <SelectValue placeholder={col.placeholder || col.label} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {col.options?.map(opt => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
+                    <Select
+                      value={newRow[col.name as string]}
+                      onValueChange={(value) => handleNewRowChange(col.name as string, value)}
+                    >
+                      <SelectTrigger className="w-[100%]">
+                        <SelectValue placeholder={col.placeholder || col.label} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {col.options.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   ) : (
-                    <FormField
-                      name={`${name}.${rowIdx}.${String(col.name)}` as Path<T>}
-                      control={control}
-                      render={({ field: rhfField }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input {...rhfField} placeholder={col.placeholder} />
-                          </FormControl>
-                        </FormItem>
-                      )}
+                    <Input
+                      placeholder={col.placeholder}
+                      value={newRow[col.name as string]}
+                      onChange={(e) => handleNewRowChange(col.name as string, e.target.value)}
                     />
                   )}
                 </td>
               ))}
-              <td>
+              <td className="sticky right-0 bg-white w-[40px]">
                 <Button
                   type="button"
                   variant="destructive"
                   size="sm"
-                  onClick={() => remove(rowIdx)}
+                  className="p-2 h-8 w-8"
+                  disabled
                 >
-                  Remove
+                  <Trash2 className="w-4 h-4" />
                 </Button>
               </td>
             </tr>
-          ))}
-
-          <tr>
-            {columns.map((col) => (
-              <td key={String(col.name)} className="px-1 py-1">
-                {col.type === "select" && col.options ? (
-                  <Select
-                    value={newRow[col.name as string]}
-                    onValueChange={(value) => handleNewRowChange(col.name as string, value)}
-                  >
-                    <SelectTrigger className="w-[100%]">
-                      <SelectValue placeholder={col.placeholder || col.label} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {col.options.map(opt => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    placeholder={col.placeholder}
-                    value={newRow[col.name as string]}
-                    onChange={(e) => handleNewRowChange(col.name as string, e.target.value)}
-                  />
-                )}
-              </td>
-            ))}
-            <td>
-              <Button type="button" variant="destructive" size="sm" disabled>
-                Remove
-              </Button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
 
       {errors && errors.length > 0 && (
         <div className="text-sm text-destructive">
