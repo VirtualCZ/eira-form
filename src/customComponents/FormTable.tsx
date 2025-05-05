@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useTranslation } from 'react-i18next';  // Replace i18next import
 import { Trash2 } from "lucide-react";
+import { FormData } from "@/schemas/formSchema";
 
 interface Column<T> {
   name: keyof T;
@@ -16,23 +17,23 @@ interface Column<T> {
   options?: { value: string; label: string }[];
 }
 
-interface FormTableProps<T extends FieldValues> {
-  name: ArrayPath<T>;
-  formControl: Control<T>; // Changed from 'control'
+interface FormTableProps {
+  name: ArrayPath<FormData>;
+  formControl: Control<FormData>; // Changed from 'control'
   columns: Column<any>[];
   errors?: any[];
   label?: string;
   tableError?: string;
 }
 
-export function FormTable<T extends FieldValues>({
+export function FormTable({
   name,
   formControl: control, // Destructure with alias
   columns,
   errors,
   label,
   tableError,
-}: FormTableProps<T>) {
+}: FormTableProps) {
   const { t } = useTranslation(); // Add this line
   const { fields, append, remove } = useFieldArray({ control, name });
 
@@ -102,10 +103,10 @@ export function FormTable<T extends FieldValues>({
                   >
                     {col.type === "select" && col.options ? (
                       <FormField
-                        name={`${name}.${rowIdx}.${String(col.name)}` as Path<T>}
+                        name={`${name}.${rowIdx}.${String(col.name)}` as Path<FormData>}
                         control={control}
                         render={({ field: rhfField }) => (
-                          <Select value={rhfField.value} onValueChange={rhfField.onChange}>
+                          <Select value={String(rhfField.value)} onValueChange={rhfField.onChange}>
                             <SelectTrigger className="w-[100%]">
                               <SelectValue placeholder={col.placeholder || col.label} />
                             </SelectTrigger>
@@ -121,12 +122,12 @@ export function FormTable<T extends FieldValues>({
                       />
                     ) : (
                       <FormField
-                        name={`${name}.${rowIdx}.${String(col.name)}` as Path<T>}
+                        name={`${name}.${rowIdx}.${String(col.name)}` as Path<FormData>}
                         control={control}
                         render={({ field: rhfField }) => (
                           <FormItem>
                             <FormControl>
-                              <Input {...rhfField} placeholder={col.placeholder} />
+                              <Input {...rhfField} value={String(rhfField.value)} placeholder={col.placeholder} />
                             </FormControl>
                           </FormItem>
                         )}

@@ -1,28 +1,29 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Control, FieldPath, FieldValues } from "react-hook-form";
+import { FormData } from "@/schemas/formSchema";
+import { Control, FieldPath } from "react-hook-form";
 
-interface FormInputProps<T extends FieldValues> {
-    name: FieldPath<T>,
+interface FormInputProps {
+    name: FieldPath<FormData>,
     formLabel: string,
     formPlaceholder?: string,
     formMessage?: boolean,
-    formControl: Control<T>,
+    formControl: Control<FormData>,
     formItemClass?: string,
     formFieldClass?: string,
     inputType?: React.HTMLInputTypeAttribute
 }
 
-const FormInput = <T extends FieldValues>({
-    name, 
-    formLabel, 
-    formPlaceholder = "", 
-    formMessage = true, 
+const FormInput = ({
+    name,
+    formLabel,
+    formPlaceholder = "",
+    formMessage = true,
     formControl,
     formItemClass,
     formFieldClass,
     inputType = "text"
-}: FormInputProps<T>) => {
+}: FormInputProps) => {
     return (
         <FormField
             control={formControl}
@@ -38,16 +39,19 @@ const FormInput = <T extends FieldValues>({
                             placeholder={formPlaceholder}
                             type={inputType}
                             {...field}
-                            onChange={e => {
+                            onChange={(e) => {
+                                const value = e.target.value;
                                 if (inputType === "number") {
-                                    const value = e.target.value;
                                     field.onChange(value === "" ? undefined : Number(value));
                                 } else {
-                                    field.onChange(e);
+                                    field.onChange(value);
                                 }
                             }}
-                            value={inputType === "number" && field.value === undefined ? "" : field.value}
-                        />
+                            value={
+                                typeof field.value === "string" || typeof field.value === "number"
+                                    ? field.value
+                                    : ""
+                            } />
                     </FormControl>
                     {formMessage ? <FormMessage /> : null}
                 </FormItem>
