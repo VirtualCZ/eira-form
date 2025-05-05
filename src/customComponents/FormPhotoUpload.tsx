@@ -49,8 +49,8 @@ export default function FormPhotoUpload<T extends FieldValues>({
         type="file"
         multiple
         accept="image/*"
-        capture="environment"
         onChange={handleFileChange}
+        className="w-full"
       />
       <div className="flex gap-2 flex-wrap">
         {(field.value || []).map((item: any, index: number) => (
