@@ -2,19 +2,22 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import SettingsPopover from './SettingsPopover';
 
+interface NavigationButtonsProps {
+    activeTab: string
+    handlePrevious: () => void
+    handleNext: () => void
+    handleClear: () => void
+    onExportJSON: () => void
+    onImportJSON: (file: File) => void
+}
 export default function NavigationButtons({
     activeTab,
     handlePrevious,
     handleNext,
     handleClear,
     onExportJSON,
-}: {
-    activeTab: string
-    handlePrevious: () => void
-    handleNext: () => void
-    handleClear: () => void
-    onExportJSON: () => void
-}) {
+    onImportJSON
+}: NavigationButtonsProps) {
     const { t } = useTranslation();
     const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment",
         "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren",
@@ -41,6 +44,7 @@ export default function NavigationButtons({
                             <SettingsPopover
                                 onClear={handleClear}
                                 onExportJSON={onExportJSON}
+                                onImportJSON={onImportJSON}
                             />
                             <Button type="submit">{t('form.buttons.submit')}</Button>
                         </div>
@@ -58,8 +62,9 @@ export default function NavigationButtons({
                     </Button>
                     <div className="flex gap-2">
                         <SettingsPopover
-                            onExportJSON={onExportJSON} 
-                            onClear={handleClear} 
+                            onClear={handleClear}
+                            onExportJSON={onExportJSON}
+                            onImportJSON={onImportJSON}
                         />
                         <Button
                             type="button"

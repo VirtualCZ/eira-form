@@ -264,7 +264,8 @@
       "previous": "Previous",
       "submit": "Submit",
       "clearForm": "Clear form",
-      "exportJSON": "Export form JSON"
+      "exportJSON": "Export form JSON",
+      "importJSON": "Import form JSON"
     }
   }
 }

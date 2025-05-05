@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import './App.css'
@@ -11,15 +11,6 @@ import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
 import { useRef } from 'react'
 import { cn } from "./lib/utils"
 import { useTranslation } from 'react-i18next'
-import FormInput from './customComponents/FormInput'
-import FormDate from './customComponents/FormDate'
-import FormRadio from './customComponents/FormRadio'
-import FormSelect from './customComponents/FormSelect'
-import FormDateFromTo from './customComponents/FormDateFromTo'
-import { Textarea } from './components/ui/textarea'
-import FormCheckbox from './customComponents/FormCheckbox'
-import { FormTable } from './customComponents/FormTable'
-import FormPhotoUpload from './customComponents/FormPhotoUpload'
 import NavigationButtons from './customComponents/NavigationButtons'
 import { PersonalInformationTab } from './tabs/PersonalInformationTab'
 import { FormData, getFormSchema } from './schemas/formSchema'
@@ -57,7 +48,7 @@ function App() {
   ];
 
   const rawDefaultValues = JSON.parse(localStorage.getItem('formData') || '{}');
-  const defaultValues = reviveDates(rawDefaultValues, dateFields);
+  const defaultValues = useMemo(() => reviveDates(rawDefaultValues, dateFields), []); // Add useMemo
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -66,6 +57,7 @@ function App() {
   });
 
   function reviveDates(obj: any, dateKeys: string[]): any {
+    console.log("revived dates")
     if (!obj || typeof obj !== 'object') return obj;
     for (const key in obj) {
       if (!obj.hasOwnProperty(key)) continue;
@@ -140,6 +132,22 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
+  const handleImportJSON = (file: File) => {
+    console.log("ran handleImportJSON")
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string)
+        const revivedData = reviveDates(data, dateFields)
+        form.reset(revivedData)
+        setFormKey(prev => prev + 1);
+      } catch (error) {
+        alert(t('form.errors.invalidJSON'))
+      }
+    }
+    reader.readAsText(file)
+  }
+
   async function onSubmit(values: FormData) {
     try {
 
@@ -169,8 +177,7 @@ function App() {
   const handleClear = () => {
     localStorage.removeItem('formData');
     form.reset({});
-    setActiveTab("personalInformation");
-    setFormKey(prev => prev + 1); // Force remount
+    setFormKey(prev => prev + 1);
   };
 
   const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment", "educationAndLanguages", "healthAndSocialInfo", "legalInfo", "familyAndChildren", "documents", "agreements"]
@@ -378,6 +385,7 @@ function App() {
                   handleNext={handleNext}
                   handleClear={handleClear}
                   onExportJSON={() => exportJSON(form.getValues())}
+                  onImportJSON={handleImportJSON}
                 />
               </Tabs>
             </form>

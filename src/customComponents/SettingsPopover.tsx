@@ -3,12 +3,19 @@ import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Settings } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
+import { Input } from '@/components/ui/input';
+import { useRef } from 'react';
 
-export default function SettingsPopover({ onClear, onExportJSON }: { 
+export default function SettingsPopover({ onClear, onExportJSON, onImportJSON }: {
   onClear: () => void,
-  onExportJSON: () => void 
+  onExportJSON: () => void
+  onImportJSON: (file: File) => void
 }) {
   const { t } = useTranslation();
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const handleImportClick = () => {
+    fileInputRef.current?.click()
+  }
 
   return (
     <Popover>
@@ -20,11 +27,32 @@ export default function SettingsPopover({ onClear, onExportJSON }: {
       <PopoverContent className="w-48 p-2 flex flex-col gap-2">
         <Button
           variant="destructive"
-          onClick={onClear}
+          onClick={() => {
+            onClear()
+            onClear()
+          }}
           className="w-full"
         >
           {t('form.buttons.clearForm')}
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleImportClick}
+        >
+          {t('form.buttons.importJSON')}
+        </Button>
+        <Input
+          type="file"
+          ref={fileInputRef}
+          accept=".json"
+          className="hidden"
+          onChange={(e) => {
+            if (e.target.files?.[0] && onImportJSON) {
+              onImportJSON(e.target.files[0])
+            }
+          }}
+        />
         <Button
           variant="outline"
           onClick={onExportJSON}

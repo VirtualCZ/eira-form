@@ -264,7 +264,8 @@
       "previous": "Předchozí",
       "submit": "Odeslat",
       "clearForm": "Vyčistit formulář",
-      "exportJSON": "Exportovat jako JSON"
+      "exportJSON": "Exportovat jako JSON",
+      "importJSON": "Importovat data JSON"
     }
   }
 }
