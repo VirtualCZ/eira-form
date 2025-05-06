@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useFieldArray, Control, FieldValues, ArrayPath, Path } from "react-hook-form";
+import { useFieldArray, Control, ArrayPath, Path } from "react-hook-form";
 import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { useRef, useState } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
