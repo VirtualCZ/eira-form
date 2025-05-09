@@ -1,15 +1,15 @@
-import FormDateFromTo from "@/customComponents/FormDateFromTo";
-import FormInput from "@/customComponents/FormInput";
-import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import FormDateFromTo from "@/customComponents/FormDateFromTo"
+import FormInput from "@/customComponents/FormInput"
+import { FormData } from "@/schemas/formSchema"
+import { Control } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 interface ForeignersTabProps {
     control: Control<FormData>
 }
 
 export const ForeignersTab = ({ control }: ForeignersTabProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
 
     return (
         <>
@@ -43,5 +43,5 @@ export const ForeignersTab = ({ control }: ForeignersTabProps) => {
                 formControl={control}
             />
         </>
-    );
-};
+    )
+}

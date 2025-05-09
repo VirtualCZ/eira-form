@@ -51,12 +51,14 @@ export const PersonalInformationTab = ({
                         formLabel={t('form.labels.firstName')}
                         formControl={control}
                         formMessage={false}
-                        formItemClass='flex-1'
+                        formItemClass="flex-1"
                     />
                 </div>
-                <div className="flex gap-2">
-                    <FormMessage>{errors.honorific?.message} {errors.firstName?.message}</FormMessage>
-                </div>
+                {(errors.honorific?.message || errors.firstName?.message) && (
+                    <FormMessage>
+                        {errors.honorific?.message} {errors.firstName?.message}
+                    </FormMessage>
+                )}
             </div>
             <FormInput
                 name="lastName"

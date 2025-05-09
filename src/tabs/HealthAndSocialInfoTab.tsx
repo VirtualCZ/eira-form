@@ -1,17 +1,17 @@
-import FormDate from "@/customComponents/FormDate";
-import FormInput from "@/customComponents/FormInput";
-import FormRadio from "@/customComponents/FormRadio";
-import FormSelect from "@/customComponents/FormSelect";
-import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import FormDate from "@/customComponents/FormDate"
+import FormInput from "@/customComponents/FormInput"
+import FormRadio from "@/customComponents/FormRadio"
+import FormSelect from "@/customComponents/FormSelect"
+import { FormData } from "@/schemas/formSchema"
+import { Control } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 interface HealthAndSocialInfoTabProps {
     control: Control<FormData>
 }
 
 export const HealthAndSocialInfoTab = ({ control }: HealthAndSocialInfoTabProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
 
     return (
         <>
@@ -67,5 +67,5 @@ export const HealthAndSocialInfoTab = ({ control }: HealthAndSocialInfoTabProps)
                 formControl={control}
             />
         </>
-    );
-};
+    )
+}

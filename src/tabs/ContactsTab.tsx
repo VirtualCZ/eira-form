@@ -16,11 +16,13 @@ export const ContactsTab = ({ control }: ContactsTabProps) => {
                 name="email"
                 formLabel={t('form.labels.email')}
                 formControl={control}
+                inputType="email"
             />
             <FormInput
                 name="phone"
                 formLabel={t('form.labels.phone')}
                 formControl={control}
+                inputType="tel"
             />
             <FormInput
                 name="dataBoxId"

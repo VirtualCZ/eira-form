@@ -1,16 +1,16 @@
-import FormDateFromTo from "@/customComponents/FormDateFromTo";
-import FormInput from "@/customComponents/FormInput";
-import FormRadio from "@/customComponents/FormRadio";
-import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import FormDateFromTo from "@/customComponents/FormDateFromTo"
+import FormInput from "@/customComponents/FormInput"
+import FormRadio from "@/customComponents/FormRadio"
+import { FormData } from "@/schemas/formSchema"
+import { Control } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 interface EmploymentTabProps {
     control: Control<FormData>
 }
 
 export const EmploymentTab = ({ control }: EmploymentTabProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
 
     return (
         <>
@@ -52,5 +52,5 @@ export const EmploymentTab = ({ control }: EmploymentTabProps) => {
                 formItemClass="flex-1"
             />
         </>
-    );
-};
+    )
+}

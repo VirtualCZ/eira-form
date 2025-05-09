@@ -1,7 +1,7 @@
 import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
 import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 interface AddressesTabProps {
@@ -10,6 +10,10 @@ interface AddressesTabProps {
 
 export const AddressesTab = ({ control }: AddressesTabProps) => {
     const { t } = useTranslation();
+    const contactSameAsPermanentAddress = useWatch({
+        control,
+        name: "contactSameAsPermanentAddress",
+    });
 
     return (
         <>
@@ -55,7 +59,7 @@ export const AddressesTab = ({ control }: AddressesTabProps) => {
                     { value: "no", label: t('form.options.yesNo.no') },
                 ]}
             />
-            {control._formValues.contactSameAsPermanentAddress === "no" && (
+            {contactSameAsPermanentAddress === "no" && (
                 <>
                     <h1>{t('form.headlines.contactAddress')}</h1>
                     <FormInput

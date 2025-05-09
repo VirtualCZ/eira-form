@@ -1,16 +1,16 @@
-import FormInput from "@/customComponents/FormInput";
-import FormSelect from "@/customComponents/FormSelect";
-import { FormTable } from "@/customComponents/FormTable";
-import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import FormInput from "@/customComponents/FormInput"
+import FormSelect from "@/customComponents/FormSelect"
+import { FormTable } from "@/customComponents/FormTable"
+import { FormData } from "@/schemas/formSchema"
+import { Control } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 interface EducationAndLanguagesTabProps {
     control: Control<FormData>
 }
 
 export const EducationAndLanguagesTab = ({ control }: EducationAndLanguagesTabProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
 
     return (
         <>
@@ -80,7 +80,7 @@ export const EducationAndLanguagesTab = ({ control }: EducationAndLanguagesTabPr
                     {
                         name: "languageExamType",
                         label: t('form.labels.languageExamType'),
-                        placeholder: "",
+                        placeholder: "", 
                         errorPath: "languageExamType",
                         type: "text"
                     },
@@ -88,5 +88,5 @@ export const EducationAndLanguagesTab = ({ control }: EducationAndLanguagesTabPr
                 errors={Array.isArray(control._formState.errors.languageSkills) ? control._formState.errors.languageSkills : undefined}
             />
         </>
-    );
-};
+    )
+}

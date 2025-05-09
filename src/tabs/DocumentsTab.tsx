@@ -1,18 +1,22 @@
-import FormPhotoUpload from "@/customComponents/FormPhotoUpload";
-import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import FormPhotoUpload from "@/customComponents/FormPhotoUpload"
+import { FormData } from "@/schemas/formSchema"
+import { Control, useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 interface DocumentsTabProps {
     control: Control<FormData>
 }
 
 export const DocumentsTab = ({ control }: DocumentsTabProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
+    const isForeigner = useWatch({
+        control,
+        name: "foreigner",
+    });
 
     return (
         <div className="grid grid-cols-1 gap-4 mb-4">
-            {control._formValues.foreigner === "yes" && (
+            {isForeigner === "yes" && (
                 <>
                     <FormPhotoUpload
                         name="travelDocumentCopy"
@@ -42,5 +46,5 @@ export const DocumentsTab = ({ control }: DocumentsTabProps) => {
                 formControl={control}
             />
         </div>
-    );
-};
+    )
+}

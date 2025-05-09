@@ -1,15 +1,15 @@
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { Textarea } from "@/components/ui/textarea";
-import { FormData } from "@/schemas/formSchema";
-import FormCheckbox from "@/customComponents/FormCheckbox";
+import { Control } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { Textarea } from "@/components/ui/textarea"
+import { FormData } from "@/schemas/formSchema"
+import FormCheckbox from "@/customComponents/FormCheckbox"
 
 interface AgreementsTabProps {
     control: Control<FormData>
 }
 
 export const AgreementsTab = ({ control }: AgreementsTabProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
 
     return (
         <>
@@ -45,5 +45,5 @@ v případě změny mé soukromé e-mailové adresy se zavazuji tuto změnu zam�
                 formControl={control}
             />
         </>
-    );
-};
+    )
+}

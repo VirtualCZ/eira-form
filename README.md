@@ -1,11 +1,32 @@
-# React + TypeScript + Vite
+# 🚀 Eira Form - Modern React Form Solution
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A feature-rich form management system built with React, TypeScript, and modern web technologies. Handles complex form scenarios with ease!
 
-Currently, two official plugins are available:
+## ✨ Key Features
+- 📋 Multi-step form wizard with tab navigation
+- 🌐 Internationalization (i18n) support (English/Čeština)
+- 🔒 Type-safe form validation with Zod
+- 🎛 Complex form components (Date pickers, File uploads, Dynamic tables)
+- 📱 Responsive UI built with Radix UI and Tailwind CSS
+- 🛠 Form state management with React Hook Form
+- 🖼 Image upload with preview functionality
+- 📅 Date range picker with dependency management
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠 Tech Stack
+- **Frontend**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **UI Library**: Radix UI + Tailwind CSS
+- **Form Management**: React Hook Form + Zod
+- **Internationalization**: i18next
+- **Date Handling**: date-fns + react-day-picker
+
+## ⚙️ Installation
+```bash
+git clone https://github.com/yourusername/eira-form.git
+cd eira-form
+npm install
+npm run dev
+```
 
 ## Expanding the ESLint configuration
 
@@ -51,4 +72,24 @@ export default tseslint.config({
     ...reactDom.configs.recommended.rules,
   },
 })
+```
+## 🧩 Key Components
+```
+src/
+├─ customComponents/
+│  ├─ FormInput.tsx       # Smart input with type handling
+│  ├─ FormDate.tsx        # Date picker with validation
+│  ├─ FormTable.tsx       # Dynamic table with CRUD operations
+│  ├─ FormPhotoUpload.tsx # Image upload with preview
+│  └─ FormDateFromTo.tsx  # Connected date range picker
+├─ components/ui/         # Radix-based UI primitives
+└─ i18n/                  # Translation configurations
+```
+
+## 🔧 Scripts
+```
+npm run dev     # Start development server
+npm run build   # Create production build
+npm run lint    # Run ESLint
+npm run preview # Preview production build
 ```

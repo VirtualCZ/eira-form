@@ -1,15 +1,15 @@
-import FormRadio from "@/customComponents/FormRadio";
-import { FormTable } from "@/customComponents/FormTable";
-import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import FormRadio from "@/customComponents/FormRadio"
+import { FormTable } from "@/customComponents/FormTable"
+import { FormData } from "@/schemas/formSchema"
+import { Control } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 interface FamilyAndChildrenTabProps {
     control: Control<FormData>
 }
 
 export const FamilyAndChildrenTab = ({ control }: FamilyAndChildrenTabProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation()
 
     return (
         <>
@@ -43,5 +43,5 @@ export const FamilyAndChildrenTab = ({ control }: FamilyAndChildrenTabProps) => 
                 errors={Array.isArray(control._formState.errors.childrenInfo) ? control._formState.errors.childrenInfo : undefined}
             />
         </>
-    );
-};
+    )
+}

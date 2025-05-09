@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Control } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import FormInput from "./FormInput";
-import { FormData } from "@/schemas/formSchema";
+import { Button } from "@/components/ui/button"
+import { Control } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import FormInput from "./FormInput"
+import { FormData } from "@/schemas/formSchema"
 import {
   Dialog,
   DialogContent,
@@ -10,12 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useFormContext } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form'
 
 interface CodeValidationPopoverProps {
-    control: Control<FormData>;
-    showCodePopover: boolean;
-    setShowCodePopover: (show: boolean) => void;
+    control: Control<FormData>
+    showCodePopover: boolean
+    setShowCodePopover: (show: boolean) => void
 }
 
 export const CodeValidationPopover = ({
@@ -23,8 +23,8 @@ export const CodeValidationPopover = ({
     setShowCodePopover,
     control
 }: CodeValidationPopoverProps) => {
-    const { t } = useTranslation();
-    const { trigger } = useFormContext();
+    const { t } = useTranslation()
+    const { trigger } = useFormContext()
     
     return (
         <Dialog open={showCodePopover} onOpenChange={setShowCodePopover}>
@@ -47,7 +47,7 @@ export const CodeValidationPopover = ({
                         className="w-full"
                         onClick={() => {
                             trigger('givenCode').then((isValid: boolean) => {
-                                if (isValid) setShowCodePopover(false);
+                                if (isValid) setShowCodePopover(false)
                             })
                         }}
                     >
@@ -56,5 +56,5 @@ export const CodeValidationPopover = ({
                 </div>
             </DialogContent>
         </Dialog>
-    );
-};
+    )
+}
