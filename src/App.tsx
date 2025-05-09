@@ -21,6 +21,7 @@ import { FamilyAndChildrenTab } from './tabs/FamilyAndChildrenTab'
 import { DocumentsTab } from './tabs/DocumentsTab'
 import { AgreementsTab } from './tabs/AgreementsTab'
 import { CodeValidationPopover } from './customComponents/CodeValidationPopover'
+import { Dialog, DialogTitle, DialogContent, DialogDescription, DialogHeader } from './components/ui/dialog'
 
 function App() {
   const { t } = useTranslation()
@@ -30,6 +31,8 @@ function App() {
   const [canScroll, setCanScroll] = useState({ left: false, right: true })
   const [formKey, setFormKey] = useState(0)
   const [showCodePopover, setShowCodePopover] = useState(false)
+  const [showResultModal, setShowResultModal] = useState(false)
+  const [resultModalContent, setResultModalContent] = useState<{ success: boolean, message: string }>({ success: false, message: "" })
   const tabsListRef = useRef<HTMLDivElement>(null)
 
   const dateFields = useMemo(() => [
@@ -157,26 +160,36 @@ function App() {
         body: JSON.stringify(values)
       });
 
-        // const response = await fetch("/rest/sm/gas/v1/createHrRequest", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     "Authorization": "Basic " + btoa(`${import.meta.env.VITE_GAS_NAME}:${import.meta.env.VITE_GAS_PASS}`)
-        //   },
-        //   body: JSON.stringify(values)
-        // })
+      // const response = await fetch("/rest/sm/gas/v1/createHrRequest", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     "Authorization": "Basic " + btoa(`${import.meta.env.VITE_GAS_NAME}:${import.meta.env.VITE_GAS_PASS}`)
+      //   },
+      //   body: JSON.stringify(values)
+      // })
 
       if (!response.ok) {
         throw new Error(`Server responded with status ${response.status}`)
       }
 
       handleClear()
+      handleClear()
       const result = await response.json()
       console.log("Submission successful:", result)
       // Optionally, show a success message to the user here
+      setResultModalContent({
+        success: true,
+        message: t(`form.modal.submitSuccessMessage`)
+      })
+      setShowResultModal(true)
     } catch (error) {
       console.error("Submission failed:", error)
-      // Optionally, show an error message to the user here
+      setResultModalContent({
+        success: false,
+        message: t(`form.modal.submitErrorMessage`)
+      })
+      setShowResultModal(true)
     }
   }
 
@@ -329,6 +342,18 @@ function App() {
                   showCodePopover={showCodePopover}
                   setShowCodePopover={setShowCodePopover}
                 />
+                <Dialog open={showResultModal} onOpenChange={setShowResultModal}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {resultModalContent.success ? t(`form.modal.success`) : t(`form.modal.error`)}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {resultModalContent.message}
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
                 <div className="relative flex items-center gap-2 mb-2">
                   <button
                     type="button"

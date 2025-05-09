@@ -249,7 +249,11 @@
       }
     },
     "modal": {
-      "givenCodeDescription": "Please enter a provided code."
+      "givenCodeDescription": "Please enter a provided code.",
+      "success": "Success",
+      "submitSuccessMessage": "Submission successful!",
+      "error": "Error",
+      "submitErrorMessage": "Submission failed. Please try again."
     },
     "pickDate": "Pick a date",
     "tabs": {

@@ -249,7 +249,11 @@
       }
     },
     "modal": {
-      "givenCodeDescription": "Prosím zadejte kód."
+      "givenCodeDescription": "Prosím zadejte kód.",
+      "success": "Úspěch",
+      "submitSuccessMessage": "Požadavek úspěšně odeslán!",
+      "error": "Chyba",
+      "submitErrorMessage": "Chyba při odesílání požadavku.."
     },
     "pickDate": "Vybrat datum",
     "tabs": {
