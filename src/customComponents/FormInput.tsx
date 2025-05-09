@@ -37,11 +37,14 @@ const FormInput = ({
                         <Input
                             className={formFieldClass}
                             placeholder={formPlaceholder}
-                            type={inputType}
+                            type={inputType === "number" ? "text" : inputType}
                             {...field}
                             onChange={(e) => {
-                                const value = e.target.value;
+                                let value = e.target.value;
+
                                 if (inputType === "number") {
+                                    // Remove all characters except digits
+                                    value = value.replace(/[^\d]/g, "");
                                     field.onChange(value === "" ? undefined : Number(value));
                                 } else {
                                     field.onChange(value);
@@ -51,7 +54,8 @@ const FormInput = ({
                                 typeof field.value === "string" || typeof field.value === "number"
                                     ? field.value
                                     : ""
-                            } />
+                            }
+                        />
                     </FormControl>
                     {formMessage ? <FormMessage /> : null}
                 </FormItem>
