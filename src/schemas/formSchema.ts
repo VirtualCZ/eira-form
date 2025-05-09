@@ -1,14 +1,10 @@
 import { z } from "zod";
 
 export const getFormSchema = (t: (key: string) => string) => z.object({
-    givenCode: z.string({
+    givenCode: z.number({
         required_error: t('form.validation.required.givenCode')
-    })
-        .length(5, {
-            message: t('form.validation.format.givenCodeLength')
-        })
-        .regex(/^[a-zA-Z0-9]{5}$/, {
-            message: t('form.validation.format.givenCode')
+    }).refine(val => val >= 10000 && val <= 99999, {
+        message: t('form.validation.format.givenCodeLength')
     }),
     titleBeforeName: z.string().optional(),
     titleAfterName: z.string().optional(),

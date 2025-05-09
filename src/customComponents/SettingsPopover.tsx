@@ -69,6 +69,7 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, f
           formLabel={t('form.labels.givenCode')}
           formControl={formControl}
           formPlaceholder="XXXXX"
+          inputType='number'
         />
         <LanguageSwitcher />
       </PopoverContent>

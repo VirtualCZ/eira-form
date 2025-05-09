@@ -62,8 +62,7 @@
         "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese."
       },
       "format": {
-        "givenCode": "Kód musí musí obsahovat jen písmena/číslice.",
-        "givenCodeLength": "Kód musí mít 5 písmen/číslic.",
+        "givenCodeLength": "Kód musí mít 5 číslic.",
         "firstName": "Jméno musí mít alespoň 2 znaky.",
         "lastName": "Příjmení musí mít alespoň 2 znaky.",
         "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",

@@ -62,8 +62,7 @@
         "confirmationReadEmailAddressDeclaration": "You must confirm reading the email address declaration."
       },
       "format": {
-        "givenCode": "Code must be alphanumerical.",
-        "givenCodeLength": "Code must be 5 letters long.",
+        "givenCodeLength": "Code must be 5 numbers long.",
         "firstName": "First name must be at least 2 characters.",
         "lastName": "Surname must be at least 2 characters.",
         "birthSurname": "Birth surname must be at least 2 characters.",

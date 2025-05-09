@@ -41,6 +41,7 @@ export const CodeValidationPopover = ({
                         formControl={control}
                         formLabel={t('form.labels.givenCode')}
                         formPlaceholder="XXXXX"
+                        inputType="number"
                     />
                     <Button
                         className="w-full"
