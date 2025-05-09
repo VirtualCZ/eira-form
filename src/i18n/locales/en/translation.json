@@ -5,6 +5,7 @@
     },
     "validation": {
       "required": {
+        "companyCode": "Please enter a code.",
         "honorary": "Please select a salutation.",
         "firstName": "Please enter your first name.",
         "lastName": "Please enter your surname.",

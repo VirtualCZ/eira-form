@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import FormInput from "./FormInput";
 import { FormData } from "@/schemas/formSchema";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog"
 import { useFormContext } from 'react-hook-form';
 

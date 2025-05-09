@@ -1,12 +1,14 @@
 import { z } from "zod";
 
 export const getFormSchema = (t: (key: string) => string) => z.object({
-    companyCode: z.string()
+    companyCode: z.string({
+        required_error: t('form.validation.required.companyCode')
+    })
         .length(5, {
-            message: t('form.format.companyCodeLength')
+            message: t('form.validation.format.companyCodeLength')
         })
-        .regex(/^[A-Z0-9]{5}$/, {
-            message: t('form.format.companyCode')
+        .regex(/^[a-zA-Z0-9]{5}$/, {
+            message: t('form.validation.format.companyCode')
     }),
     titleBeforeName: z.string().optional(),
     titleAfterName: z.string().optional(),

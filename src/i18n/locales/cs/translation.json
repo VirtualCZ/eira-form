@@ -5,6 +5,7 @@
     },
     "validation": {
       "required": {
+        "companyCode": "Prosím zadejte kód.",
         "honorary": "Prosím vyberte oslovení.",
         "firstName": "Prosím zadejte jméno.",
         "lastName": "Prosím zadejte příjmení.",
