@@ -1,3 +1,4 @@
+import FormDate from "@/customComponents/FormDate";
 import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
 import { Control } from "react-hook-form";
@@ -42,6 +43,13 @@ export const LegalInfoTab = ({ control }: LegalInfoTabProps) => {
                 <FormInput
                     name="wageDeductionDetails"
                     formLabel={t('form.labels.wageDeductionDetails')}
+                    formControl={control}
+                />
+            )}
+            {control._formValues.hasWageDeductions === "yes" && (
+                <FormDate
+                    name="wageDeductionDate"
+                    formLabel={t('form.labels.wageDeductionDate')}
                     formControl={control}
                 />
             )}

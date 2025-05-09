@@ -245,6 +245,7 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     claimChildTaxRelief: z.enum(["yes", "no"], {
         required_error: t('form.validation.required.claimChildTaxRelief'),
     }),
+    wageDeductionDate: z.date().optional(),
     childrenInfo: z.array(z.object({
         childrenInfoFullName: z.string({
             required_error: t('form.validation.required.childrenInfoFullName'),

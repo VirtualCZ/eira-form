@@ -273,7 +273,7 @@ function App() {
       "hasDisability", "disabilityType", "disabilityDecisionDate", "receivesPension", "pensionType", "pensionDecisionDate"
     ],
     legalInfo: [
-      "activityBan", "bannedActivity", "hasWageDeductions", "wageDeductionDetails"
+      "activityBan", "bannedActivity", "hasWageDeductions", "wageDeductionDetails", "wageDeductionDate"
     ],
     familyAndChildren: [
       "claimChildTaxRelief", "childrenInfo"
@@ -300,12 +300,11 @@ function App() {
   useEffect(() => {
     const storedData = localStorage.getItem('formData');
     const parsedData = storedData ? JSON.parse(storedData) : {};
-    if (!storedData || storedData === '{}' || !parsedData.companyCode) {
+    if (!storedData || storedData === '{}' || !parsedData.givenCode) {
       setShowCodePopover(true);
     }
   }, []);
 
-  // Add to return statement
   return (
     <>
 
