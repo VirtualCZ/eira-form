@@ -1,4 +1,3 @@
-import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
 import { FormTable } from "@/customComponents/FormTable";
 import { FormData } from "@/schemas/formSchema";
@@ -14,45 +13,35 @@ export const FamilyAndChildrenTab = ({ control }: FamilyAndChildrenTabProps) => 
 
     return (
         <>
-            <FormInput
-                name="numberOfDependents"
-                formLabel={t('form.labels.numberOfDependents')}
+            <FormRadio
+                name="claimChildTaxRelief"
+                formLabel={t('form.labels.claimChildTaxRelief')}
                 formControl={control}
-                inputType="number"
+                options={[
+                    { value: "yes", label: t('form.options.yesNo.yes') },
+                    { value: "no", label: t('form.options.yesNo.no') },
+                ]}
             />
-            {control._formValues.numberOfDependents > 0 && (
-                <>
-                    <FormRadio
-                        name="claimChildTaxRelief"
-                        formLabel={t('form.labels.claimChildTaxRelief')}
-                        formControl={control}
-                        options={[
-                            { value: "yes", label: t('form.options.yesNo.yes') },
-                            { value: "no", label: t('form.options.yesNo.no') },
-                        ]}
-                    />
-                    <FormTable
-                        name="childrenInfo"
-                        label={t('form.headlines.childrenInfo')}
-                        formControl={control}
-                        columns={[
-                            {
-                                name: "childrenInfoFullName",
-                                label: t('form.labels.childrenInfoFullName'),
-                                placeholder: "",
-                                errorPath: "childrenInfoFullName"
-                            },
-                            {
-                                name: "childrenInfoBirthNumber",
-                                label: t('form.labels.childrenInfoBirthNumber'),
-                                placeholder: "",
-                                errorPath: "childrenInfoBirthNumber"
-                            }
-                        ]}
-                        errors={Array.isArray(control._formState.errors.childrenInfo) ? control._formState.errors.childrenInfo : undefined}
-                    />
-                </>
-            )}
+            <FormTable
+                name="childrenInfo"
+                label={t('form.headlines.childrenInfo')}
+                formControl={control}
+                columns={[
+                    {
+                        name: "childrenInfoFullName",
+                        label: t('form.labels.childrenInfoFullName'),
+                        placeholder: "",
+                        errorPath: "childrenInfoFullName"
+                    },
+                    {
+                        name: "childrenInfoBirthNumber",
+                        label: t('form.labels.childrenInfoBirthNumber'),
+                        placeholder: "",
+                        errorPath: "childrenInfoBirthNumber"
+                    }
+                ]}
+                errors={Array.isArray(control._formState.errors.childrenInfo) ? control._formState.errors.childrenInfo : undefined}
+            />
         </>
     );
 };

@@ -193,8 +193,7 @@
       },
       "sex": {
         "male": "Male",
-        "female": "Female",
-        "other": "Other"
+        "female": "Female"
       },
       "maritalStatus": {
         "single": "Single",

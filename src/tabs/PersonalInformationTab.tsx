@@ -21,7 +21,7 @@ export const PersonalInformationTab = ({
     return (
         <>
             <FormInput
-                name="firstName" 
+                name="titleBeforeName" 
                 formLabel={t('form.labels.titleBeforeName')}
                 formControl={control}
             />
@@ -80,7 +80,6 @@ export const PersonalInformationTab = ({
                 options={[
                     { value: "male", label: t('form.options.sex.male') },
                     { value: "female", label: t('form.options.sex.female') },
-                    { value: "other", label: t('form.options.sex.other') }
                 ]}
             />
             <FormInput

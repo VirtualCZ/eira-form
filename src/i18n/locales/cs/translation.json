@@ -193,8 +193,7 @@
       },
       "sex": {
         "male": "Muž",
-        "female": "Žena",
-        "other": "Jiné"
+        "female": "Žena"
       },
       "maritalStatus": {
         "single": "Svobodný/á",

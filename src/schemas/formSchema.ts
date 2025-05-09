@@ -22,7 +22,7 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     dateOfBirth: z.date({
         required_error: t('form.validation.required.dateOfBirth'),
     }),
-    sex: z.enum(["male", "female", "other"], {
+    sex: z.enum(["male", "female"], {
         required_error: t('form.validation.required.sex'),
     }),
     placeOfBirth: z.string({
