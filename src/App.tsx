@@ -148,15 +148,23 @@ function App() {
   async function onSubmit(values: FormData) {
     try {
 
-      //const response = await fetch("https://gas.eira.com/rest/sm/gas/v1/createHrRequest", {
-      const response = await fetch("http://localhost:8880/rest/sm/gas/v1/createHrRequest", {
+      const response = await fetch("/rest/sm/gas/v1/createHrRequest", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Basic " + btoa(`${import.meta.env.VITE_GAS_NAME}:${import.meta.env.VITE_GAS_PASS}`)
         },
         body: JSON.stringify(values)
-      })
+      });
+
+        // const response = await fetch("/rest/sm/gas/v1/createHrRequest", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "Authorization": "Basic " + btoa(`${import.meta.env.VITE_GAS_NAME}:${import.meta.env.VITE_GAS_PASS}`)
+        //   },
+        //   body: JSON.stringify(values)
+        // })
 
       if (!response.ok) {
         throw new Error(`Server responded with status ${response.status}`)
