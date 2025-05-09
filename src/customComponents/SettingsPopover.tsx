@@ -65,11 +65,10 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, f
           {t('form.buttons.exportJSON')}
         </Button>
         <FormInput
-          name="companyCode"
-          formLabel={t('form.labels.companyCode')}
+          name="givenCode"
+          formLabel={t('form.labels.givenCode')}
           formControl={formControl}
           formPlaceholder="XXXXX"
-          // className="mb-4"
         />
         <LanguageSwitcher />
       </PopoverContent>
