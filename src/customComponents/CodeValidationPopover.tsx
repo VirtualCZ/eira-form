@@ -4,10 +4,11 @@ import { useTranslation } from "react-i18next";
 import FormInput from "./FormInput";
 import { FormData } from "@/schemas/formSchema";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { useFormContext } from 'react-hook-form';
 
@@ -27,9 +28,12 @@ export const CodeValidationPopover = ({
     
     return (
         <Dialog open={showCodePopover} onOpenChange={setShowCodePopover}>
-            <DialogContent aria-description="Company code input modal" className="w-96 p-4">
+            <DialogContent className="w-96 p-4">
                 <DialogHeader>
                     <DialogTitle>{t('form.labels.companyCode')}</DialogTitle>
+                    <DialogDescription>
+                        {t('form.modal.companyCodeDescription')}
+                    </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                     <FormInput

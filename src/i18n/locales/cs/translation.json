@@ -248,6 +248,9 @@
         "native": "Rodilý mluvčí"
       }
     },
+    "modal": {
+      "companyCodeDescription": "Prosím zadejte kód."
+    },
     "pickDate": "Vybrat datum",
     "tabs": {
       "personalInformation": "Osobní údaje",

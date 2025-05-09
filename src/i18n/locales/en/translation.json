@@ -248,6 +248,9 @@
         "native": "Native speaker"
       }
     },
+    "modal": {
+      "companyCodeDescription": "Please enter a provided code."
+    },
     "pickDate": "Pick a date",
     "tabs": {
       "personalInformation": "Personal information",
