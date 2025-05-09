@@ -5,7 +5,7 @@
     },
     "validation": {
       "required": {
-        "companyCode": "Prosím zadejte kód.",
+        "givenCode": "Prosím zadejte kód.",
         "honorary": "Prosím vyberte oslovení.",
         "firstName": "Prosím zadejte jméno.",
         "lastName": "Prosím zadejte příjmení.",
@@ -62,8 +62,8 @@
         "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese."
       },
       "format": {
-        "companyCode": "Kód musí musí obsahovat jen písmena/číslice.",
-        "companyCodeLength": "Kód musí mít 5 písmen/číslic.",
+        "givenCode": "Kód musí musí obsahovat jen písmena/číslice.",
+        "givenCodeLength": "Kód musí mít 5 písmen/číslic.",
         "firstName": "Jméno musí mít alespoň 2 znaky.",
         "lastName": "Příjmení musí mít alespoň 2 znaky.",
         "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
@@ -100,7 +100,7 @@
       "childrenInfo": "Informace o dětech"
     },
     "labels": {
-      "companyCode": "Kód",
+      "givenCode": "Kód",
       "titleBeforeName": "Titul před jménem",
       "titleAfterName": "Titul za jménem",
       "honorific": "Oslovení",
@@ -249,7 +249,7 @@
       }
     },
     "modal": {
-      "companyCodeDescription": "Prosím zadejte kód."
+      "givenCodeDescription": "Prosím zadejte kód."
     },
     "pickDate": "Vybrat datum",
     "tabs": {

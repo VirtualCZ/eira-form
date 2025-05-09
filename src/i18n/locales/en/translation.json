@@ -5,7 +5,7 @@
     },
     "validation": {
       "required": {
-        "companyCode": "Please enter a code.",
+        "givenCode": "Please enter a code.",
         "honorary": "Please select a salutation.",
         "firstName": "Please enter your first name.",
         "lastName": "Please enter your surname.",
@@ -62,8 +62,8 @@
         "confirmationReadEmailAddressDeclaration": "You must confirm reading the email address declaration."
       },
       "format": {
-        "companyCode": "Code must be alphanumerical.",
-        "companyCodeLength": "Code must be 5 letters long.",
+        "givenCode": "Code must be alphanumerical.",
+        "givenCodeLength": "Code must be 5 letters long.",
         "firstName": "First name must be at least 2 characters.",
         "lastName": "Surname must be at least 2 characters.",
         "birthSurname": "Birth surname must be at least 2 characters.",
@@ -100,7 +100,7 @@
       "childrenInfo": "Children information"
     },
     "labels": {
-      "companyCode": "Code",
+      "givenCode": "Code",
       "titleBeforeName": "Title before name",
       "titleAfterName": "Title after name",
       "honorific": "Salutation",
@@ -249,7 +249,7 @@
       }
     },
     "modal": {
-      "companyCodeDescription": "Please enter a provided code."
+      "givenCodeDescription": "Please enter a provided code."
     },
     "pickDate": "Pick a date",
     "tabs": {

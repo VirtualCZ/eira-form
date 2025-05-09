@@ -30,22 +30,22 @@ export const CodeValidationPopover = ({
         <Dialog open={showCodePopover} onOpenChange={setShowCodePopover}>
             <DialogContent className="w-96 p-4">
                 <DialogHeader>
-                    <DialogTitle>{t('form.labels.companyCode')}</DialogTitle>
+                    <DialogTitle>{t('form.labels.givenCode')}</DialogTitle>
                     <DialogDescription>
-                        {t('form.modal.companyCodeDescription')}
+                        {t('form.modal.givenCodeDescription')}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                     <FormInput
-                        name="companyCode"
+                        name="givenCode"
                         formControl={control}
-                        formLabel={t('form.labels.companyCode')}
+                        formLabel={t('form.labels.givenCode')}
                         formPlaceholder="XXXXX"
                     />
                     <Button
                         className="w-full"
                         onClick={() => {
-                            trigger('companyCode').then((isValid: boolean) => {
+                            trigger('givenCode').then((isValid: boolean) => {
                                 if (isValid) setShowCodePopover(false);
                             })
                         }}
