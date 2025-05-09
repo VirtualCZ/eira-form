@@ -61,6 +61,8 @@
         "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese."
       },
       "format": {
+        "companyCode": "Kód musí musí obsahovat jen písmena/číslice.",
+        "companyCodeLength": "Kód musí mít 5 písmen/číslic.",
         "firstName": "Jméno musí mít alespoň 2 znaky.",
         "lastName": "Příjmení musí mít alespoň 2 znaky.",
         "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
@@ -97,6 +99,7 @@
       "childrenInfo": "Informace o dětech"
     },
     "labels": {
+      "companyCode": "Kód",
       "titleBeforeName": "Titul před jménem",
       "titleAfterName": "Titul za jménem",
       "honorific": "Oslovení",
@@ -264,7 +267,8 @@
       "submit": "Odeslat",
       "clearForm": "Vyčistit formulář",
       "exportJSON": "Exportovat jako JSON",
-      "importJSON": "Importovat data JSON"
+      "importJSON": "Importovat data JSON",
+      "submitCode": "Uložit kód"
     }
   }
 }

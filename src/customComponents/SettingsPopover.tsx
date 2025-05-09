@@ -5,11 +5,15 @@ import { Settings } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Input } from '@/components/ui/input';
 import { useRef } from 'react';
+import FormInput from './FormInput';
+import { Control } from 'react-hook-form';
+import { FormData } from '@/schemas/formSchema';
 
-export default function SettingsPopover({ onClear, onExportJSON, onImportJSON }: {
+export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, formControl }: {
   onClear: () => void,
   onExportJSON: () => void
   onImportJSON: (file: File) => void
+  formControl: Control<FormData>
 }) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -60,6 +64,13 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON }:
         >
           {t('form.buttons.exportJSON')}
         </Button>
+        <FormInput
+          name="companyCode"
+          formLabel={t('form.labels.companyCode')}
+          formControl={formControl}
+          formPlaceholder="XXXXX"
+          // className="mb-4"
+        />
         <LanguageSwitcher />
       </PopoverContent>
     </Popover>

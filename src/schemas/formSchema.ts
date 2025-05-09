@@ -1,6 +1,13 @@
 import { z } from "zod";
 
 export const getFormSchema = (t: (key: string) => string) => z.object({
+    companyCode: z.string()
+        .length(5, {
+            message: t('form.format.companyCodeLength')
+        })
+        .regex(/^[A-Z0-9]{5}$/, {
+            message: t('form.format.companyCode')
+    }),
     titleBeforeName: z.string().optional(),
     titleAfterName: z.string().optional(),
     honorific: z.string({
@@ -233,10 +240,6 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         required_error: t('form.validation.required.hasWageDeductions'),
     }),
     wageDeductionDetails: z.string().optional(),
-
-    numberOfDependents: z.number({
-        required_error: t('form.validation.required.numberOfDependents'),
-    }),
     claimChildTaxRelief: z.enum(["yes", "no"], {
         required_error: t('form.validation.required.claimChildTaxRelief'),
     }),

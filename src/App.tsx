@@ -24,6 +24,7 @@ import { LegalInfoTab } from './tabs/LegalInfoTab'
 import { FamilyAndChildrenTab } from './tabs/FamilyAndChildrenTab'
 import { DocumentsTab } from './tabs/DocumentsTab'
 import { AgreementsTab } from './tabs/AgreementsTab'
+import { CodeValidationPopover } from './customComponents/CodeValidationPopover'
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("personalInformation")
   const [canScroll, setCanScroll] = useState({ left: false, right: true });
   const [formKey, setFormKey] = useState(0);
+  const [showCodePopover, setShowCodePopover] = useState(false);
 
   const tabsListRef = useRef<HTMLDivElement>(null);
 
@@ -151,7 +153,8 @@ function App() {
   async function onSubmit(values: FormData) {
     try {
 
-      const response = await fetch("https://gas.eira.com/rest/im/gas/v1/createHrRequest", {
+      //const response = await fetch("https://gas.eira.com/rest/sm/gas/v1/createHrRequest", {
+      const response = await fetch("http://localhost:8880/rest/sm/gas/v1/createHrRequest", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -273,7 +276,7 @@ function App() {
       "activityBan", "bannedActivity", "hasWageDeductions", "wageDeductionDetails"
     ],
     familyAndChildren: [
-      "numberOfDependents", "claimChildTaxRelief", "childrenInfo"
+      "claimChildTaxRelief", "childrenInfo"
     ],
     documents: [
       "travelDocumentCopy", "residencePermitCopy", "educationCertificate",
@@ -294,8 +297,18 @@ function App() {
     return fields.some(field => !!errors[field])
   }
 
+  useEffect(() => {
+    const storedData = localStorage.getItem('formData');
+    const parsedData = storedData ? JSON.parse(storedData) : {};
+    if (!storedData || storedData === '{}' || !parsedData.companyCode) {
+      setShowCodePopover(true);
+    }
+  }, []);
+
+  // Add to return statement
   return (
     <>
+
       <div className="min-h-svh flex items-center justify-center @container">
         <div className="form-container py-2 @xs:w-[100%] @lg:w-[400px] @2xl:w-[600px] @4xl:w-[800px]">
           <Form {...form} key={formKey}>
@@ -309,6 +322,11 @@ function App() {
                 }}
                 className="h-full flex flex-col"
               >
+                <CodeValidationPopover
+                  control={form.control}
+                  showCodePopover={showCodePopover}
+                  setShowCodePopover={setShowCodePopover}
+                />
                 <div className="relative flex items-center gap-2 mb-2">
                   <button
                     type="button"
@@ -386,6 +404,7 @@ function App() {
                   handleClear={handleClear}
                   onExportJSON={() => exportJSON(form.getValues())}
                   onImportJSON={handleImportJSON}
+                  formControl={form.control}
                 />
               </Tabs>
             </form>

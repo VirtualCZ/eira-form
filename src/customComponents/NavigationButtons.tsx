@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import SettingsPopover from './SettingsPopover';
+import { Control } from 'react-hook-form';
+import { FormData } from '@/schemas/formSchema';
 
 interface NavigationButtonsProps {
     activeTab: string
@@ -9,6 +11,7 @@ interface NavigationButtonsProps {
     handleClear: () => void
     onExportJSON: () => void
     onImportJSON: (file: File) => void
+    formControl: Control<FormData>,
 }
 export default function NavigationButtons({
     activeTab,
@@ -16,7 +19,8 @@ export default function NavigationButtons({
     handleNext,
     handleClear,
     onExportJSON,
-    onImportJSON
+    onImportJSON,
+    formControl
 }: NavigationButtonsProps) {
     const { t } = useTranslation();
     const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment",
@@ -45,6 +49,7 @@ export default function NavigationButtons({
                                 onClear={handleClear}
                                 onExportJSON={onExportJSON}
                                 onImportJSON={onImportJSON}
+                                formControl={formControl}
                             />
                             <Button type="submit">{t('form.buttons.submit')}</Button>
                         </div>
@@ -65,6 +70,7 @@ export default function NavigationButtons({
                             onClear={handleClear}
                             onExportJSON={onExportJSON}
                             onImportJSON={onImportJSON}
+                            formControl={formControl}
                         />
                         <Button
                             type="button"
