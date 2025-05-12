@@ -74,6 +74,7 @@ export const PersonalInformationTab = ({
                 name="dateOfBirth"
                 formLabel={t('form.labels.dateOfBirth')}
                 formControl={control}
+                yearsBack={100}
             />
             <FormRadio
                 name="sex"
