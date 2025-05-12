@@ -254,13 +254,9 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     foodPass: z.array(z.string()).optional(),
     travelDocumentCopy: z.array(z.string()).optional(),
     residencePermitCopy: z.array(z.string()).optional(),
-    educationCertificate: z.array(z.string().min(1, {
-        message: t('form.validation.required.educationCertificate')
-    })).min(1, {
-        message: t('form.validation.required.educationCertificate')
-    }),
+    educationCertificate: z.array(z.string()).optional(),
     wageDeductionDecision: z.array(z.string()).optional(),
-
+    
     confirmationReadEmployeeDeclaration: z.boolean().refine(val => val === true, {
         message: t('form.validation.required.confirmationReadEmployeeDeclaration')
     }),
