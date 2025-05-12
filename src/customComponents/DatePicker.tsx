@@ -18,7 +18,7 @@ interface DatePickerProps {
     yearsBack?: number;
 }
 
-const DatePicker = ({ field, className, disabled, yearsBack = 100 }: DatePickerProps) => {
+const DatePicker = ({ field, className, disabled, yearsBack = 10 }: DatePickerProps) => {
     const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [selectedYear, setSelectedYear] = useState<number | undefined>(field.value ? new Date(field.value).getFullYear() : undefined);
