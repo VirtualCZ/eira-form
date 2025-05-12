@@ -21,9 +21,11 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     }).min(2, {
         message: t('form.validation.format.lastName'),
     }),
-    birthSurname: z.string().min(2, {
-        message: t('form.validation.format.birthSurname'),
-    }).optional(),
+    birthSurname: z.string()
+        // .min(2, {
+        //     message: t('form.validation.format.birthSurname'),
+        // })
+        .optional(),
     dateOfBirth: z.date({
         required_error: t('form.validation.required.dateOfBirth'),
     }),
@@ -94,7 +96,11 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         message: t('form.validation.format.permanentCountry'),
     }),
 
-    contactSameAsPermanentAddress: z.enum(["yes", "no"]).optional(),
+    contactSameAsPermanentAddress: z.enum(["yes", "no"],
+        {
+            required_error: t('form.validation.required.contactSameAsPermanentAddress'),
+        }
+    ),
 
     contactStreet: z.string().optional(),
     contactHouseNumber: z.number().optional(),
@@ -132,7 +138,11 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     }).min(2, {
         message: t('form.validation.format.jobPosition'),
     }),
-    firstJobInCz: z.enum(["yes", "no"]).optional(),
+    firstJobInCz: z.enum(["yes", "no"],
+        {
+            required_error: t('form.validation.required.firstJobInCz'),
+        }
+    ),
     lastEmployer: z.string({
         required_error: t('form.validation.required.lastEmployer'),
     }),
