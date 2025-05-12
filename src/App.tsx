@@ -321,13 +321,20 @@ function App() {
     }
   }, [])
 
+  const newSubmit = (values: FormData) => {
+    console.log("data would be sent")
+  }
+
   return (
     <>
 
       <div className="min-h-svh flex items-center justify-center @container">
         <div className="form-container py-2 @xs:w-[100%] @lg:w-[400px] @2xl:w-[600px] @4xl:w-[800px]">
           <Form {...form} key={formKey}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="h-full">
+            <form onSubmit={form.handleSubmit(
+              // onSubmit
+              newSubmit
+              )} className="h-full">
               <Tabs
                 value={activeTab}
                 onValueChange={async (newTab) => {

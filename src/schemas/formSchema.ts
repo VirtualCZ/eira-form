@@ -143,24 +143,10 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
             required_error: t('form.validation.required.firstJobInCz'),
         }
     ),
-    lastEmployer: z.string({
-        required_error: t('form.validation.required.lastEmployer'),
-    }),
-    lastJobType: z.string({
-        required_error: t('form.validation.required.lastJobType'),
-    }).min(2, {
-        message: t('form.validation.format.lastJobType'),
-    }),
-    lastJobPeriodFrom: z.date(
-        {
-            required_error: t('form.validation.required.lastJobPeriodFrom'),
-        }
-    ),
-    lastJobPeriodTo: z.date(
-        {
-            required_error: t('form.validation.required.lastJobPeriodTo'),
-        }
-    ),
+    lastEmployer: z.string().optional(),
+    lastJobType: z.string().optional(),
+    lastJobPeriodFrom: z.date().optional(),
+    lastJobPeriodTo: z.date().optional(),
     bankingInstitutionName: z.string({
         required_error: t('form.validation.required.bankingInstitutionName'),
     }).min(2, {
@@ -281,6 +267,40 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     confirmationReadEmailAddressDeclaration: z.boolean().refine(val => val === true, {
         message: t('form.validation.required.confirmationReadEmailAddressDeclaration')
     })
+}).superRefine((data, ctx) => {
+    if (data.firstJobInCz === "yes") {
+        // If first job, skip checks for last job fields
+        return;
+    }
+    // If not first job, check required fields
+    if (!data.lastEmployer || data.lastEmployer.trim() === "") {
+        ctx.addIssue({
+            path: ["lastEmployer"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.required.lastEmployer'),
+        });
+    }
+    if (!data.lastJobType || data.lastJobType.trim() === "") {
+        ctx.addIssue({
+            path: ["lastJobType"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.required.lastJobType'),
+        });
+    }
+    if (!data.lastJobPeriodFrom) {
+        ctx.addIssue({
+            path: ["lastJobPeriodFrom"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.required.lastJobPeriodFrom'),
+        });
+    }
+    if (!data.lastJobPeriodTo) {
+        ctx.addIssue({
+            path: ["lastJobPeriodTo"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.required.lastJobPeriodTo'),
+        });
+    }
 })
 
 export type FormData = z.infer<ReturnType<typeof getFormSchema>>;
