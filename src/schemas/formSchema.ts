@@ -256,11 +256,15 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     residencePermitCopy: z.array(z.string()).optional(),
     educationCertificate: z.array(z.string()).optional(),
     wageDeductionDecision: z.array(z.string()).optional(),
-    
-    confirmationReadEmployeeDeclaration: z.boolean().refine(val => val === true, {
+
+    confirmationReadEmployeeDeclaration: z.boolean({
+        required_error: t('form.validation.required.confirmationReadEmployeeDeclaration'),
+    }).refine(val => val === true, {
         message: t('form.validation.required.confirmationReadEmployeeDeclaration')
     }),
-    confirmationReadEmailAddressDeclaration: z.boolean().refine(val => val === true, {
+    confirmationReadEmailAddressDeclaration: z.boolean({
+        required_error: t('form.validation.required.confirmationReadEmailAddressDeclaration'),
+    }).refine(val => val === true, {
         message: t('form.validation.required.confirmationReadEmailAddressDeclaration')
     })
 }).superRefine((data, ctx) => {

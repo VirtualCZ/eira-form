@@ -32,7 +32,11 @@ function App() {
   const [formKey, setFormKey] = useState(0)
   const [showCodePopover, setShowCodePopover] = useState(false)
   const [showResultModal, setShowResultModal] = useState(false)
-  const [resultModalContent, setResultModalContent] = useState<{ success: boolean, message: string }>({ success: false, message: "" })
+  const [resultModalContent, setResultModalContent] = useState<{ success: boolean, message: string, loading?: boolean }>({ success: false, message: "", loading: false })
+
+  const [showValidationErrorModal, setShowValidationErrorModal] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
+
   const tabsListRef = useRef<HTMLDivElement>(null)
 
   const dateFields = useMemo(() => [
@@ -148,9 +152,44 @@ function App() {
     reader.readAsText(file)
   }
 
-  async function onSubmit(values: FormData) {
-    try {
+  const getErrorMessages = (errors: any, prefix = ''): string[] => {
+    let messages: string[] = []
+    for (const key in errors) {
+      if (!errors.hasOwnProperty(key)) continue
+      const error = errors[key]
+      if (error?.message) {
+        messages.push(`${prefix}${error.message}`)
+      }
+      if (error?.types) {
+        messages.push(...Object.values(error.types).filter((v): v is string => typeof v === "string"))
+      }
+      if (typeof error === 'object' && !error.message && !error.types) {
+        messages.push(...getErrorMessages(error, prefix ? `${prefix}${key}.` : `${key}.`))
+      }
+    }
+    return messages
+  }
 
+  const handleFormSubmit = async (data: FormData) => {
+    console.log("ran handleFormSubmit")
+    await onSubmit(data)
+  }
+
+  const handleInvalid = (errors: any) => {
+    console.log("ran handleInvalid")
+    const messages = getErrorMessages(errors)
+    setValidationErrors(messages)
+    setShowValidationErrorModal(true)
+  }
+
+  async function onSubmit(values: FormData) {
+    setResultModalContent({
+      success: false,
+      message: t('form.modal.sendingDescription') || "Sending data...",
+      loading: true
+    })
+    setShowResultModal(true)
+    try {
       const response = await fetch("/rest/sm/gas/v1/createHrRequest", {
         method: "POST",
         headers: {
@@ -180,17 +219,18 @@ function App() {
       // Optionally, show a success message to the user here
       setResultModalContent({
         success: true,
-        message: t(`form.modal.submitSuccessMessage`)
+        message: t(`form.modal.submitSuccessMessage`),
+        loading: false
       })
-      setShowResultModal(true)
     } catch (error) {
-      console.error("Submission failed:", error)
       setResultModalContent({
         success: false,
-        message: t(`form.modal.submitErrorMessage`)
+        message: t(`form.modal.submitErrorMessage`),
+        loading: false
       })
-      setShowResultModal(true)
     }
+    // Keep the modal open to show the result
+    setShowResultModal(true)
   }
 
   const handleClear = () => {
@@ -328,8 +368,9 @@ function App() {
         <div className="form-container py-2 @xs:w-[100%] @lg:w-[400px] @2xl:w-[600px] @4xl:w-[800px]">
           <Form {...form} key={formKey}>
             <form onSubmit={form.handleSubmit(
-              onSubmit
-              )} className="h-full">
+              handleFormSubmit,
+              handleInvalid
+            )} className="h-full">
               <Tabs
                 value={activeTab}
                 onValueChange={async (newTab) => {
@@ -348,10 +389,32 @@ function App() {
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>
-                        {resultModalContent.success ? t(`form.modal.success`) : t(`form.modal.error`)}
+                        {resultModalContent.loading
+                          ? t('form.modal.sending')
+                          : resultModalContent.success
+                            ? t(`form.modal.success`)
+                            : t(`form.modal.error`)
+                        }
                       </DialogTitle>
                       <DialogDescription>
-                        {resultModalContent.message}
+                        {resultModalContent.loading
+                          ? t('form.modal.sendingMessage')
+                          : resultModalContent.message
+                        }
+                      </DialogDescription>
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
+                <Dialog open={showValidationErrorModal} onOpenChange={setShowValidationErrorModal}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{t('form.modal.validationErrorTitle') || "Please fix the following errors:"}</DialogTitle>
+                      <DialogDescription>
+                        <ul className="list-disc pl-5">
+                          {validationErrors.map((msg, idx) => (
+                            <li key={idx}>{msg}</li>
+                          ))}
+                        </ul>
                       </DialogDescription>
                     </DialogHeader>
                   </DialogContent>

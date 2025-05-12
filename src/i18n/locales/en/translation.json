@@ -255,7 +255,10 @@
       "success": "Success",
       "submitSuccessMessage": "Submission successful!",
       "error": "Error",
-      "submitErrorMessage": "Submission failed. Please try again."
+      "submitErrorMessage": "Submission failed. Please try again.",
+      "validationErrorTitle": "Validation error",
+      "sending": "Sending data...",
+      "sendingMessage": "Sending data to EIRA"
     },
     "pickDate": "Pick a date",
     "tabs": {

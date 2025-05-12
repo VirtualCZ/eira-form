@@ -255,7 +255,10 @@
       "success": "Úspěch",
       "submitSuccessMessage": "Požadavek úspěšně odeslán!",
       "error": "Chyba",
-      "submitErrorMessage": "Chyba při odesílání požadavku.."
+      "submitErrorMessage": "Chyba při odesílání požadavku.",
+      "validationErrorTitle": "Chyba při validaci:",
+      "sending": "Odesílání dat...",
+      "sendingMessage": "Probíhá odesílání dat do systému EIRA."
     },
     "pickDate": "Vybrat datum",
     "tabs": {
