@@ -411,9 +411,21 @@ function App() {
                       <DialogTitle>{t('form.modal.validationErrorTitle') || "Please fix the following errors:"}</DialogTitle>
                       <DialogDescription>
                         <ul className="list-disc pl-5">
-                          {validationErrors.map((msg, idx) => (
-                            <li key={idx}>{msg}</li>
-                          ))}
+                          {validationErrors.map((msg, idx) => {
+                            // Try to prettify array field errors like "childrenInfo.1.Rodné číslo neprošlo kontrolou dělitelnosti."
+                            const arrayFieldMatch = msg.match(/^([a-zA-Z0-9_]+)\.(\d+)\.(.+)$/);
+                            if (arrayFieldMatch) {
+                              const [, field, index, message] = arrayFieldMatch;
+                              // Try to get a label from translations, fallback to field name
+                              const label = t(`form.labels.${field}`) || field;
+                              return (
+                                <li key={idx}>
+                                  {label} ({parseInt(index, 10) + 1}): {message}
+                                </li>
+                              );
+                            }
+                            return <li key={idx}>{msg}</li>;
+                          })}
                         </ul>
                       </DialogDescription>
                     </DialogHeader>
