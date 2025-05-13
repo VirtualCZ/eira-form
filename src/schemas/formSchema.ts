@@ -322,9 +322,24 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         });
     }
 
-    // --- Birth number validation ---
-    const value = data.birthNumber;
-    const { dateOfBirth, sex } = data;
+    validateBirthNumber(
+        data.birthNumber,
+        data.dateOfBirth,
+        data.sex,
+        t,
+        ctx
+    );
+})
+
+export type FormData = z.infer<ReturnType<typeof getFormSchema>>;
+
+function validateBirthNumber(
+    value: string,
+    dateOfBirth: Date,
+    sex: "male" | "female",
+    t: (key: string) => string,
+    ctx: z.RefinementCtx
+) {
     const [front, back] = value.split('/');
     if (!front || !back) {
         ctx.addIssue({
@@ -382,6 +397,4 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         code: z.ZodIssueCode.custom,
         message: t('form.validation.format.birthNumberAfter1954Fail'),
     });
-})
-
-export type FormData = z.infer<ReturnType<typeof getFormSchema>>;
+}
