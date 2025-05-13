@@ -196,6 +196,19 @@ export function FormTable({
       {errors && errors.length > 0 && (
         <div className="text-sm text-destructive">
           {tableError || t('form.errors.tableIncomplete')}
+          <ul className="mt-1 list-disc list-inside">
+            {errors.map((rowError, rowIdx) =>
+              rowError
+                ? Object.entries(rowError).map(([colName, colError]: [string, any]) =>
+                    colError && colError.message ? (
+                      <li key={`${rowIdx}-${colName}`}>
+                        {t(`form.labels.${colName}`) || colName} ({rowIdx + 1}): {colError.message}
+                      </li>
+                    ) : null
+                  )
+                : null
+            )}
+          </ul>
         </div>
       )}
     </div>

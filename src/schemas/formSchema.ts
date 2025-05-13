@@ -246,8 +246,28 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         }),
         childrenInfoBirthNumber: z.string({
             required_error: t('form.validation.required.childrenInfoBirthNumber'),
-        }).min(1, {
-            message: t('form.validation.format.childrenInfoBirthNumber'),
+        })
+        .regex(/^\d{6}\/\d{3,4}$/, {
+            message: t('form.validation.format.birthNumberFormatFail'),
+        })
+        .superRefine((value, ctx) => {
+            const [front, back] = value.split('/');
+            if (!front || !back) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: t('form.validation.format.birthNumberFormatFail'),
+                });
+                return;
+            }
+            if (back.length === 4) {
+                const rcNumber = parseInt(front + back, 10);
+                if (rcNumber % 11 === 0) return;
+                if (rcNumber % 11 === 10 && back[3] === '0') return;
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: t('form.validation.format.birthNumberDiversibilityFail'),
+                });
+            }
         }),
     })).optional(),
 
