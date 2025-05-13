@@ -350,26 +350,27 @@ function validateBirthNumber(
         return;
     }
     const year = parseInt(front.slice(0, 2), 10);
-    let month = parseInt(front.slice(2, 4), 10);
+    const month = parseInt(front.slice(2, 4), 10);
     const day = parseInt(front.slice(4, 6), 10);
 
+    const birthYear = dateOfBirth.getFullYear();
     let fullYear = year + (year >= 54 ? 1900 : 2000);
-    if (dateOfBirth.getFullYear() < 1954) {
+    if (birthYear < 1954) {
         fullYear = year + 1900;
     }
 
-    let expectedMonth = dateOfBirth.getMonth() + 1;
+    const expectedMonth = dateOfBirth.getMonth() + 1;
     let validMonth = false;
     if (sex === "female") {
-        if (month === expectedMonth + 50 || (dateOfBirth.getFullYear() >= 2024 && month === expectedMonth + 70)) {
+        if (month === expectedMonth + 50 || (birthYear >= 2024 && month === expectedMonth + 70)) {
             validMonth = true;
         }
     } else if (sex === "male") {
-        if (month === expectedMonth || (dateOfBirth.getFullYear() >= 2024 && month === expectedMonth + 20)) {
+        if (month === expectedMonth || (birthYear >= 2024 && month === expectedMonth + 20)) {
             validMonth = true;
         }
     }
-    if (!validMonth || day !== dateOfBirth.getDate() || fullYear !== dateOfBirth.getFullYear()) {
+    if (!validMonth || day !== dateOfBirth.getDate() || fullYear !== birthYear) {
         ctx.addIssue({
             path: ["birthNumber"],
             code: z.ZodIssueCode.custom,
@@ -378,7 +379,7 @@ function validateBirthNumber(
         return;
     }
 
-    if (dateOfBirth.getFullYear() < 1954) {
+    if (birthYear < 1954) {
         return;
     }
     const rcNumber = parseInt(front + back, 10);
