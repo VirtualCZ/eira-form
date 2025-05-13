@@ -48,8 +48,8 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
 
     birthNumber: z.string({
         required_error: t('form.validation.required.birthNumber'),
-    }).regex(/^\d{6}\/\d{4}$/, {
-        message: t('form.validation.format.birthNumber'),
+    }).regex(/^\d{6}\/\d{3,4}$/, {
+        message: t('form.validation.format.birthNumberFormatFail'),
     }),
     foreignBirthNumber: z.string().optional(),
     insuranceBirthNumber: z.number().optional(),
@@ -301,6 +301,67 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
             message: t('form.validation.required.lastJobPeriodTo'),
         });
     }
+
+    // --- Birth number validation ---
+    const value = data.birthNumber;
+    const { dateOfBirth, sex } = data;
+    const [front, back] = value.split('/');
+    if (!front || !back) {
+        ctx.addIssue({
+            path: ["birthNumber"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.format.birthNumberFormatFail'),
+        });
+        return;
+    }
+    const year = parseInt(front.slice(0, 2), 10);
+    let month = parseInt(front.slice(2, 4), 10);
+    const day = parseInt(front.slice(4, 6), 10);
+
+    let fullYear = year + (year >= 54 ? 1900 : 2000);
+    if (dateOfBirth.getFullYear() < 1954) {
+        fullYear = year + 1900;
+    }
+
+    let expectedMonth = dateOfBirth.getMonth() + 1;
+    let validMonth = false;
+    if (sex === "female") {
+        if (month === expectedMonth + 50 || (dateOfBirth.getFullYear() >= 2024 && month === expectedMonth + 70)) {
+            validMonth = true;
+        }
+    } else if (sex === "male") {
+        if (month === expectedMonth || (dateOfBirth.getFullYear() >= 2024 && month === expectedMonth + 20)) {
+            validMonth = true;
+        }
+    }
+    if (!validMonth || day !== dateOfBirth.getDate() || fullYear !== dateOfBirth.getFullYear()) {
+        ctx.addIssue({
+            path: ["birthNumber"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.format.birthNumberMatchFail'),
+        });
+        return;
+    }
+
+    if (dateOfBirth.getFullYear() < 1954) {
+        return;
+    }
+    const rcNumber = parseInt(front + back, 10);
+    if (back.length === 4) {
+        if (rcNumber % 11 === 0) return;
+        if (rcNumber % 11 === 10 && back[3] === '0') return;
+        ctx.addIssue({
+            path: ["birthNumber"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.format.birthNumberDiversibilityFail'),
+        });
+        return;
+    }
+    ctx.addIssue({
+        path: ["birthNumber"],
+        code: z.ZodIssueCode.custom,
+        message: t('form.validation.format.birthNumberAfter1954Fail'),
+    });
 })
 
 export type FormData = z.infer<ReturnType<typeof getFormSchema>>;

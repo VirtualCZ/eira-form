@@ -68,7 +68,11 @@
         "firstName": "Jméno musí mít alespoň 2 znaky.",
         "lastName": "Příjmení musí mít alespoň 2 znaky.",
         "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
-        "birthNumber": "Rodné číslo musí být ve formátu rrmmdd/1234.",
+        "birthNumberFormatFail": "Rodné číslo musí být ve formátu YYMMDD/XXXX nebo YYMMDD/XXX.",
+        "birthNumberMatchFail": "Rodné číslo neodpovídá zadanému datu narození nebo pohlaví.",
+        "birthNumberDiversibilityFail": "Rodné číslo neprošlo kontrolou dělitelnosti.",
+        "birthNumberAfter1954Fail": "Rodné číslo musí mít 4 číslice za lomítkem pro osoby narozené po roce 1954.",
+
         "idCardNumber": "Číslo občanského průkazu musí mít alespoň 1 znak.",
         "idCardIssuedBy": "Vyplňte, kdo vydal občanský průkaz.",
         "permanentStreet": "Ulice musí mít alespoň 1 znak.",

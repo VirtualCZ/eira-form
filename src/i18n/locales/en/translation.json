@@ -68,7 +68,11 @@
         "firstName": "First name must be at least 2 characters.",
         "lastName": "Surname must be at least 2 characters.",
         "birthSurname": "Birth surname must be at least 2 characters.",
-        "birthNumber": "Birth number must be in the format yymmdd/1234.",
+        "birthNumberFormatFail": "Birth number must be in the format YYMMDD/XXXX or YYMMDD/XXX.",
+        "birthNumberMatchFail": "Birth number does not match the provided date of birth or sex.",
+        "birthNumberDiversibilityFail": "Birth number fails the divisibility check.",
+        "birthNumberAfter1954Fail": "Birth number must have 4 digits after the slash for people born after 1954.",
+
         "idCardNumber": "ID card number must be at least 1 character.",
         "idCardIssuedBy": "Please specify who issued the ID card.",
         "permanentStreet": "Street must be at least 1 character.",
