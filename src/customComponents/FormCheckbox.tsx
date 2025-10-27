@@ -24,15 +24,17 @@ const FormCheckbox = <T extends FieldValues>({
             control={formControl}
             name={name}
             render={({ field }) => (
-                <FormItem className={formItemClass + " flex flex-row items-center space-x-2"}>
-                    <FormControl>
-                        <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            className={formFieldClass}
-                        />
-                    </FormControl>
-                    <FormLabel className="mb-0">{formLabel}</FormLabel>
+                <FormItem className={formItemClass}>
+                    <div className="flex items-center space-x-2">
+                        <FormControl>
+                            <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className={formFieldClass}
+                            />
+                        </FormControl>
+                        <FormLabel className="mb-0">{formLabel}</FormLabel>
+                    </div>
                     {formMessage ? <FormMessage /> : null}
                 </FormItem>
             )}

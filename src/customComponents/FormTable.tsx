@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useFieldArray, Control, ArrayPath, Path } from "react-hook-form";
-import { FormField, FormItem, FormControl } from "@/components/ui/form";
+import { useFieldArray, Control, ArrayPath, Path, useFormContext } from "react-hook-form";
+import { FormField, FormControl, FormLabel } from "@/components/ui/form";
 import { useRef, useState } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useTranslation } from 'react-i18next';  // Replace i18next import
@@ -21,7 +21,6 @@ interface FormTableProps {
   name: ArrayPath<FormData>;
   formControl: Control<FormData>; // Changed from 'control'
   columns: Column<any>[];
-  errors?: any[];
   label?: string;
   tableError?: string;
 }
@@ -30,15 +29,23 @@ export function FormTable({
   name,
   formControl: control, // Destructure with alias
   columns,
-  errors,
   label,
   tableError,
 }: FormTableProps) {
-  const { t } = useTranslation(); // Add this line
+  const { t } = useTranslation();
   const { fields, append, remove } = useFieldArray({ control, name });
+  const formErrors = control._formState.errors;
+  const { trigger } = useFormContext();
+
 
   const [newRow, setNewRow] = useState<Record<string, string>>(
-    Object.fromEntries(columns.map((col) => [col.name as string, ""]))
+    Object.fromEntries(columns.map((col) => {
+      // For select fields, use the first option if it's "none", otherwise empty string
+      if (col.type === "select" && col.options?.[0]?.value === "none") {
+        return [col.name as string, "none"];
+      }
+      return [col.name as string, ""];
+    }))
   );
 
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -74,40 +81,49 @@ export function FormTable({
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className={`text-sm ${errors && errors.length > 0 ? "text-destructive" : ""}`}>
+    <div className="space-y-2">
+      <FormLabel className={formErrors[name as keyof typeof formErrors] ? "text-red-600" : ""}>
         {label}
-      </label>
-      <div className="overflow-x-auto border rounded-md">
+      </FormLabel>
+      <div className="overflow-x-auto border border-gray-200 rounded-md bg-white">
         <table className="w-full">
           <thead>
-            <tr>
+            <tr className="border-b border-gray-200">
               {columns.map((col) => (
                 <th
                   key={String(col.name)}
-                  className="px-2 py-1 text-left"  // Removed min-width
+                  className="px-3 py-2 text-left text-sm font-medium text-gray-700"
                 >
                   {col.label}
                 </th>
               ))}
-              <th className="sticky right-0 bg-white w-[40px]"></th>
+              <th className="sticky right-0 bg-white w-10 px-2"></th>
             </tr>
           </thead>
           <tbody>
             {fields.map((field, rowIdx) => (
-              <tr key={field.id}>
+              <tr key={field.id} className="border-b border-gray-100">
                 {columns.map((col) => (
                   <td
                     key={String(col.name)}
-                    className="px-1 py-1"  // Removed min-width
+                    className="px-3 py-2 align-top"
                   >
                     {col.type === "select" && col.options ? (
                       <FormField
                         name={`${name}.${rowIdx}.${String(col.name)}` as Path<FormData>}
                         control={control}
-                        render={({ field: rhfField }) => (
-                          <Select value={String(rhfField.value)} onValueChange={rhfField.onChange}>
-                            <SelectTrigger className="w-[100%]">
+                        render={({ field: rhfField, fieldState }) => (
+                          <Select value={String(rhfField.value || "none")} onValueChange={async (value) => {
+                            rhfField.onChange(value);
+                            // Trigger validation for exam type when proficiency changes
+                            if (String(col.name) === "languageProficiency") {
+                              await trigger(`${name}.${rowIdx}.languageExamType`);
+                            }
+                          }}>
+                            <SelectTrigger 
+                              className="h-9"
+                              aria-invalid={!!fieldState.error}
+                            >
                               <SelectValue placeholder={col.placeholder || col.label} />
                             </SelectTrigger>
                             <SelectContent>
@@ -124,23 +140,27 @@ export function FormTable({
                       <FormField
                         name={`${name}.${rowIdx}.${String(col.name)}` as Path<FormData>}
                         control={control}
-                        render={({ field: rhfField }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...rhfField} value={String(rhfField.value)} placeholder={col.placeholder} />
-                            </FormControl>
-                          </FormItem>
+                        render={({ field: rhfField, fieldState }) => (
+                          <FormControl>
+                            <Input 
+                              {...rhfField} 
+                              value={String(rhfField.value)} 
+                              placeholder={col.placeholder}
+                              className="h-9"
+                              aria-invalid={!!fieldState.error}
+                            />
+                          </FormControl>
                         )}
                       />
                     )}
                   </td>
                 ))}
-                <td className="sticky right-0 bg-white w-[40px]">
+                <td className="sticky right-0 bg-white w-10 px-2 py-2">
                   <Button
                     type="button"
                     variant="destructive"
                     size="sm"
-                    className="p-2 h-8 w-8"
+                    className="h-8 w-8 p-0"
                     onClick={() => remove(rowIdx)}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -149,15 +169,15 @@ export function FormTable({
               </tr>
             ))}
 
-            <tr>
+            <tr className="bg-gray-50/50">
               {columns.map((col) => (
-                <td key={String(col.name)} className="px-1 py-1">
+                <td key={String(col.name)} className="px-3 py-2 align-top">
                   {col.type === "select" && col.options ? (
                     <Select
                       value={newRow[col.name as string]}
                       onValueChange={(value) => handleNewRowChange(col.name as string, value)}
                     >
-                      <SelectTrigger className="w-[100%]">
+                      <SelectTrigger className="h-9">
                         <SelectValue placeholder={col.placeholder || col.label} />
                       </SelectTrigger>
                       <SelectContent>
@@ -173,16 +193,17 @@ export function FormTable({
                       placeholder={col.placeholder}
                       value={newRow[col.name as string]}
                       onChange={(e) => handleNewRowChange(col.name as string, e.target.value)}
+                      className="h-9"
                     />
                   )}
                 </td>
               ))}
-              <td className="sticky right-0 bg-white w-[40px]">
+              <td className="sticky right-0 bg-gray-50/50 w-10 px-2 py-2">
                 <Button
                   type="button"
                   variant="destructive"
                   size="sm"
-                  className="p-2 h-8 w-8"
+                  className="h-8 w-8 p-0"
                   disabled
                 >
                   <Trash2 className="w-4 h-4" />
@@ -193,16 +214,19 @@ export function FormTable({
         </table>
       </div>
 
-      {errors && errors.length > 0 && (
-        <div className="text-sm text-destructive">
-          {tableError || t('form.errors.tableIncomplete')}
-          <ul className="mt-1 list-disc list-inside">
-            {errors.map((rowError, rowIdx) =>
+      {formErrors[name as keyof typeof formErrors] && (
+        <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-2">
+          <div className="font-medium mb-1">
+            {tableError || t('form.errors.tableIncomplete')}
+          </div>
+          <ul className="space-y-1">
+            {Array.isArray(formErrors[name as keyof typeof formErrors]) && 
+             (formErrors[name as keyof typeof formErrors] as any[]).map((rowError: any, rowIdx: number) =>
               rowError
                 ? Object.entries(rowError).map(([colName, colError]: [string, any]) =>
                     colError && colError.message ? (
-                      <li key={`${rowIdx}-${colName}`}>
-                        {t(`form.labels.${colName}`) || colName} ({rowIdx + 1}): {colError.message}
+                      <li key={`${rowIdx}-${colName}`} className="text-sm">
+                        <span className="font-medium">{t(`form.labels.${colName}`) || colName}</span> (řádek {rowIdx + 1}): {colError.message}
                       </li>
                     ) : null
                   )

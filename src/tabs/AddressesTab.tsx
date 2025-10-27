@@ -1,8 +1,9 @@
 import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
 import { FormData } from "@/schemas/formSchema";
-import { Control, useWatch } from "react-hook-form";
+import { Control, useWatch, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 interface AddressesTabProps {
     control: Control<FormData>
@@ -10,14 +11,30 @@ interface AddressesTabProps {
 
 export const AddressesTab = ({ control }: AddressesTabProps) => {
     const { t } = useTranslation();
+    const { trigger } = useFormContext<FormData>();
     const contactSameAsPermanentAddress = useWatch({
         control,
         name: "contactSameAsPermanentAddress",
     });
 
+    useEffect(() => {
+        if (contactSameAsPermanentAddress === "no") {
+            // Wait a bit for the schema to process
+            setTimeout(async () => {
+                await trigger([
+                    "contactStreet",
+                    "contactHouseNumber",
+                    "contactCity",
+                    "contactPostalCode",
+                    "contactCountry"
+                ]);
+            }, 500);
+        }
+    }, [contactSameAsPermanentAddress, trigger]);
+
     return (
         <>
-            <h1>{t('form.headlines.permanentAddress')}</h1>
+            <h1 className="text-lg font-semibold text-gray-900 mb-4 mt-6 first:mt-0">{t('form.headlines.permanentAddress')}</h1>
             <FormInput
                 name="permanentStreet"
                 formLabel={t('form.labels.street')}
@@ -61,7 +78,7 @@ export const AddressesTab = ({ control }: AddressesTabProps) => {
             />
             {contactSameAsPermanentAddress === "no" && (
                 <>
-                    <h1>{t('form.headlines.contactAddress')}</h1>
+                    <h1 className="text-lg font-semibold text-gray-900 mb-4 mt-6">{t('form.headlines.contactAddress')}</h1>
                     <FormInput
                         name="contactStreet"
                         formLabel={t('form.labels.street')}

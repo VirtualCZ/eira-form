@@ -1,4 +1,4 @@
-import { FormMessage } from "@/components/ui/form";
+import { FormItem, FormMessage } from "@/components/ui/form";
 import FormDate from "@/customComponents/FormDate";
 import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
@@ -30,36 +30,38 @@ export const PersonalInformationTab = ({
                 formLabel={t('form.labels.titleAfterName')}
                 formControl={control}
             />
-            <div className="space-y-2">
-                <div className="flex gap-2">
-                    <FormSelect
-                        name="honorific"
-                        formLabel={t('form.labels.honorific')}
-                        formControl={control}
-                        formItemClass="flex-none"
-                        options={[
-                            { value: "mr", label: t('form.options.honorific.mr') },
-                            { value: "mrs", label: t('form.options.honorific.mrs') },
-                            { value: "ms", label: t('form.options.honorific.ms') },
-                            { value: "miss", label: t('form.options.honorific.miss') }
-                        ]}
-                        placeholder="--."
-                        formMessage={false}
-                    />
-                    <FormInput
-                        name="firstName"
-                        formLabel={t('form.labels.firstName')}
-                        formControl={control}
-                        formMessage={false}
-                        formItemClass="flex-1"
-                    />
-                </div>
-                {(errors.honorific?.message || errors.firstName?.message) && (
-                    <FormMessage>
-                        {errors.honorific?.message} {errors.firstName?.message}
-                    </FormMessage>
-                )}
+            <div className="flex gap-2">
+                <FormSelect
+                    name="honorific"
+                    formLabel={t('form.labels.honorific')}
+                    formControl={control}
+                    formItemClass="flex-none"
+                    formMessage={false}
+                    options={[
+                        { value: "mr", label: t('form.options.honorific.mr') },
+                        { value: "mrs", label: t('form.options.honorific.mrs') },
+                        { value: "ms", label: t('form.options.honorific.ms') },
+                        { value: "miss", label: t('form.options.honorific.miss') }
+                    ]}
+                    placeholder="--."
+                />
+                <FormInput
+                    name="firstName"
+                    formLabel={t('form.labels.firstName')}
+                    formControl={control}
+                    formItemClass="flex-1"
+                    formMessage={false}
+                />
             </div>
+            {(errors.honorific?.message || errors.firstName?.message) && (
+                <div className="mb-4">
+                    <FormItem>
+                        <FormMessage>
+                            {errors.honorific?.message} {errors.firstName?.message}
+                        </FormMessage>
+                    </FormItem>
+                </div>
+            )}
             <FormInput
                 name="lastName"
                 formLabel={t('form.labels.lastName')}

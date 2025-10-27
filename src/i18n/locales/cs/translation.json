@@ -1,4 +1,26 @@
 {
+  "app": {
+    "title": "EIRA Registrační formulář zaměstnance",
+    "ariaLabels": {
+      "scrollTabsLeft": "Posunout záložky vlevo",
+      "formSections": "Sekce formuláře",
+      "scrollTabsRight": "Posunout záložky vpravo"
+    },
+    "status": {
+      "progress": "Pokrok:",
+      "allChangesSaved": "Všechny změny uloženy",
+      "unsavedChanges": "Neuložené změny",
+      "lastSaved": "Naposledy uloženo:",
+      "justNow": "Právě teď",
+      "minutesAgo": "před {{minutes}}m",
+      "hoursAgo": "před {{hours}}h"
+    },
+    "declarations": {
+      "employeeDeclaration": "Prohlášení zaměstnance",
+      "emailAddressDeclaration": "Prohlášení o e-mailové adrese",
+      "personalDataProcessing": "Informace o zpracování osobních údajů"
+    }
+  },
   "form": {
     "errors": {
       "tableIncomplete": "Prosím vyplňte všechny povinná pole."
@@ -13,7 +35,7 @@
         "sex": "Musíte vybrat pohlaví.",
         "placeOfBirth": "Místo a země narození jsou povinná.",
         "maritalStatus": "Musíte vybrat rodinný stav.",
-        "foreigner": "Pole je povinné.",
+        "foreigner": "Musíte vybrat zda jste cizinec či ne.",
         "birthNumber": "Rodné číslo je povinné.",
         "foreignBirthNumber": "Rodné číslo cizince je povinné.",
         "insuranceBirthNumber": "Rodné číslo přidělené pojišťovnou je povinné.",
@@ -59,12 +81,16 @@
         "claimChildTaxRelief": "Vyberte, zda uplatňujete daňové zvýhodnění na dítě.",
         "childrenInfoFullName": "Jméno dítěte je povinné.",
         "childrenInfoBirthNumber": "Rodné číslo dítěte je povinné.",
-        "educationCertificate" :"Foto vzdělacího certifikátu je povinné",
+        "visaPassport": "Vízum/pas je povinné",
+        "highestEducationDocument": "Doklad o nejvyšším možném ukončeném vzdělání je povinné",
+        "childBirthCertificate": "Rodný list dítěte je povinný",
+        "pensionDecision": "Rozhodnutí o uznání důchodu je povinné",
         "confirmationReadEmployeeDeclaration": "Musíte potvrdit přečtení prohlášení zaměstnance.",
-        "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese."
+        "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese.",
+        "confirmationReadPersonalDataProcessing": "Musíte potvrdit přečtení informací o zpracování osobních údajů."
       },
       "format": {
-        "givenCodeLength": "Kód musí mít 5 číslic.",
+        "givenCodeLength": "Kód je povinný.",
         "firstName": "Jméno musí mít alespoň 2 znaky.",
         "lastName": "Příjmení musí mít alespoň 2 znaky.",
         "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
@@ -72,7 +98,6 @@
         "birthNumberMatchFail": "Rodné číslo neodpovídá zadanému datu narození nebo pohlaví.",
         "birthNumberDiversibilityFail": "Rodné číslo neprošlo kontrolou dělitelnosti.",
         "birthNumberAfter1954Fail": "Rodné číslo musí mít 4 číslice za lomítkem pro osoby narozené po roce 1954.",
-
         "idCardNumber": "Číslo občanského průkazu musí mít alespoň 1 znak.",
         "idCardIssuedBy": "Vyplňte, kdo vydal občanský průkaz.",
         "permanentStreet": "Ulice musí mít alespoň 1 znak.",
@@ -182,13 +207,24 @@
       "childrenInfoBirthNumber": "Rodné číslo dítěte",
       "residencePermitValidity": "Platnost povolení k pobytu",
       "lastJobPeriod": "Období poslední práce",
+      "visaPassport": "Vízum/pas",
       "residencePermitCopy": "Foto potvrzení o povolení k pobytu",
       "travelDocumentCopy": "Foto cestovního dokladu",
-      "wageDeductionDecision": "Foto potvrzení o srážkách ze mzdy",
-      "foodPass": "Foto potravinářského průkazu",
-      "educationCertificate": "Foto vzdělacího certifikátu",
+      "highestEducationDocument": "Doklad o nejvyšším možném ukončeném vzdělání",
+      "childBirthCertificate1": "Rodný list dítěte 1",
+      "childBirthCertificate2": "Rodný list dítěte 2",
+      "childBirthCertificate3": "Rodný list dítěte 3",
+      "childBirthCertificate4": "Rodný list dítěte 4",
+      "childTaxReliefConfirmation": "Potvrzení o neuplatnění nároku na odpočty na dítě 2. rodiče",
+      "pensionDecision": "Rozhodnutí o uznání důchodu",
+      "employmentConfirmation": "Potvrzení o předchozím zaměstnání (započtový list)",
       "confirmationReadEmployeeDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením zaměstnance",
-      "confirmationReadEmailAddressDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením ohledně emailové adresy zaměstnance"
+      "confirmationReadEmailAddressDeclaration": "Potvrzuji, že jsem si přečetl a souhlasím s prohlášením ohledně emailové adresy zaměstnance",
+      "confirmationReadPersonalDataProcessing": "Potvrzuji, že jsem se seznámil/a s výše uvedenými informacemi o zpracování mých osobních údajů a rozumím jim.",
+      "personalDataProcessing": "Potvrzuji, že jsem se seznámil/a s výše uvedenými informacemi o zpracování mých osobních údajů a rozumím jim."
+    },
+    "declarations": {
+      "personalDataProcessing": "Vaše osobní údaje zpracovává společnost [název společnosti] jako správce údajů. Údaje jsou zpracovávány za účelem vedení personální a mzdové agendy, plnění povinností vyplývajících z pracovního poměru a dodržení zákonných požadavků (např. vůči zdravotním pojišťovnám, ČSSZ nebo daňovým úřadům).\n\nPrávním základem zpracování je plnění pracovní smlouvy a splnění právních povinností zaměstnavatele. Vaše údaje mohou být zpřístupněny pouze oprávněným osobám, jako jsou pracovníci personálního oddělení, vedení společnosti, a příslušné státní orgány.\n\nÚdaje budou uchovávány po dobu trvání pracovního poměru a následně po dobu stanovenou příslušnými právními předpisy.\n\nMáte právo na přístup ke svým údajům, jejich opravu nebo výmaz, omezení zpracování, případně vznést námitku proti zpracování či podat stížnost u Úřadu pro ochranu osobních údajů."
     },
     "options": {
       "yesNo": {
@@ -251,7 +287,8 @@
         "orphansPension": "Sirotčí důchod"
       },
       "languageProficiency": {
-        "native": "Rodilý mluvčí"
+        "native": "Rodilý mluvčí",
+        "selectLevel": "-- Vyberte úroveň --"
       }
     },
     "modal": {
@@ -287,5 +324,101 @@
       "importJSON": "Importovat data JSON",
       "submitCode": "Uložit kód"
     }
+  },
+  "required": {
+    "givenCode": "Prosím zadejte kód.",
+    "honorary": "Prosím vyberte oslovení.",
+    "firstName": "Prosím zadejte jméno.",
+    "lastName": "Prosím zadejte příjmení.",
+    "dateOfBirth": "Datum narození je povinné.",
+    "sex": "Musíte vybrat pohlaví.",
+    "placeOfBirth": "Místo a země narození jsou povinná.",
+    "maritalStatus": "Musíte vybrat rodinný stav.",
+    "foreigner": "Musíte vybrat zda jste cizinec či ne.",
+    "birthNumber": "Rodné číslo je povinné.",
+    "foreignBirthNumber": "Rodné číslo cizince je povinné.",
+    "insuranceBirthNumber": "Rodné číslo přidělené pojišťovnou je povinné.",
+    "idCardNumber": "Číslo občanského průkazu je povinné.",
+    "idCardIssuedBy": "Vyplňte, kdo vydal občanský průkaz.",
+    "passportNumber": "Číslo cestovního dokladu je povinné.",
+    "passportIssuedBy": "Vyplňte, kdo vydal cestovní doklad.",
+    "citizenship": "Prosím vyberte zemi.",
+    "nationality": "Prosím vyberte národnost.",
+    "street": "Ulice je povinná.",
+    "houseNumber": "Číslo popisné je povinné.",
+    "city": "Město/Obec je povinné.",
+    "postalCode": "PSČ je povinné.",
+    "country": "Země je povinná.",
+    "contactSameAsPermanentAddress": "Prosím zvolte zda je kontaktní adresa stejná jako trvalá adresa.",
+    "email": "Emailová adresa je povinná.",
+    "phone": "Telefon je povinný.",
+    "employmentClassification": "Klasifikace zaměstnání je povinná.",
+    "jobPosition": "Pracovní pozice je povinná.",
+    "firstJobInCz": "Prosím vyberte zda je vaše první práce v ČR.",
+    "lastEmployer": "Poslední zaměstnavatel je povinný.",
+    "lastJobType": "Typ poslední práce je povinný.",
+    "lastJobPeriodFrom": "Začátek období poslední práce je povinný.",
+    "lastJobPeriodTo": "Konec období poslední práce je povinný.",
+    "bankingInstitutionName": "Název bankovní instituce je povinný.",
+    "bankAccountNumber": "Číslo bankovního účtu je povinné.",
+    "bankCode": "Kód banky je povinný.",
+    "healthInsurance": "Zdravotní pojišťovna je povinná.",
+    "highestEducation": "Nejvyšší dosažené vzdělání je povinné.",
+    "highestEducationSchool": "Název školy je povinný.",
+    "fieldOfStudy": "Studijní obor je povinný.",
+    "graduationYear": "Rok ukončení studia je povinný.",
+    "studyCity": "Město studia je povinné.",
+    "language": "Jazyk je povinný.",
+    "languageProficiency": "Úroveň znalosti jazyka je povinná.",
+    "languageExamType": "Typ jazykové zkoušky je povinný.",
+    "hasDisability": "Vyberte, zda máte zdravotní postižení.",
+    "receivesPension": "Vyberte, zda pobíráte důchod.",
+    "pensionType": "Typ důchodu je povinný.",
+    "activityBan": "Vyberte, zda máte zákaz činnosti.",
+    "hasWageDeductions": "Vyberte, zda máte srážky ze mzdy.",
+    "numberOfDependents": "Počet vyživovaných dětí je povinný.",
+    "claimChildTaxRelief": "Vyberte, zda uplatňujete daňové zvýhodnění na dítě.",
+    "childrenInfoFullName": "Jméno dítěte je povinné.",
+    "childrenInfoBirthNumber": "Rodné číslo dítěte je povinné.",
+    "visaPassport": "Vízum/pas je povinné",
+    "highestEducationDocument": "Doklad o nejvyšším možném ukončeném vzdělání je povinné",
+    "childBirthCertificate": "Rodný list dítěte je povinný",
+    "pensionDecision": "Rozhodnutí o uznání důchodu je povinné",
+    "confirmationReadEmployeeDeclaration": "Musíte potvrdit přečtení prohlášení zaměstnance.",
+    "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese.",
+    "confirmationReadPersonalDataProcessing": "Musíte potvrdit přečtení informací o zpracování osobních údajů."
+  },
+  "format": {
+    "givenCodeLength": "Kód musí mít 5 číslic.",
+    "firstName": "Jméno musí mít alespoň 2 znaky.",
+    "lastName": "Příjmení musí mít alespoň 2 znaky.",
+    "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
+    "birthNumberFormatFail": "Rodné číslo musí být ve formátu YYMMDD/XXXX nebo YYMMDD/XXX.",
+    "birthNumberMatchFail": "Rodné číslo neodpovídá zadanému datu narození nebo pohlaví.",
+    "birthNumberDiversibilityFail": "Rodné číslo neprošlo kontrolou dělitelnosti.",
+    "birthNumberAfter1954Fail": "Rodné číslo musí mít 4 číslice za lomítkem pro osoby narozené po roce 1954.",
+    "idCardNumber": "Číslo občanského průkazu musí mít alespoň 1 znak.",
+    "idCardIssuedBy": "Vyplňte, kdo vydal občanský průkaz.",
+    "permanentStreet": "Ulice musí mít alespoň 1 znak.",
+    "permanentHouseNumber": "Číslo popisné musí mít alespoň 1 znak.",
+    "permanentCity": "Město/Obec musí mít alespoň 1 znak.",
+    "permanentPostalCode": "PSČ musí mít alespoň 1 číslici.",
+    "permanentCountry": "Země musí mít alespoň 1 znak.",
+    "email": "Emailová adresa musí být platná.",
+    "phone": "Musí být v mezinárodním formátu s kódem země (např. +420123456789).",
+    "employmentClassification": "Klasifikace zaměstnání musí mít alespoň 2 znaky.",
+    "jobPosition": "Pracovní pozice musí mít alespoň 2 znaky.",
+    "lastJobType": "Typ poslední práce musí mít alespoň 2 znaky.",
+    "bankingInstitutionName": "Název banky musí mít alespoň 2 znaky.",
+    "bankAccountNumber": "Číslo účtu musí mít alespoň 8 číslic.",
+    "highestEducationSchool": "Název školy musí mít alespoň 1 znak.",
+    "fieldOfStudy": "Studijní obor musí mít alespoň 1 znak.",
+    "graduationYear": "Rok ukončení studia musí mít 4 číslice.",
+    "studyCity": "Město studia musí mít alespoň 2 znaky.",
+    "language": "Jazyk musí mít alespoň 1 znak.",
+    "languageExamType": "Typ jazykové zkoušky musí mít alespoň 1 znak.",
+    "placeOfBirth": "Místo narození musí mít alespoň 1 znak.",
+    "childrenInfoFullName": "Jméno a příjmení dítěte musí mít alespoň 1 znak.",
+    "childrenInfoBirthNumber": "Rodné číslo dítěte musí mít alespoň 1 znak."
   }
 }

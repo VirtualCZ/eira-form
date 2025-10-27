@@ -68,6 +68,7 @@ export const EducationAndLanguagesTab = ({ control }: EducationAndLanguagesTabPr
                         errorPath: "languageProficiency",
                         type: "select",
                         options: [
+                            { value: "none", label: t('form.options.languageProficiency.selectLevel') },
                             { value: "A1", label: "A1" },
                             { value: "A2", label: "A2" },
                             { value: "B1", label: "B1" },
@@ -85,7 +86,6 @@ export const EducationAndLanguagesTab = ({ control }: EducationAndLanguagesTabPr
                         type: "text"
                     },
                 ]}
-                errors={Array.isArray(control._formState.errors.languageSkills) ? control._formState.errors.languageSkills : undefined}
             />
         </>
     )

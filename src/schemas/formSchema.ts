@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { validateCzechSSN } from "@/lib/czechSSNValidation";
 
 export const getFormSchema = (t: (key: string) => string) => z.object({
-    givenCode: z.number({
+    givenCode: z.string({
         required_error: t('form.validation.required.givenCode')
-    }).refine(val => val >= 10000 && val <= 99999, {
+    }).min(1, {
         message: t('form.validation.format.givenCodeLength')
     }),
     titleBeforeName: z.string().optional(),
@@ -48,7 +49,10 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
 
     birthNumber: z.string({
         required_error: t('form.validation.required.birthNumber'),
-    }).regex(/^\d{6}\/\d{3,4}$/, {
+    }).refine((value) => {
+        const result = validateCzechSSN(value, t);
+        return result.isValid;
+    }, {
         message: t('form.validation.format.birthNumberFormatFail'),
     }),
     foreignBirthNumber: z.string().optional(),
@@ -111,7 +115,9 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
 
     email: z.string({
         required_error: t('form.validation.required.email'),
-    }).email().min(5, {
+    }).refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+        message: t('form.validation.format.email'),
+    }).refine((val) => val.length >= 5, {
         message: t('form.validation.format.email'),
     }),
     phone: z.string({
@@ -128,16 +134,8 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
     residencePermitType: z.string().optional(),
     residencePermitPurpose: z.string().optional(),
 
-    employmentClassification: z.string({
-        required_error: t('form.validation.required.employmentClassification'),
-    }).min(2, {
-        message: t('form.validation.format.employmentClassification'),
-    }),
-    jobPosition: z.string({
-        required_error: t('form.validation.required.jobPosition'),
-    }).min(2, {
-        message: t('form.validation.format.jobPosition'),
-    }),
+    employmentClassification: z.string().optional(),
+    jobPosition: z.string().optional(),
     firstJobInCz: z.enum(["yes", "no"],
         {
             required_error: t('form.validation.required.firstJobInCz'),
@@ -200,16 +198,24 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         }).min(1, {
             message: t('form.validation.format.language'),
         }),
-        languageProficiency: z.enum(["-", "A1", "A2", "B1", "B2", "C1", "C2", "native"],
+        languageProficiency: z.string().refine((val) => 
+            val !== "none" && ["A1", "A2", "B1", "B2", "C1", "C2", "native"].includes(val),
             {
-                required_error: t('form.validation.required.languageProficiency'),
+                message: t('form.validation.required.languageProficiency'),
             }
         ),
-        languageExamType: z.string({
-            required_error: t('form.validation.required.languageExamType'),
-        }).min(1, {
-            message: t('form.validation.format.languageExamType'),
-        }),
+        languageExamType: z.string().optional(),
+    }).superRefine((data, ctx) => {
+        // If languageProficiency is not "none" and not "native", exam type is required
+        if (data.languageProficiency && data.languageProficiency !== "none" && data.languageProficiency !== "native") {
+            if (!data.languageExamType || data.languageExamType.trim() === "") {
+                ctx.addIssue({
+                    path: ["languageExamType"],
+                    code: z.ZodIssueCode.custom,
+                    message: t('form.validation.required.languageExamType'),
+                });
+            }
+        }
     })).optional(),
     hasDisability: z.enum(["yes", "no"], {
         required_error: t('form.validation.required.hasDisability'),
@@ -271,11 +277,18 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         }),
     })).optional(),
 
-    foodPass: z.array(z.string()).optional(),
+    // Document fields
+    visaPassport: z.array(z.string()).optional(),
     travelDocumentCopy: z.array(z.string()).optional(),
     residencePermitCopy: z.array(z.string()).optional(),
-    educationCertificate: z.array(z.string()).optional(),
-    wageDeductionDecision: z.array(z.string()).optional(),
+    highestEducationDocument: z.array(z.string()).optional(),
+    childBirthCertificate1: z.array(z.string()).optional(),
+    childBirthCertificate2: z.array(z.string()).optional(),
+    childBirthCertificate3: z.array(z.string()).optional(),
+    childBirthCertificate4: z.array(z.string()).optional(),
+    childTaxReliefConfirmation: z.array(z.string()).optional(),
+    pensionDecision: z.array(z.string()).optional(),
+    employmentConfirmation: z.array(z.string()).optional(),
 
     confirmationReadEmployeeDeclaration: z.boolean({
         required_error: t('form.validation.required.confirmationReadEmployeeDeclaration'),
@@ -286,6 +299,11 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         required_error: t('form.validation.required.confirmationReadEmailAddressDeclaration'),
     }).refine(val => val === true, {
         message: t('form.validation.required.confirmationReadEmailAddressDeclaration')
+    }),
+    confirmationReadPersonalDataProcessing: z.boolean({
+        required_error: t('form.validation.required.confirmationReadPersonalDataProcessing'),
+    }).refine(val => val === true, {
+        message: t('form.validation.required.confirmationReadPersonalDataProcessing')
     })
 }).superRefine((data, ctx) => {
     if (data.firstJobInCz === "yes") {
@@ -329,6 +347,80 @@ export const getFormSchema = (t: (key: string) => string) => z.object({
         t,
         ctx
     );
+
+    // Conditional validations for documents
+    // If foreigner = yes, visa/passport is required
+    if (data.foreigner === "yes" && (!data.visaPassport || data.visaPassport.length === 0)) {
+        ctx.addIssue({
+            path: ["visaPassport"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.required.visaPassport'),
+        });
+    }
+
+    // If receivesPension = yes, pension decision is required
+    if (data.receivesPension === "yes" && (!data.pensionDecision || data.pensionDecision.length === 0)) {
+        ctx.addIssue({
+            path: ["pensionDecision"],
+            code: z.ZodIssueCode.custom,
+            message: t('form.validation.required.pensionDecision'),
+        });
+    }
+
+    // If claimChildTaxRelief = yes, at least one child birth certificate is required
+    if (data.claimChildTaxRelief === "yes") {
+        const hasChildBirthCertificate = (data.childBirthCertificate1?.length ?? 0) > 0 ||
+            (data.childBirthCertificate2?.length ?? 0) > 0 ||
+            (data.childBirthCertificate3?.length ?? 0) > 0 ||
+            (data.childBirthCertificate4?.length ?? 0) > 0;
+        
+        if (!hasChildBirthCertificate) {
+            ctx.addIssue({
+                path: ["childBirthCertificate1"],
+                code: z.ZodIssueCode.custom,
+                message: t('form.validation.required.childBirthCertificate'),
+            });
+        }
+    }
+
+    // If contact address is different from permanent, validate contact address fields
+    if (data.contactSameAsPermanentAddress === "no") {
+        if (!data.contactStreet || data.contactStreet.trim() === "") {
+            ctx.addIssue({
+                path: ["contactStreet"],
+                code: z.ZodIssueCode.custom,
+                message: t('form.validation.required.street'),
+            });
+        }
+        if (!data.contactHouseNumber) {
+            ctx.addIssue({
+                path: ["contactHouseNumber"],
+                code: z.ZodIssueCode.custom,
+                message: t('form.validation.required.houseNumber'),
+            });
+        }
+        if (!data.contactCity || data.contactCity.trim() === "") {
+            ctx.addIssue({
+                path: ["contactCity"],
+                code: z.ZodIssueCode.custom,
+                message: t('form.validation.required.city'),
+            });
+        }
+        if (!data.contactPostalCode) {
+            ctx.addIssue({
+                path: ["contactPostalCode"],
+                code: z.ZodIssueCode.custom,
+                message: t('form.validation.required.postalCode'),
+            });
+        }
+        if (!data.contactCountry || data.contactCountry.trim() === "") {
+            ctx.addIssue({
+                path: ["contactCountry"],
+                code: z.ZodIssueCode.custom,
+                message: t('form.validation.required.country'),
+            });
+        }
+    }
 })
 
 export type FormData = z.infer<ReturnType<typeof getFormSchema>>;

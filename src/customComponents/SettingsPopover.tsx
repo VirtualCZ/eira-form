@@ -5,21 +5,31 @@ import { Settings } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Input } from '@/components/ui/input';
 import { useRef } from 'react';
-import FormInput from './FormInput';
-import { Control } from 'react-hook-form';
+import { Control, useWatch } from 'react-hook-form';
 import { FormData } from '@/schemas/formSchema';
+import { Label } from '@/components/ui/label';
 
-export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, formControl }: {
+export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, onCodeChange, formControl }: {
   onClear: () => void,
   onExportJSON: () => void
   onImportJSON: (file: File) => void
+  onCodeChange?: (value: string) => void
   formControl: Control<FormData>
 }) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const code = useWatch({ control: formControl, name: 'givenCode' });
+  
   const handleImportClick = () => {
     fileInputRef.current?.click()
   }
+  
+  const handleCodeChange = (value: string) => {
+    if (onCodeChange) {
+      onCodeChange(value);
+    }
+  }
+  
 
   return (
     <Popover>
@@ -31,10 +41,7 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, f
       <PopoverContent className="w-48 p-2 flex flex-col gap-2">
         <Button
           variant="destructive"
-          onClick={() => {
-            onClear()
-            onClear()
-          }}
+          onClick={onClear}
           className="w-full"
         >
           {t('form.buttons.clearForm')}
@@ -64,13 +71,15 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, f
         >
           {t('form.buttons.exportJSON')}
         </Button>
-        <FormInput
-          name="givenCode"
-          formLabel={t('form.labels.givenCode')}
-          formControl={formControl}
-          formPlaceholder="XXXXX"
-          inputType='number'
-        />
+        <div>
+          <Label className="text-sm font-medium mb-1 block">{t('form.labels.givenCode')}</Label>
+          <Input
+            type="text"
+            placeholder="Enter code"
+            value={code || ''}
+            onChange={(e) => handleCodeChange(e.target.value)}
+          />
+        </div>
         <LanguageSwitcher />
       </PopoverContent>
     </Popover>

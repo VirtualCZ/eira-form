@@ -40,7 +40,6 @@ export const FamilyAndChildrenTab = ({ control }: FamilyAndChildrenTabProps) => 
                         errorPath: "childrenInfoBirthNumber"
                     }
                 ]}
-                errors={Array.isArray(control._formState.errors.childrenInfo) ? control._formState.errors.childrenInfo : undefined}
             />
         </>
     )

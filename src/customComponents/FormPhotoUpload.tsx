@@ -6,12 +6,14 @@ interface FormPhotoUploadProps<T extends FieldValues> {
   name: Path<T>;
   formControl: Control<T>;
   label: string;
+  required?: boolean;
 }
 
 export default function FormPhotoUpload<T extends FieldValues>({
   name,
   formControl,
-  label
+  label,
+  required = false
 }: FormPhotoUploadProps<T>) {
   const { field, fieldState } = useController({
     name: name,
@@ -49,6 +51,7 @@ export default function FormPhotoUpload<T extends FieldValues>({
         data-error={!!fieldState.error}
       >
         {label}
+        {required && <span className="text-destructive ml-1">*</span>}
       </label>
       <Input
         type="file"
