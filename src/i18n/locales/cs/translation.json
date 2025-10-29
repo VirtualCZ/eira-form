@@ -90,7 +90,7 @@
         "confirmationReadPersonalDataProcessing": "Musíte potvrdit přečtení informací o zpracování osobních údajů."
       },
       "format": {
-        "givenCodeLength": "Kód je povinný.",
+        "givenCodeLength": "Kód musí mít přesně 5 znaků.",
         "firstName": "Jméno musí mít alespoň 2 znaky.",
         "lastName": "Příjmení musí mít alespoň 2 znaky.",
         "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
@@ -323,6 +323,9 @@
       "exportJSON": "Exportovat jako JSON",
       "importJSON": "Importovat data JSON",
       "submitCode": "Uložit kód"
+    },
+    "placeholders": {
+      "givenCode": "Zadejte kód (5 znaků)"
     }
   },
   "required": {

@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ModalProvider } from '@/components/ModalSystem';
-import { ProgressBar, FormStatus } from '@/components/ProgressIndicator';
+// import { ProgressBar, FormStatus } from '@/components/ProgressIndicator'; // Hidden for now
 import { StickyNavigation } from '@/components/StickyNavigation';
 import { useFormState } from '@/hooks/useFormState';
 import { useTabNavigation } from '@/hooks/useTabNavigation';
@@ -91,7 +91,7 @@ const FormTabsTrigger: React.FC<{
 
 const MainApp: React.FC = () => {
   const { t } = useTranslation();
-  const { form, formState, actions, setIsSubmitting } = useFormState();
+  const { form, formState, actions, setIsSubmitting, clearKey } = useFormState();
   const { getValidationResult, formatErrorMessage } = useFormValidation();
   const { showError, showSuccess, showLoading, showValidationErrors, hideModal } = useModal();
   const submissionService = createEiraSubmissionService();
@@ -176,8 +176,30 @@ const MainApp: React.FC = () => {
   };
 
   const handleInvalid = (errors: any) => {
-    const validationResult = getValidationResult(errors, {});
-    const errorMessages = validationResult.errors.map(formatErrorMessage);
+    // Create tab fields map for error grouping
+    const tabFieldsMap = navState.tabs.reduce((acc, tab) => {
+      acc[tab.id] = tab.fields;
+      return acc;
+    }, {} as Record<string, string[]>);
+    
+    const validationResult = getValidationResult(errors, tabFieldsMap);
+    
+    // Format errors with tab information
+    const errorMessages = validationResult.errors.map(error => {
+      // Find which tab this error belongs to
+      const tabId = Object.entries(tabFieldsMap).find(([, fields]) =>
+        fields.some(field => error.field.startsWith(field))
+      )?.[0];
+      
+      const formattedMessage = formatErrorMessage(error);
+      
+      if (tabId) {
+        const tabLabel = t(navState.tabs.find(t => t.id === tabId)?.label || tabId);
+        return `${tabLabel}: ${formattedMessage}`;
+      }
+      
+      return formattedMessage;
+    });
     
     showValidationErrors(errorMessages, t('form.modal.validationErrorTitle'));
     announceValidation(false, errorMessages);
@@ -234,21 +256,110 @@ const MainApp: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const codeFromUrl = urlParams.get('code');
     
-    if (codeFromUrl) {
-      form.setValue('givenCode', codeFromUrl);
+    if (codeFromUrl && codeFromUrl.length === 5) {
+      // Load data for the code from URL - loadDataForCode will set the code field
+      actions.loadDataForCode(codeFromUrl).catch(err => console.error('Error loading data for code:', err));
+    } else {
+      // Check if code exists in localStorage
+      const lastCode = localStorage.getItem('eira-form-last-code');
+      if (lastCode && lastCode.length === 5) {
+        // Load data for the last used code - loadDataForCode will set the code field
+        actions.loadDataForCode(lastCode).catch(err => console.error('Error loading data for code:', err));
+      } else {
+        // No code found - show modal
+        setShowCodeModal(true);
+      }
     }
-    
-    // Check if code exists in form
-    const currentCode = form.watch('givenCode');
-    if (!currentCode) {
-      setShowCodeModal(true);
-    }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   const handleCodeSubmit = async () => {
-    if (codeInput.trim().length > 0) {
-      form.setValue('givenCode', codeInput.trim());
+    const trimmedCode = codeInput.trim();
+    if (trimmedCode.length === 5) {
+      // Load data for the entered code - loadDataForCode will set the code field
+      await actions.loadDataForCode(trimmedCode).catch(err => console.error('Error loading data for code:', err));
       setShowCodeModal(false);
+      setCodeInput('');
+    }
+  };
+
+  // Handle code change from settings popover
+  const handleCodeChange = (newCode: string) => {
+    if (newCode && newCode.length === 5) {
+      const currentCode = form.getValues('givenCode');
+      
+      // Only switch if code actually changed
+      if (newCode !== currentCode) {
+        // IMPORTANT: Save current data to old code BEFORE reloading
+        if (currentCode && currentCode.length === 5) {
+          // Get current form state while old code is still active
+          const formData = form.getValues();
+          
+          // Ensure the saved data has the correct old code
+          const dataToSave = { ...formData, givenCode: currentCode };
+          
+          // Save directly to localStorage with old code immediately
+          const STORAGE_PREFIX = 'eira-form-data-';
+          const storageKey = `${STORAGE_PREFIX}${currentCode}`;
+          
+          // Exclude image fields to avoid localStorage overflow
+          const imageFields = [
+            'visaPassport', 'travelDocumentCopy', 'residencePermitCopy',
+            'highestEducationDocument', 'childBirthCertificate1',
+            'childBirthCertificate2', 'childBirthCertificate3',
+            'childBirthCertificate4', 'childTaxReliefConfirmation',
+            'pensionDecision', 'employmentConfirmation'
+          ];
+          const dataWithoutImages = { ...dataToSave };
+          imageFields.forEach(field => {
+            delete dataWithoutImages[field as keyof typeof dataWithoutImages];
+          });
+          
+          // Serialize dates before saving (dates must be converted to strings for JSON)
+          const dateFields = [
+            'dateOfBirth', 'residencePermitValidityFrom', 'residencePermitValidityUntil',
+            'lastJobPeriodFrom', 'lastJobPeriodTo', 'disabilityDecisionDate',
+            'pensionDecisionDate', 'wageDeductionDate'
+          ];
+          const serializeDates = (obj: any): any => {
+            if (!obj || typeof obj !== 'object') return obj;
+            if (Array.isArray(obj)) return obj.map(serializeDates);
+            const result = { ...obj };
+            for (const key in result) {
+              if (dateFields.includes(key) && result[key] instanceof Date) {
+                result[key] = result[key].toISOString();
+              } else if (typeof result[key] === 'object' && result[key] !== null) {
+                result[key] = serializeDates(result[key]);
+              }
+            }
+            return result;
+          };
+          const serializedData = serializeDates(dataWithoutImages);
+          
+          // Add timestamp to track when data was saved
+          const dataWithTimestamp = {
+            ...serializedData,
+            _timestamp: Date.now()
+          };
+          
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(dataWithTimestamp));
+            console.log(`✅ Saved data to code: ${currentCode}`, Object.keys(dataWithoutImages).length, 'fields');
+          } catch (error) {
+            console.error('Error saving data:', error);
+          }
+        }
+        
+        // Update URL with new code and reload the page
+        const url = new URL(window.location.href);
+        url.searchParams.set('code', newCode);
+        window.location.href = url.toString();
+      } else {
+        // Code is the same - just update URL without reloading
+        const url = new URL(window.location.href);
+        url.searchParams.set('code', newCode);
+        window.history.replaceState({}, '', url.toString());
+      }
     }
   };
 
@@ -261,20 +372,21 @@ const MainApp: React.FC = () => {
                   {t('app.title')}
                 </h1>
           
-          <div className="flex items-center gap-4 mb-4">
+          {/* Progress bar hidden for now */}
+          {/* <div className="flex items-center gap-4 mb-4">
             <ProgressBar progress={formState.progress} className="flex-1" />
             <FormStatus
               hasUnsavedChanges={formState.hasUnsavedChanges}
               lastSaved={formState.lastSaved}
               progress={formState.progress}
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
       {/* Main Form */}
       <div className="max-w-4xl mx-auto p-4">
-        <Form {...form}>
+        <Form {...form} key={clearKey}>
           <form onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}>
           {/* Tab Navigation */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
@@ -344,9 +456,10 @@ const MainApp: React.FC = () => {
         onClear={actions.clear}
         onExport={handleExport}
         onImport={handleImport}
-        onCodeChange={(value: string) => form.setValue('givenCode', value)}
-                  formControl={form.control}
-                />
+        onCodeChange={handleCodeChange}
+        formControl={form.control}
+        setValue={form.setValue}
+      />
       
       {/* Code Entry Modal */}
       <Dialog open={showCodeModal} onOpenChange={() => {}}>
@@ -360,13 +473,20 @@ const MainApp: React.FC = () => {
           <div className="space-y-4">
             <Input
               type="text"
-              placeholder="Enter code"
+              placeholder={t('form.placeholders.givenCode')}
               value={codeInput}
+              maxLength={5}
               onChange={(e) => setCodeInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && codeInput.trim().length === 5) {
+                  handleCodeSubmit();
+                }
+              }}
             />
             <Button
               className="w-full"
               onClick={handleCodeSubmit}
+              disabled={codeInput.trim().length !== 5}
             >
               {t('form.buttons.submitCode')}
             </Button>

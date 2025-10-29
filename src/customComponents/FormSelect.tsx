@@ -35,7 +35,11 @@ const FormSelect = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem className={formItemClass}>
           <FormLabel>{formLabel}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select 
+            onValueChange={field.onChange} 
+            value={field.value ?? undefined}
+            key={field.value ?? 'empty'}
+          >
             <FormControl>
               <SelectTrigger className={formTriggerClass}>
                 <SelectValue placeholder={placeholder} />

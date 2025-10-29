@@ -4,7 +4,7 @@ import { validateCzechSSN } from "@/lib/czechSSNValidation";
 export const getFormSchema = (t: (key: string) => string) => z.object({
     givenCode: z.string({
         required_error: t('form.validation.required.givenCode')
-    }).min(1, {
+    }).length(5, {
         message: t('form.validation.format.givenCodeLength')
     }),
     titleBeforeName: z.string().optional(),

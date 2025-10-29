@@ -4,35 +4,62 @@ import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popove
 import { Settings } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { Input } from '@/components/ui/input';
-import { useRef } from 'react';
-import { Control, useWatch } from 'react-hook-form';
+import { useRef, useState, useEffect } from 'react';
+import { Control, useWatch, UseFormSetValue } from 'react-hook-form';
 import { FormData } from '@/schemas/formSchema';
 import { Label } from '@/components/ui/label';
 
-export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, onCodeChange, formControl }: {
+export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, onCodeChange, formControl, setValue }: {
   onClear: () => void,
   onExportJSON: () => void
   onImportJSON: (file: File) => void
   onCodeChange?: (value: string) => void
   formControl: Control<FormData>
+  setValue: UseFormSetValue<FormData>
 }) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null)
   const code = useWatch({ control: formControl, name: 'givenCode' });
+  const [isOpen, setIsOpen] = useState(false);
+  const [localCodeInput, setLocalCodeInput] = useState('');
+  const [lastValidCode, setLastValidCode] = useState('');
+  
+  // Sync local input with form code when popover opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      // When opening, initialize with current code and remember last valid code
+      setLocalCodeInput(code || '');
+      setLastValidCode(code && code.length === 5 ? code : '');
+    }
+  }, [isOpen, code]);
   
   const handleImportClick = () => {
     fileInputRef.current?.click()
   }
-  
-  const handleCodeChange = (value: string) => {
-    if (onCodeChange) {
-      onCodeChange(value);
+
+  const handlePopoverOpenChange = (open: boolean) => {
+    if (!open) {
+      // Popover is closing - validate and handle code
+      const trimmedCode = localCodeInput.trim();
+      
+      if (trimmedCode.length === 5) {
+        // Valid code - trigger change (will load new data and save)
+        if (onCodeChange) {
+          onCodeChange(trimmedCode);
+        }
+      } else {
+        // Invalid code - revert to last valid code (don't trigger load)
+        if (lastValidCode && lastValidCode.length === 5) {
+          // Revert form value to last valid code without loading
+          setValue('givenCode', lastValidCode);
+        }
+      }
     }
+    setIsOpen(open);
   }
-  
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={handlePopoverOpenChange}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="icon">
           <Settings className="h-4 w-4" />
@@ -75,9 +102,12 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, o
           <Label className="text-sm font-medium mb-1 block">{t('form.labels.givenCode')}</Label>
           <Input
             type="text"
-            placeholder="Enter code"
-            value={code || ''}
-            onChange={(e) => handleCodeChange(e.target.value)}
+            placeholder={t('form.placeholders.givenCode')}
+            value={localCodeInput}
+            maxLength={5}
+            onChange={(e) => {
+              setLocalCodeInput(e.target.value);
+            }}
           />
         </div>
         <LanguageSwitcher />

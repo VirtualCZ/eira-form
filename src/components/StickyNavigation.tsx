@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SettingsPopover from '@/customComponents/SettingsPopover';
-import { Control } from 'react-hook-form';
+import { Control, UseFormSetValue } from 'react-hook-form';
 import { FormData } from '@/schemas/formSchema';
 
 interface StickyNavigationProps {
@@ -19,6 +19,7 @@ interface StickyNavigationProps {
   onImport: (file: File) => void;
   onCodeChange?: (value: string) => void;
   formControl: Control<FormData>;
+  setValue: UseFormSetValue<FormData>;
 }
 
 export const StickyNavigation: React.FC<StickyNavigationProps> = ({
@@ -33,7 +34,8 @@ export const StickyNavigation: React.FC<StickyNavigationProps> = ({
   onExport,
   onImport,
   onCodeChange,
-  formControl
+  formControl,
+  setValue
 }) => {
   const { t } = useTranslation();
 
@@ -61,6 +63,7 @@ export const StickyNavigation: React.FC<StickyNavigationProps> = ({
               onImportJSON={onImport}
               onCodeChange={onCodeChange}
               formControl={formControl}
+              setValue={setValue}
             />
             
             {isLastPage ? (

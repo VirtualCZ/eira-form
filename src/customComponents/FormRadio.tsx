@@ -38,7 +38,7 @@ const FormRadio = <T extends FieldValues>({
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
-              defaultValue={field.value}
+              value={field.value || undefined}
               className={radioGroupClass}
             >
               {options.map((option) => {

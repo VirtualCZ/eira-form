@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import SettingsPopover from './SettingsPopover';
-import { Control } from 'react-hook-form';
+import { Control, UseFormSetValue } from 'react-hook-form';
 import { FormData } from '@/schemas/formSchema';
 
 interface NavigationButtonsProps {
@@ -11,7 +11,9 @@ interface NavigationButtonsProps {
     handleClear: () => void
     onExportJSON: () => void
     onImportJSON: (file: File) => void
-    formControl: Control<FormData>,
+    formControl: Control<FormData>
+    setValue: UseFormSetValue<FormData>
+    onCodeChange?: (value: string) => void
 }
 export default function NavigationButtons({
     activeTab,
@@ -20,7 +22,9 @@ export default function NavigationButtons({
     handleClear,
     onExportJSON,
     onImportJSON,
-    formControl
+    formControl,
+    setValue,
+    onCodeChange
 }: NavigationButtonsProps) {
     const { t } = useTranslation();
     const tabs = ["personalInformation", "addresses", "contacts", "foreigners", "employment",
@@ -49,7 +53,9 @@ export default function NavigationButtons({
                                 onClear={handleClear}
                                 onExportJSON={onExportJSON}
                                 onImportJSON={onImportJSON}
+                                onCodeChange={onCodeChange}
                                 formControl={formControl}
+                                setValue={setValue}
                             />
                             <Button type="submit">{t('form.buttons.submit')}</Button>
                         </div>
@@ -70,7 +76,9 @@ export default function NavigationButtons({
                             onClear={handleClear}
                             onExportJSON={onExportJSON}
                             onImportJSON={onImportJSON}
+                            onCodeChange={onCodeChange}
                             formControl={formControl}
+                            setValue={setValue}
                         />
                         <Button
                             type="button"

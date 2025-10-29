@@ -66,23 +66,25 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   }, [modals]);
 
   const showError = useCallback((title: string, description?: string, actions?: ModalAction[]) => {
+    const modalId = `error-${Date.now()}`;
     showModal({
-      id: `error-${Date.now()}`,
+      id: modalId,
       title,
       description,
       type: 'error',
-      actions: actions || [{ label: 'OK', onClick: () => hideModal(`error-${Date.now()}`) }],
+      actions: actions || [{ label: 'OK', onClick: () => hideModal(modalId) }],
       closable: true
     });
   }, [showModal, hideModal]);
 
   const showSuccess = useCallback((title: string, description?: string, actions?: ModalAction[]) => {
+    const modalId = `success-${Date.now()}`;
     showModal({
-      id: `success-${Date.now()}`,
+      id: modalId,
       title,
       description,
       type: 'success',
-      actions: actions || [{ label: 'OK', onClick: () => hideModal(`success-${Date.now()}`) }],
+      actions: actions || [{ label: 'OK', onClick: () => hideModal(modalId) }],
       closable: true
     });
   }, [showModal, hideModal]);
@@ -187,8 +189,14 @@ const Modal: React.FC<ModalProps> = ({ config, onClose }) => {
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open && config.closable !== false) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={true} onOpenChange={config.closable !== false ? onClose : undefined}>
+    <Dialog open={true} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">

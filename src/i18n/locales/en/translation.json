@@ -92,7 +92,7 @@
         "confirmationReadPersonalDataProcessing": "You must confirm reading the personal data processing information."
       },
       "format": {
-        "givenCodeLength": "Code is required.",
+        "givenCodeLength": "Code must be exactly 5 characters.",
         "firstName": "First name must be at least 2 characters.",
         "lastName": "Surname must be at least 2 characters.",
         "birthSurname": "Birth surname must be at least 2 characters.",
@@ -228,7 +228,7 @@
     "declarations": {
       "personalDataProcessing": "Your personal data is processed by [company name] as the data controller. The data is processed for the purpose of managing personnel and payroll, fulfilling obligations arising from the employment relationship, and meeting legal requirements (e.g., towards health insurance companies, CSSZ or tax offices).\n\nThe legal basis for processing is the fulfillment of the employment contract and compliance with the employer's legal obligations. Your data may only be made available to authorized persons, such as personnel department staff, company management, and relevant state authorities.\n\nThe data will be stored for the duration of the employment relationship and subsequently for the period specified by applicable legal regulations.\n\nYou have the right to access your data, correct or delete it, limit processing, or object to processing or file a complaint with the Office for Personal Data Protection."
     },
-    "options": {
+    "fieldDescriptions": {
       "sex": "Gender",
       "placeOfBirth": "Place and country of birth",
       "maritalStatus": "Marital status",
@@ -410,6 +410,9 @@
       "exportJSON": "Export form JSON",
       "importJSON": "Import form JSON",
       "submitCode": "Save code"
+    },
+    "placeholders": {
+      "givenCode": "Enter code (5 characters)"
     }
   },
   "required": {
