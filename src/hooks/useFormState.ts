@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FormData, getFormSchema } from '@/schemas/formSchema';
 import { IMAGE_FIELDS, LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates } from '@/services/FormPersistence';
 import { isValidCode } from '@/lib/codeUtils';
+import { hasFieldData } from '@/lib/formDataUtils';
 
 export interface FormState {
   isDirty: boolean;
@@ -101,52 +102,12 @@ export const useFormState = () => {
 
   // Calculate form progress
   const progress = useMemo(() => {
-    const formData = watchedValues;
-    // Exclude givenCode and _timestamp from progress calculation
+    const formData = watchedValues as Record<string, unknown>;
     const excludedFields = ['givenCode', '_timestamp'];
-    const fieldsToCount = Object.entries(formData).filter(([key]) => 
-      !excludedFields.includes(key)
-    );
-    
+    const fieldsToCount = Object.entries(formData).filter(([key]) => !excludedFields.includes(key));
     const totalFields = fieldsToCount.length;
     if (totalFields === 0) return 0;
-    
-    // Use the same hasFieldData logic as auto-save for consistency
-    const hasFieldData = (val: any): boolean => {
-      if (val === undefined || val === null) return false;
-      if (typeof val === 'string' && val.trim() === '') return false;
-      if (Array.isArray(val)) {
-        // For arrays, check if any item has data
-        if (val.length === 0) return false;
-        // For arrays of objects (like languageSkills, childrenInfo from FormTable)
-        // FormTable creates objects with properties that might include "none" values
-        return val.some(item => {
-          if (typeof item === 'object' && item !== null) {
-            // Check if object has any non-empty properties
-            // Ignore "none" values for select fields
-            return Object.values(item).some(propVal => {
-              if (propVal === undefined || propVal === null) return false;
-              if (typeof propVal === 'string') {
-                const trimmed = propVal.trim();
-                if (trimmed === '' || trimmed === 'none') return false;
-              }
-              return true;
-            });
-          }
-          // For primitive arrays, check if any item is truthy/non-empty
-          if (typeof item === 'string' && item.trim() === '') return false;
-          return item !== undefined && item !== null;
-        });
-      }
-      if (typeof val === 'object' && val !== null) {
-        // For objects, check if any property has data
-        return Object.values(val).some(hasFieldData);
-      }
-      return true;
-    };
-    
     const filledFields = fieldsToCount.filter(([, value]) => hasFieldData(value)).length;
-    
     const percentage = Math.round((filledFields / totalFields) * 100);
     // Cap at 100% to prevent showing 150%
     return Math.min(100, percentage);
@@ -166,41 +127,6 @@ export const useFormState = () => {
       const code = allFormData.givenCode;
       
       if (isValidCode(code)) {
-        // Check if form has actual data (not just givenCode)
-        // Count non-empty fields (excluding givenCode and image fields)
-        const hasFieldData = (val: any): boolean => {
-          if (val === undefined || val === null) return false;
-          if (typeof val === 'string' && val.trim() === '') return false;
-          if (Array.isArray(val)) {
-            // For arrays, check if any item has data
-            if (val.length === 0) return false;
-            // For arrays of objects (like languageSkills, childrenInfo from FormTable)
-            // FormTable creates objects with properties that might include "none" values
-            return val.some(item => {
-              if (typeof item === 'object' && item !== null) {
-                // Check if object has any non-empty properties
-                // Ignore "none" values for select fields
-                return Object.values(item).some(propVal => {
-                  if (propVal === undefined || propVal === null) return false;
-                  if (typeof propVal === 'string') {
-                    const trimmed = propVal.trim();
-                    if (trimmed === '' || trimmed === 'none') return false;
-                  }
-                  return true;
-                });
-              }
-              // For primitive arrays, check if any item is truthy/non-empty
-              if (typeof item === 'string' && item.trim() === '') return false;
-              return item !== undefined && item !== null;
-            });
-          }
-          if (typeof val === 'object' && val !== null) {
-            // For objects, check if any property has data
-            return Object.values(val).some(hasFieldData);
-          }
-          return true;
-        };
-        
         const fieldsWithData = Object.keys(allFormData).filter(key => {
           if (key === 'givenCode') return false;
           // Include image fields in the check - they should trigger saving too

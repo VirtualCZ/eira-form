@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { FormData } from '@/schemas/formSchema';
+import { hasFieldData } from '@/lib/formDataUtils';
 
 export interface TabConfig {
   id: string;
@@ -202,8 +203,55 @@ export const useTabNavigation = (
   );
 
   const progress = useMemo(() => {
-    const completedTabs = visibleTabs.filter(tab => tab.isComplete(formData, formErrors)).length;
-    return Math.round((completedTabs / visibleTabs.length) * 100);
+    // Build a unique list of enabled fields across visible tabs, including conditional extras
+    const enabled = new Set<keyof FormData>();
+
+    visibleTabs.forEach(tab => {
+      tab.fields.forEach(f => enabled.add(f));
+    });
+
+    // Conditional fields across tabs
+    if (formData.firstJobInCz === 'no') {
+      (['lastEmployer','lastJobType','lastJobPeriodFrom','lastJobPeriodTo'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+    if (formData.hasDisability === 'yes') {
+      (['disabilityType','disabilityDecisionDate'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+    if (formData.receivesPension === 'yes') {
+      (['pensionType','pensionDecisionDate'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+    if (formData.activityBan === 'yes') {
+      (['bannedActivity'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+    if (formData.hasWageDeductions === 'yes') {
+      (['wageDeductionDetails','wageDeductionDate'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+    if (formData.foreigner === 'yes') {
+      (['visaPassport'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+    if (formData.receivesPension === 'yes') {
+      (['pensionDecision'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+    if (formData.claimChildTaxRelief === 'yes') {
+      (['childBirthCertificate1'] as (keyof FormData)[]).forEach(f => enabled.add(f));
+    }
+
+    // Exclude meta fields
+    enabled.delete('givenCode' as keyof FormData);
+    enabled.delete('_timestamp' as keyof FormData);
+
+    const total = enabled.size;
+    if (total === 0) return 0;
+
+    let validCount = 0;
+    enabled.forEach((field) => {
+      const value = (formData as any)[field];
+      const hasData = hasFieldData(value);
+      const hasError = Boolean(formErrors?.[field as string]);
+      if (hasData && !hasError) validCount++;
+    });
+
+    return Math.round((validCount / total) * 100);
   }, [visibleTabs, formData, formErrors]);
 
   const currentIndex = useMemo(() => 
