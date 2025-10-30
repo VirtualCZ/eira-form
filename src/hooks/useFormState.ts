@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { FormData, getFormSchema } from '@/schemas/formSchema';
-import { imagesToKeys, keysToImages, cleanupOldImages } from '@/lib/imageStorage';
+import { IMAGE_FIELDS, LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates } from '@/services/FormPersistence';
+import { isValidCode } from '@/lib/codeUtils';
 
 export interface FormState {
   isDirty: boolean;
@@ -19,173 +20,19 @@ export interface FormActions {
   reset: () => Promise<void>;
   clear: () => void;
   exportData: () => void;
-  importData: (data: any) => void;
+  importData: (data: Record<string, unknown>) => void;
   loadDataForCode: (code: string) => Promise<void>;
   saveDataForCode: (code: string) => Promise<void>;
 }
 
-const STORAGE_PREFIX = 'eira-form-data-';
-const LAST_CODE_KEY = 'eira-form-last-code';
 const AUTO_SAVE_INTERVAL = 5000; // 5 seconds
-// Data expiration: 1 week (7 days) for production
-const DATA_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000; // 1 week (7 days)
-
-// Image fields that should be excluded from localStorage to avoid overflow
-const IMAGE_FIELDS = [
-  'visaPassport',
-  'travelDocumentCopy',
-  'residencePermitCopy',
-  'highestEducationDocument',
-  'childBirthCertificate1',
-  'childBirthCertificate2',
-  'childBirthCertificate3',
-  'childBirthCertificate4',
-  'childTaxReliefConfirmation',
-  'pensionDecision',
-  'employmentConfirmation'
-];
-
-// Helper function to get storage key for a code
-const getStorageKey = (code: string) => {
-  return `${STORAGE_PREFIX}${code}`;
-};
-
-// Date fields that need serialization
-const DATE_FIELDS = [
-  'dateOfBirth',
-  'residencePermitValidityFrom',
-  'residencePermitValidityUntil',
-  'lastJobPeriodFrom',
-  'lastJobPeriodTo',
-  'disabilityDecisionDate',
-  'pensionDecisionDate',
-  'wageDeductionDate'
-];
 
 // Helper function to serialize dates and convert images to keys for localStorage
 // Keys stored in localStorage, actual image data stored in IndexedDB
-const serializeDatesAndKeys = async (obj: any, code: string): Promise<any> => {
-  if (!obj || typeof obj !== 'object') return obj;
-  
-  if (Array.isArray(obj)) {
-    return Promise.all(obj.map(item => serializeDatesAndKeys(item, code)));
-  }
-  
-  const result = { ...obj };
-  
-  for (const key in result) {
-    if (!Object.prototype.hasOwnProperty.call(result, key)) continue;
-    
-    if (Array.isArray(result[key])) {
-      // Convert image arrays to keys (stored in localStorage), store actual data in IndexedDB
-      if (IMAGE_FIELDS.includes(key)) {
-        result[key] = await imagesToKeys(result[key], code, key);
-      } else {
-        result[key] = await Promise.all(result[key].map((item: any) => serializeDatesAndKeys(item, code)));
-      }
-    } else if (DATE_FIELDS.includes(key) && result[key] instanceof Date) {
-      // Convert Date objects to ISO strings for JSON storage
-      result[key] = result[key].toISOString();
-    } else if (typeof result[key] === 'object' && result[key] !== null && !(result[key] instanceof Date)) {
-      result[key] = await serializeDatesAndKeys(result[key], code);
-    }
-  }
-  
-  return result;
-};
-
-// Helper function to restore images from keys when loading from storage
-// Keys are used to retrieve actual image data from IndexedDB
-const restoreImagesFromKeys = async (obj: any): Promise<any> => {
-  if (!obj || typeof obj !== 'object') return obj;
-  
-  if (Array.isArray(obj)) {
-    return Promise.all(obj.map(item => restoreImagesFromKeys(item)));
-  }
-  
-  const result = { ...obj };
-  
-  for (const key in result) {
-    if (!Object.prototype.hasOwnProperty.call(result, key)) continue;
-    
-    if (Array.isArray(result[key])) {
-      // Check if this is a key array (strings that match the key format: contains underscores)
-      // Old format might have "image://" prefix, new format is just "code_field_index_timestamp"
-      if (IMAGE_FIELDS.includes(key) && result[key].length > 0 && typeof result[key][0] === 'string') {
-        // Retrieve actual image data from IndexedDB using keys
-        console.log(`🔍 Restoring images for field ${key} with ${result[key].length} keys:`, result[key].slice(0, 2));
-        result[key] = await keysToImages(result[key]);
-        console.log(`✅ Restored ${result[key].length} images for field ${key}`);
-      } else {
-        result[key] = await Promise.all(result[key].map((item: any) => restoreImagesFromKeys(item)));
-      }
-    } else if (typeof result[key] === 'object' && result[key] !== null) {
-      result[key] = await restoreImagesFromKeys(result[key]);
-    }
-  }
-  
-  return result;
-};
 
 // Note: excludeImageFields removed - we now store image paths in localStorage
 
 // Helper function to clean up old data on page load
-const cleanupOldData = async () => {
-  const now = Date.now();
-  const keysToDelete: string[] = [];
-  const validImageKeys = new Set<string>();
-  
-  // Iterate through all localStorage keys
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith(STORAGE_PREFIX)) {
-      try {
-        const dataStr = localStorage.getItem(key);
-        if (dataStr) {
-          const data = JSON.parse(dataStr);
-          // Check if data has a timestamp
-          if (data._timestamp) {
-            const age = now - data._timestamp;
-            if (age > DATA_EXPIRATION_MS) {
-              keysToDelete.push(key);
-            } else {
-              // Collect valid image keys from non-expired data
-              IMAGE_FIELDS.forEach(field => {
-                if (Array.isArray(data[field])) {
-                  data[field].forEach((imageKey: string) => {
-                    if (typeof imageKey === 'string') {
-                      // Handle both old format (image://...) and new format (code_field_index_timestamp)
-                      validImageKeys.add(imageKey);
-                    }
-                  });
-                }
-              });
-            }
-          } else {
-            // Old format data without timestamp - delete it
-            keysToDelete.push(key);
-          }
-        }
-      } catch (error) {
-        // Invalid JSON - delete it
-        keysToDelete.push(key);
-      }
-    }
-  }
-  
-  // Delete old data
-  keysToDelete.forEach(key => {
-    localStorage.removeItem(key);
-    console.log(`🗑️ Cleaned up old data: ${key}`);
-  });
-  
-  // Clean up old images from IndexedDB
-  await cleanupOldImages(validImageKeys);
-  
-  if (keysToDelete.length > 0) {
-    console.log(`✅ Cleaned up ${keysToDelete.length} old data entries`);
-  }
-};
 
 export const useFormState = () => {
   const { t } = useTranslation();
@@ -198,67 +45,7 @@ export const useFormState = () => {
 
   const formSchema = useMemo(() => getFormSchema(t), [t]);
   
-  const dateFields = useMemo(() => [
-    'dateOfBirth',
-    'residencePermitValidityFrom',
-    'residencePermitValidityUntil',
-    'lastJobPeriodFrom',
-    'lastJobPeriodTo',
-    'disabilityDecisionDate',
-    'pensionDecisionDate',
-    'wageDeductionDate'
-  ], []);
-
-  const reviveDates = useCallback((obj: any, dateKeys: string[]): any => {
-    if (!obj || typeof obj !== 'object') return obj;
-    
-    // Handle arrays - process each item recursively
-    if (Array.isArray(obj)) {
-      return obj.map(item => reviveDates(item, dateKeys));
-    }
-    
-    const result = { ...obj };
-    const arrayFields = [
-      'languageSkills',
-      'childrenInfo',
-      'visaPassport',
-      'travelDocumentCopy',
-      'residencePermitCopy',
-      'highestEducationDocument',
-      'childBirthCertificate1',
-      'childBirthCertificate2',
-      'childBirthCertificate3',
-      'childBirthCertificate4',
-      'childTaxReliefConfirmation',
-      'pensionDecision',
-      'employmentConfirmation'
-    ];
-    
-    for (const key in result) {
-      if (!Object.prototype.hasOwnProperty.call(result, key)) continue;
-      
-      // Convert empty objects to arrays for array fields
-      if (arrayFields.includes(key) && result[key] !== null && typeof result[key] === 'object' && !Array.isArray(result[key])) {
-        result[key] = [];
-      }
-      // Handle arrays - recursively process array items
-      else if (Array.isArray(result[key])) {
-        result[key] = result[key].map((item: any) => reviveDates(item, dateKeys));
-      }
-      // Convert date strings to Date objects
-      else if (dateKeys.includes(key) && typeof result[key] === 'string') {
-        const d = new Date(result[key]);
-        if (!isNaN(d.getTime())) {
-          result[key] = d;
-        }
-      } 
-      // Recursively process nested objects
-      else if (typeof result[key] === 'object' && result[key] !== null) {
-        result[key] = reviveDates(result[key], dateKeys);
-      }
-    }
-    return result;
-  }, []);
+  // date deserialization now handled by service.reviveDates
 
   const getStoredData = useCallback(async (code?: string) => {
     try {
@@ -267,17 +54,17 @@ export const useFormState = () => {
       if (!codeToUse) {
         const urlParams = new URLSearchParams(window.location.search);
         const codeFromUrl = urlParams.get('code');
-        if (codeFromUrl && codeFromUrl.length >= 5 && codeFromUrl.length <= 10) {
-          codeToUse = codeFromUrl;
+        if (isValidCode(codeFromUrl || undefined)) {
+          codeToUse = codeFromUrl || undefined;
         } else {
           codeToUse = currentCode || localStorage.getItem(LAST_CODE_KEY) || '';
         }
       }
       
-      if (!codeToUse || codeToUse.length < 5 || codeToUse.length > 10) {
+      if (!isValidCode(codeToUse || undefined)) {
         return {};
       }
-      const storageKey = getStorageKey(codeToUse);
+      const storageKey = getStorageKey(codeToUse as string);
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored);
@@ -285,14 +72,14 @@ export const useFormState = () => {
         const { _timestamp, ...data } = parsed;
         // Restore images from IndexedDB using keys and revive dates
         const restored = await restoreImagesFromKeys(data);
-        return reviveDates(restored, dateFields);
+        return reviveDates(restored);
       }
       return {};
     } catch (error) {
       console.error('Error loading stored data:', error);
       return {};
     }
-  }, [reviveDates, dateFields, currentCode]);
+  }, [reviveDates, currentCode]);
 
   // Clean up old data on mount
   useEffect(() => {
@@ -378,7 +165,7 @@ export const useFormState = () => {
       const allFormData = form.getValues();
       const code = allFormData.givenCode;
       
-      if (code && code.length >= 5 && code.length <= 10) {
+      if (isValidCode(code)) {
         // Check if form has actual data (not just givenCode)
         // Count non-empty fields (excluding givenCode and image fields)
         const hasFieldData = (val: any): boolean => {
@@ -427,19 +214,19 @@ export const useFormState = () => {
                'wageDeductionDetails', 'wageDeductionDate'].includes(key)) {
             if (Array.isArray(fieldValue)) {
               if (IMAGE_FIELDS.includes(key)) {
-                console.log(`📸 Image field check ${key}: array[${fieldValue.length}], hasData=${hasData}`, fieldValue.length > 0 ? fieldValue.slice(0, 1) : 'empty');
+                if (import.meta.env.DEV) console.log(`📸 Image field check ${key}: array[${fieldValue.length}], hasData=${hasData}`, fieldValue.length > 0 ? fieldValue.slice(0, 1) : 'empty');
               } else {
-                console.log(`🔍 Field check ${key}: array[${fieldValue.length}], hasData=${hasData}`, fieldValue.length > 0 ? fieldValue[0] : 'empty');
+                if (import.meta.env.DEV) console.log(`🔍 Field check ${key}: array[${fieldValue.length}], hasData=${hasData}`, fieldValue.length > 0 ? fieldValue[0] : 'empty');
               }
             } else {
-              console.log(`🔍 Field check ${key}: "${fieldValue}", hasData=${hasData}`);
+              if (import.meta.env.DEV) console.log(`🔍 Field check ${key}: "${fieldValue}", hasData=${hasData}`);
             }
           }
           
           return hasData;
         });
         
-        console.log(`🔍 Total fields with data: ${fieldsWithData.length}`, fieldsWithData.slice(0, 5));
+        if (import.meta.env.DEV) console.log(`🔍 Total fields with data: ${fieldsWithData.length}`, fieldsWithData.slice(0, 5));
         
         // Only auto-save if there's actual form data (not just the code)
         // Use getValues() to ensure we save ALL form values, just like exportData does
@@ -461,7 +248,7 @@ export const useFormState = () => {
               const dataToSave = JSON.stringify(dataWithTimestamp);
               localStorage.setItem(storageKey, dataToSave);
               localStorage.setItem(LAST_CODE_KEY, code);
-              console.log(`💾 Saved data with image keys (images stored in IndexedDB) for code: ${code}`);
+              if (import.meta.env.DEV) console.log(`💾 Saved data with image keys (images stored in IndexedDB) for code: ${code}`);
             } catch (error) {
               console.error('Error saving to localStorage:', error);
             }
@@ -474,13 +261,13 @@ export const useFormState = () => {
               if (dataWithTimestamp[field]) {
                 const fieldValue = dataWithTimestamp[field];
                 if (Array.isArray(fieldValue)) {
-                  console.log(`💾 Saving ${field}:`, fieldValue.length, 'items', fieldValue.slice(0, 2));
+                  if (import.meta.env.DEV) console.log(`💾 Saving ${field}:`, fieldValue.length, 'items', fieldValue.slice(0, 2));
                 } else {
-                  console.log(`💾 Saving ${field}:`, fieldValue);
+                  if (import.meta.env.DEV) console.log(`💾 Saving ${field}:`, fieldValue);
                 }
               }
             });
-            console.log(`💾 Total fields saved: ${Object.keys(dataWithTimestamp).length}`);
+            if (import.meta.env.DEV) console.log(`💾 Total fields saved: ${Object.keys(dataWithTimestamp).length}`);
           }).catch(error => {
             console.error('Error serializing data for storage:', error);
           });
@@ -508,7 +295,7 @@ export const useFormState = () => {
   const save = useCallback(async () => {
     const data = form.getValues();
     const code = data.givenCode;
-    if (code && code.length >= 5 && code.length <= 10) {
+    if (isValidCode(code)) {
       // Convert images to keys for localStorage, store actual data in IndexedDB
       const serializedData = await serializeDatesAndKeys(data, code);
       const dataWithTimestamp = {
@@ -520,7 +307,7 @@ export const useFormState = () => {
         localStorage.setItem(storageKey, JSON.stringify(dataWithTimestamp));
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
-        console.log(`💾 Saved data with image paths (images stored in IndexedDB) for code: ${code}`);
+        if (import.meta.env.DEV) console.log(`💾 Saved data with image paths (images stored in IndexedDB) for code: ${code}`);
       } catch (error) {
         console.error('Error saving to localStorage:', error);
       }
@@ -538,7 +325,7 @@ export const useFormState = () => {
     const code = form.getValues().givenCode;
     
     // Remove data from localStorage for this code
-    if (code && code.length >= 5 && code.length <= 10) {
+    if (isValidCode(code)) {
       const storageKey = getStorageKey(code);
       localStorage.removeItem(storageKey);
     }
@@ -552,7 +339,7 @@ export const useFormState = () => {
     
     // Build empty state object (all fields empty strings/empty arrays, but keep code)
     const emptyFormState: any = {};
-    if (code && code.length >= 5 && code.length <= 10) {
+    if (isValidCode(code)) {
       emptyFormState.givenCode = code; // Preserve the code
     }
     
@@ -644,13 +431,13 @@ export const useFormState = () => {
     URL.revokeObjectURL(url);
   }, [form]);
 
-  const importData = useCallback((data: any) => {
+  const importData = useCallback((data: Record<string, unknown>) => {
     try {
       // Keep current code intact
       const currentCode = form.getValues('givenCode');
       // Exclude givenCode from imported data
       const { givenCode, ...dataWithoutCode } = data;
-      const revivedData = reviveDates(dataWithoutCode, dateFields);
+      const revivedData = reviveDates(dataWithoutCode);
 
       // Temporarily disable auto-save to avoid interference
       skipAutoSaveRef.current = true;
@@ -716,7 +503,7 @@ export const useFormState = () => {
             setCurrentCode(currentCode);
             setHasUnsavedChanges(false);
             setLastSaved(new Date());
-            console.log(`💾 Saved imported data with image keys (images stored in IndexedDB) for code: ${currentCode}`);
+            if (import.meta.env.DEV) console.log(`💾 Saved imported data with image keys (images stored in IndexedDB) for code: ${currentCode}`);
           } catch (error) {
             console.error('Error saving imported data:', error);
           }
@@ -731,11 +518,11 @@ export const useFormState = () => {
       console.error('Error importing data:', error);
       throw new Error('Invalid data format');
     }
-  }, [reset, reviveDates, dateFields, form, serializeDatesAndKeys, setCurrentCode, setHasUnsavedChanges, setLastSaved]);
+  }, [reset, reviveDates, form, serializeDatesAndKeys, setCurrentCode, setHasUnsavedChanges, setLastSaved]);
 
   // Save current form data for a specific code
   const saveDataForCode = useCallback(async (code: string) => {
-    if (!code || code.length < 5 || code.length > 10) {
+    if (!isValidCode(code)) {
       console.warn('Invalid code provided to saveDataForCode:', code);
       return;
     }
@@ -758,20 +545,20 @@ export const useFormState = () => {
 
   // Load data for a specific code
   const loadDataForCode = useCallback(async (code: string) => {
-    if (!code || code.length < 5 || code.length > 10) {
+    if (!isValidCode(code)) {
       console.warn('Invalid code provided to loadDataForCode:', code);
       return;
     }
     
     // Save current data before switching
     const currentData = form.getValues();
-    if (currentCode && currentCode.length >= 5 && currentCode.length <= 10 && currentData.givenCode === currentCode) {
+    if (isValidCode(currentCode) && currentData.givenCode === currentCode) {
       await saveDataForCode(currentCode);
     }
     
     // Load new code's data (restore images from IndexedDB using keys)
     const storedData = await getStoredData(code);
-    console.log(`🔍 Loading data for code: ${code}`, storedData);
+    if (import.meta.env.DEV) console.log(`🔍 Loading data for code: ${code}`, storedData);
     
     // Temporarily disable auto-save during load/clear
     skipAutoSaveRef.current = true;
@@ -780,7 +567,7 @@ export const useFormState = () => {
     const dataWithCode = { ...storedData, givenCode: code };
     
     if (!storedData || Object.keys(storedData).length === 0) {
-      console.warn(`No data found for code: ${code} - clearing form`);
+      if (import.meta.env.DEV) console.warn(`No data found for code: ${code} - clearing form`);
       // Clear the form completely for new code
       const currentFormData = form.getValues();
       const allFieldNames = Object.keys(currentFormData);
@@ -898,15 +685,15 @@ export const useFormState = () => {
           }
         });
         
-        console.log(`✅ Set ${fieldsToSet.length} fields for code: ${code}`);
-        console.log('📋 Sample fields:', fieldsToSet.slice(0, 10).join(', '), fieldsToSet.length > 10 ? '...' : '');
+        if (import.meta.env.DEV) console.log(`✅ Set ${fieldsToSet.length} fields for code: ${code}`);
+        if (import.meta.env.DEV) console.log('📋 Sample fields:', fieldsToSet.slice(0, 10).join(', '), fieldsToSet.length > 10 ? '...' : '');
         // Log specific array fields to debug
         const arrayFields = ['languageSkills', 'childrenInfo'];
         arrayFields.forEach(field => {
           const fieldValue = storedData[field as keyof typeof storedData];
           if (fieldValue && Array.isArray(fieldValue)) {
             const arr = fieldValue as any[];
-            console.log(`  📊 ${field}: ${arr.length} items`);
+            if (import.meta.env.DEV) console.log(`  📊 ${field}: ${arr.length} items`);
           }
         });
         

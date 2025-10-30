@@ -56,7 +56,7 @@ export const keysToImages = async (keys: ImageKey[]): Promise<string[]> => {
     if (image) {
       images.push(image);
     } else {
-      console.warn(`Image not found in IndexedDB for key: ${key}`);
+      if (import.meta.env.DEV) console.warn(`Image not found in IndexedDB for key: ${key}`);
     }
   }
   
@@ -79,7 +79,7 @@ const storeImageInIndexedDB = async (key: string, base64Data: string): Promise<v
       const putRequest = store.put(base64Data, key);
       
       putRequest.onsuccess = () => {
-        console.log(`💾 Stored image in IndexedDB with key: ${key}`);
+        if (import.meta.env.DEV) console.log(`💾 Stored image in IndexedDB with key: ${key}`);
         resolve();
       };
       putRequest.onerror = () => reject(putRequest.error);
@@ -112,7 +112,7 @@ const getImageFromIndexedDB = async (key: string): Promise<string | null> => {
       getRequest.onsuccess = () => {
         const result = getRequest.result || null;
         if (result) {
-          console.log(`🔍 Retrieved image from IndexedDB with key: ${key}`);
+          if (import.meta.env.DEV) console.log(`🔍 Retrieved image from IndexedDB with key: ${key}`);
         }
         resolve(result);
       };
@@ -156,7 +156,7 @@ export const cleanupOldImages = async (validKeys: Set<string>): Promise<void> =>
         });
         
         if (deleted > 0) {
-          console.log(`🗑️ Cleaned up ${deleted} old images from IndexedDB`);
+          if (import.meta.env.DEV) console.log(`🗑️ Cleaned up ${deleted} old images from IndexedDB`);
         }
         
         resolve();

@@ -16,6 +16,7 @@ import { Form } from '@/components/ui/form';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { isValidCode, MAX_CODE_LENGTH } from '@/lib/codeUtils';
 
 // Lazy load tab components for better performance
 const PersonalInformationTab = React.lazy(() => import('@/tabs/PersonalInformationTab').then(m => ({ default: m.PersonalInformationTab })));
@@ -256,15 +257,15 @@ const MainApp: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const codeFromUrl = urlParams.get('code');
     
-    if (codeFromUrl && codeFromUrl.length >= 5 && codeFromUrl.length <= 10) {
+    if (isValidCode(codeFromUrl || undefined)) {
       // Load data for the code from URL - loadDataForCode will set the code field
-      actions.loadDataForCode(codeFromUrl).catch(err => console.error('Error loading data for code:', err));
+      actions.loadDataForCode(codeFromUrl as string).catch(err => console.error('Error loading data for code:', err));
     } else {
       // Check if code exists in localStorage
       const lastCode = localStorage.getItem('eira-form-last-code');
-      if (lastCode && lastCode.length >= 5 && lastCode.length <= 10) {
+      if (isValidCode(lastCode || undefined)) {
         // Load data for the last used code - loadDataForCode will set the code field
-        actions.loadDataForCode(lastCode).catch(err => console.error('Error loading data for code:', err));
+        actions.loadDataForCode(lastCode as string).catch(err => console.error('Error loading data for code:', err));
       } else {
         // No code found - show modal
         setShowCodeModal(true);
@@ -275,7 +276,7 @@ const MainApp: React.FC = () => {
 
   const handleCodeSubmit = async () => {
     const trimmedCode = codeInput.trim();
-    if (trimmedCode.length >= 5 && trimmedCode.length <= 10) {
+    if (isValidCode(trimmedCode)) {
       // Load data for the entered code - loadDataForCode will set the code field
       await actions.loadDataForCode(trimmedCode).catch(err => console.error('Error loading data for code:', err));
       setShowCodeModal(false);
@@ -284,70 +285,15 @@ const MainApp: React.FC = () => {
   };
 
   // Handle code change from settings popover
-  const handleCodeChange = (newCode: string) => {
-    if (newCode && newCode.length >= 5 && newCode.length <= 10) {
+  const handleCodeChange = async (newCode: string) => {
+    if (isValidCode(newCode)) {
       const currentCode = form.getValues('givenCode');
       
       // Only switch if code actually changed
       if (newCode !== currentCode) {
         // IMPORTANT: Save current data to old code BEFORE reloading
-        if (currentCode && currentCode.length >= 5 && currentCode.length <= 10) {
-          // Get current form state while old code is still active
-          const formData = form.getValues();
-          
-          // Ensure the saved data has the correct old code
-          const dataToSave = { ...formData, givenCode: currentCode };
-          
-          // Save directly to localStorage with old code immediately
-          const STORAGE_PREFIX = 'eira-form-data-';
-          const storageKey = `${STORAGE_PREFIX}${currentCode}`;
-          
-          // Exclude image fields to avoid localStorage overflow
-          const imageFields = [
-            'visaPassport', 'travelDocumentCopy', 'residencePermitCopy',
-            'highestEducationDocument', 'childBirthCertificate1',
-            'childBirthCertificate2', 'childBirthCertificate3',
-            'childBirthCertificate4', 'childTaxReliefConfirmation',
-            'pensionDecision', 'employmentConfirmation'
-          ];
-          const dataWithoutImages = { ...dataToSave };
-          imageFields.forEach(field => {
-            delete dataWithoutImages[field as keyof typeof dataWithoutImages];
-          });
-          
-          // Serialize dates before saving (dates must be converted to strings for JSON)
-          const dateFields = [
-            'dateOfBirth', 'residencePermitValidityFrom', 'residencePermitValidityUntil',
-            'lastJobPeriodFrom', 'lastJobPeriodTo', 'disabilityDecisionDate',
-            'pensionDecisionDate', 'wageDeductionDate'
-          ];
-          const serializeDates = (obj: any): any => {
-            if (!obj || typeof obj !== 'object') return obj;
-            if (Array.isArray(obj)) return obj.map(serializeDates);
-            const result = { ...obj };
-            for (const key in result) {
-              if (dateFields.includes(key) && result[key] instanceof Date) {
-                result[key] = result[key].toISOString();
-              } else if (typeof result[key] === 'object' && result[key] !== null) {
-                result[key] = serializeDates(result[key]);
-              }
-            }
-            return result;
-          };
-          const serializedData = serializeDates(dataWithoutImages);
-          
-          // Add timestamp to track when data was saved
-          const dataWithTimestamp = {
-            ...serializedData,
-            _timestamp: Date.now()
-          };
-          
-          try {
-            localStorage.setItem(storageKey, JSON.stringify(dataWithTimestamp));
-            console.log(`✅ Saved data to code: ${currentCode}`, Object.keys(dataWithoutImages).length, 'fields');
-          } catch (error) {
-            console.error('Error saving data:', error);
-          }
+        if (isValidCode(currentCode)) {
+          await actions.saveDataForCode(currentCode).catch(err => console.error('Error saving data for current code:', err));
         }
         
         // Update URL with new code and reload the page
@@ -474,10 +420,10 @@ const MainApp: React.FC = () => {
               type="text"
               placeholder={t('form.placeholders.givenCode')}
               value={codeInput}
-              maxLength={10}
+              maxLength={MAX_CODE_LENGTH}
               onChange={(e) => setCodeInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && codeInput.trim().length >= 5 && codeInput.trim().length <= 10) {
+                if (e.key === 'Enter' && isValidCode(codeInput.trim())) {
                   handleCodeSubmit();
                 }
               }}
@@ -485,7 +431,7 @@ const MainApp: React.FC = () => {
             <Button
               className="w-full"
               onClick={handleCodeSubmit}
-              disabled={codeInput.trim().length < 5 || codeInput.trim().length > 10}
+              disabled={!isValidCode(codeInput.trim())}
             >
               {t('form.buttons.submitCode')}
             </Button>
