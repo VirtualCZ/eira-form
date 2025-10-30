@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ModalProvider } from '@/components/ModalSystem';
-// import { ProgressBar, FormStatus } from '@/components/ProgressIndicator'; // Hidden for now
+import { ProgressBar, FormStatus } from '@/components/ProgressIndicator';
 import { StickyNavigation } from '@/components/StickyNavigation';
 import { useFormState } from '@/hooks/useFormState';
 import { useTabNavigation } from '@/hooks/useTabNavigation';
@@ -256,13 +256,13 @@ const MainApp: React.FC = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const codeFromUrl = urlParams.get('code');
     
-    if (codeFromUrl && codeFromUrl.length === 5) {
+    if (codeFromUrl && codeFromUrl.length >= 5 && codeFromUrl.length <= 10) {
       // Load data for the code from URL - loadDataForCode will set the code field
       actions.loadDataForCode(codeFromUrl).catch(err => console.error('Error loading data for code:', err));
     } else {
       // Check if code exists in localStorage
       const lastCode = localStorage.getItem('eira-form-last-code');
-      if (lastCode && lastCode.length === 5) {
+      if (lastCode && lastCode.length >= 5 && lastCode.length <= 10) {
         // Load data for the last used code - loadDataForCode will set the code field
         actions.loadDataForCode(lastCode).catch(err => console.error('Error loading data for code:', err));
       } else {
@@ -275,7 +275,7 @@ const MainApp: React.FC = () => {
 
   const handleCodeSubmit = async () => {
     const trimmedCode = codeInput.trim();
-    if (trimmedCode.length === 5) {
+    if (trimmedCode.length >= 5 && trimmedCode.length <= 10) {
       // Load data for the entered code - loadDataForCode will set the code field
       await actions.loadDataForCode(trimmedCode).catch(err => console.error('Error loading data for code:', err));
       setShowCodeModal(false);
@@ -285,13 +285,13 @@ const MainApp: React.FC = () => {
 
   // Handle code change from settings popover
   const handleCodeChange = (newCode: string) => {
-    if (newCode && newCode.length === 5) {
+    if (newCode && newCode.length >= 5 && newCode.length <= 10) {
       const currentCode = form.getValues('givenCode');
       
       // Only switch if code actually changed
       if (newCode !== currentCode) {
         // IMPORTANT: Save current data to old code BEFORE reloading
-        if (currentCode && currentCode.length === 5) {
+        if (currentCode && currentCode.length >= 5 && currentCode.length <= 10) {
           // Get current form state while old code is still active
           const formData = form.getValues();
           
@@ -372,15 +372,14 @@ const MainApp: React.FC = () => {
                   {t('app.title')}
                 </h1>
           
-          {/* Progress bar hidden for now */}
-          {/* <div className="flex items-center gap-4 mb-4">
-            <ProgressBar progress={formState.progress} className="flex-1" />
+          <div className="flex items-center gap-4 mb-4">
+            <ProgressBar progress={navState.progress} className="flex-1" />
             <FormStatus
               hasUnsavedChanges={formState.hasUnsavedChanges}
               lastSaved={formState.lastSaved}
-              progress={formState.progress}
+              progress={navState.progress}
             />
-          </div> */}
+          </div>
         </div>
       </div>
 
@@ -475,10 +474,10 @@ const MainApp: React.FC = () => {
               type="text"
               placeholder={t('form.placeholders.givenCode')}
               value={codeInput}
-              maxLength={5}
+              maxLength={10}
               onChange={(e) => setCodeInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && codeInput.trim().length === 5) {
+                if (e.key === 'Enter' && codeInput.trim().length >= 5 && codeInput.trim().length <= 10) {
                   handleCodeSubmit();
                 }
               }}
@@ -486,7 +485,7 @@ const MainApp: React.FC = () => {
             <Button
               className="w-full"
               onClick={handleCodeSubmit}
-              disabled={codeInput.trim().length !== 5}
+              disabled={codeInput.trim().length < 5 || codeInput.trim().length > 10}
             >
               {t('form.buttons.submitCode')}
             </Button>

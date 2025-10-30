@@ -90,7 +90,7 @@
         "confirmationReadPersonalDataProcessing": "Musíte potvrdit přečtení informací o zpracování osobních údajů."
       },
       "format": {
-        "givenCodeLength": "Kód musí mít přesně 5 znaků.",
+      "givenCodeLength": "Kód musí mít 5–10 znaků.",
         "firstName": "Jméno musí mít alespoň 2 znaky.",
         "lastName": "Příjmení musí mít alespoň 2 znaky.",
         "birthSurname": "Rodné příjmení musí mít alespoň 2 znaky.",
@@ -325,7 +325,7 @@
       "submitCode": "Uložit kód"
     },
     "placeholders": {
-      "givenCode": "Zadejte kód (5 znaků)"
+      "givenCode": "Zadejte kód (5–10 znaků)"
     }
   },
   "required": {

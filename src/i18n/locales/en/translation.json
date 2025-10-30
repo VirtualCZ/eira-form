@@ -92,7 +92,7 @@
         "confirmationReadPersonalDataProcessing": "You must confirm reading the personal data processing information."
       },
       "format": {
-        "givenCodeLength": "Code must be exactly 5 characters.",
+        "givenCodeLength": "Code must be 5–10 characters.",
         "firstName": "First name must be at least 2 characters.",
         "lastName": "Surname must be at least 2 characters.",
         "birthSurname": "Birth surname must be at least 2 characters.",
@@ -412,7 +412,7 @@
       "submitCode": "Save code"
     },
     "placeholders": {
-      "givenCode": "Enter code (5 characters)"
+      "givenCode": "Enter code (5–10 characters)"
     }
   },
   "required": {

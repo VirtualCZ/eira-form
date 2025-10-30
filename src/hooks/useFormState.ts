@@ -267,14 +267,14 @@ export const useFormState = () => {
       if (!codeToUse) {
         const urlParams = new URLSearchParams(window.location.search);
         const codeFromUrl = urlParams.get('code');
-        if (codeFromUrl && codeFromUrl.length === 5) {
+        if (codeFromUrl && codeFromUrl.length >= 5 && codeFromUrl.length <= 10) {
           codeToUse = codeFromUrl;
         } else {
           codeToUse = currentCode || localStorage.getItem(LAST_CODE_KEY) || '';
         }
       }
       
-      if (!codeToUse || codeToUse.length !== 5) {
+      if (!codeToUse || codeToUse.length < 5 || codeToUse.length > 10) {
         return {};
       }
       const storageKey = getStorageKey(codeToUse);
@@ -309,13 +309,16 @@ export const useFormState = () => {
 
   const { watch, formState, reset } = form;
 
+  // Watch all form values so progress recalculates on any change
+  const watchedValues = watch();
+
   // Calculate form progress
   const progress = useMemo(() => {
-    const formData = watch();
+    const formData = watchedValues;
     // Exclude givenCode and _timestamp from progress calculation
     const excludedFields = ['givenCode', '_timestamp'];
     const fieldsToCount = Object.entries(formData).filter(([key]) => 
-      !excludedFields.includes(key) && !IMAGE_FIELDS.includes(key)
+      !excludedFields.includes(key)
     );
     
     const totalFields = fieldsToCount.length;
@@ -360,7 +363,7 @@ export const useFormState = () => {
     const percentage = Math.round((filledFields / totalFields) * 100);
     // Cap at 100% to prevent showing 150%
     return Math.min(100, percentage);
-  }, [watch]);
+  }, [watchedValues]);
 
   // Auto-save functionality (only saves non-image fields)
   useEffect(() => {
@@ -375,7 +378,7 @@ export const useFormState = () => {
       const allFormData = form.getValues();
       const code = allFormData.givenCode;
       
-      if (code && code.length === 5) {
+      if (code && code.length >= 5 && code.length <= 10) {
         // Check if form has actual data (not just givenCode)
         // Count non-empty fields (excluding givenCode and image fields)
         const hasFieldData = (val: any): boolean => {
@@ -505,7 +508,7 @@ export const useFormState = () => {
   const save = useCallback(async () => {
     const data = form.getValues();
     const code = data.givenCode;
-    if (code && code.length === 5) {
+    if (code && code.length >= 5 && code.length <= 10) {
       // Convert images to keys for localStorage, store actual data in IndexedDB
       const serializedData = await serializeDatesAndKeys(data, code);
       const dataWithTimestamp = {
@@ -535,7 +538,7 @@ export const useFormState = () => {
     const code = form.getValues().givenCode;
     
     // Remove data from localStorage for this code
-    if (code && code.length === 5) {
+    if (code && code.length >= 5 && code.length <= 10) {
       const storageKey = getStorageKey(code);
       localStorage.removeItem(storageKey);
     }
@@ -549,7 +552,7 @@ export const useFormState = () => {
     
     // Build empty state object (all fields empty strings/empty arrays, but keep code)
     const emptyFormState: any = {};
-    if (code && code.length === 5) {
+    if (code && code.length >= 5 && code.length <= 10) {
       emptyFormState.givenCode = code; // Preserve the code
     }
     
@@ -696,7 +699,7 @@ export const useFormState = () => {
       // Manually save imported data to storage after a short delay
       // This ensures imported data persists even if user doesn't touch any fields
       setTimeout(async () => {
-        if (currentCode && currentCode.length === 5) {
+        if (currentCode && currentCode.length >= 5 && currentCode.length <= 10) {
           try {
             const allFormData = form.getValues();
             // Convert images to keys for localStorage, store actual data in IndexedDB
@@ -732,7 +735,7 @@ export const useFormState = () => {
 
   // Save current form data for a specific code
   const saveDataForCode = useCallback(async (code: string) => {
-    if (!code || code.length !== 5) {
+    if (!code || code.length < 5 || code.length > 10) {
       console.warn('Invalid code provided to saveDataForCode:', code);
       return;
     }
@@ -755,14 +758,14 @@ export const useFormState = () => {
 
   // Load data for a specific code
   const loadDataForCode = useCallback(async (code: string) => {
-    if (!code || code.length !== 5) {
+    if (!code || code.length < 5 || code.length > 10) {
       console.warn('Invalid code provided to loadDataForCode:', code);
       return;
     }
     
     // Save current data before switching
     const currentData = form.getValues();
-    if (currentCode && currentCode.length === 5 && currentData.givenCode === currentCode) {
+    if (currentCode && currentCode.length >= 5 && currentCode.length <= 10 && currentData.givenCode === currentCode) {
       await saveDataForCode(currentCode);
     }
     
@@ -859,7 +862,7 @@ export const useFormState = () => {
     // This is necessary because reset might not update all fields correctly, especially selects
     setTimeout(() => {
       // Always set the code field first
-      form.setValue('givenCode', code, {
+    form.setValue('givenCode', code, {
         shouldDirty: false,
         shouldTouch: false,
         shouldValidate: false

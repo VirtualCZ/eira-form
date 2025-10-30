@@ -29,7 +29,7 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, o
     if (isOpen) {
       // When opening, initialize with current code and remember last valid code
       setLocalCodeInput(code || '');
-      setLastValidCode(code && code.length === 5 ? code : '');
+      setLastValidCode(code && code.length >= 5 && code.length <= 10 ? code : '');
     }
   }, [isOpen, code]);
   
@@ -42,14 +42,14 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, o
       // Popover is closing - validate and handle code
       const trimmedCode = localCodeInput.trim();
       
-      if (trimmedCode.length === 5) {
+      if (trimmedCode.length >= 5 && trimmedCode.length <= 10) {
         // Valid code - trigger change (will load new data and save)
         if (onCodeChange) {
           onCodeChange(trimmedCode);
         }
       } else {
         // Invalid code - revert to last valid code (don't trigger load)
-        if (lastValidCode && lastValidCode.length === 5) {
+        if (lastValidCode && lastValidCode.length >= 5 && lastValidCode.length <= 10) {
           // Revert form value to last valid code without loading
           setValue('givenCode', lastValidCode);
         }
@@ -104,7 +104,7 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, o
             type="text"
             placeholder={t('form.placeholders.givenCode')}
             value={localCodeInput}
-            maxLength={5}
+            maxLength={10}
             onChange={(e) => {
               setLocalCodeInput(e.target.value);
             }}

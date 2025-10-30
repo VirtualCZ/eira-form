@@ -91,7 +91,9 @@ const TAB_CONFIGS: TabConfig[] = [
     ],
     isVisible: () => true,
     isComplete: (data, errors) => {
-      const requiredFields = ['firstJobInCz'];
+      const baseRequired = ['firstJobInCz'];
+      const extraIfNo = ['lastEmployer', 'lastJobType', 'lastJobPeriodFrom', 'lastJobPeriodTo'];
+      const requiredFields = data.firstJobInCz === 'no' ? [...baseRequired, ...extraIfNo] : baseRequired;
       return requiredFields.every(field => data[field as keyof FormData] && !errors[field]);
     }
   },
@@ -117,7 +119,13 @@ const TAB_CONFIGS: TabConfig[] = [
     ],
     isVisible: () => true,
     isComplete: (data, errors) => {
-      const requiredFields = ['hasDisability', 'receivesPension'];
+      const baseRequired = ['hasDisability', 'receivesPension'];
+      const extraDisability = ['disabilityType', 'disabilityDecisionDate'];
+      const extraPension = ['pensionType', 'pensionDecisionDate'];
+      const requiredWhenYes: string[] = [];
+      if (data.hasDisability === 'yes') requiredWhenYes.push(...extraDisability);
+      if (data.receivesPension === 'yes') requiredWhenYes.push(...extraPension);
+      const requiredFields = [...baseRequired, ...requiredWhenYes];
       return requiredFields.every(field => data[field as keyof FormData] && !errors[field]);
     }
   },
