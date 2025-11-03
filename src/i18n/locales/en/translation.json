@@ -197,6 +197,7 @@
         "fieldOfStudy": "Field of study is required.",
         "graduationYear": "Graduation year is required.",
         "studyCity": "City of study is required.",
+        "languageSkills": "At least one language skill is required.",
         "language": "Language is required.",
         "languageProficiency": "Language proficiency is required.",
         "languageExamType": "Type of language exam is required.",

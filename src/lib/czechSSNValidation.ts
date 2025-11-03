@@ -79,6 +79,14 @@ export function validateCzechSSN(value: string, t: (key: string) => string): Cze
     };
   }
 
+  // Check if person was born after 1954 - must have 4 digits
+  if (fullYear > 1954 && back.length === 3) {
+    return {
+      isValid: false,
+      error: t('form.validation.format.birthNumberAfter1954Fail')
+    };
+  }
+
   // For 4-digit suffix (new format) - validate divisibility
   if (back.length === 4) {
     const first9Digits = front + back.substring(0, 3);
@@ -95,7 +103,8 @@ export function validateCzechSSN(value: string, t: (key: string) => string): Cze
       };
     }
   }
-  // For 3-digit suffix (old format) - no validation needed
+  // For 3-digit suffix (old format) - only valid for people born before 1954
+  // (already checked above)
 
   return {
     isValid: true,

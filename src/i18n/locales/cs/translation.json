@@ -200,6 +200,7 @@
         "fieldOfStudy": "Studijní obor je povinný.",
         "graduationYear": "Rok ukončení studia je povinný.",
         "studyCity": "Město studia je povinné.",
+        "languageSkills": "Musí být zadána alespoň jedna jazyková zkušenost.",
         "language": "Jazyk je povinný.",
         "languageProficiency": "Úroveň znalosti jazyka je povinná.",
         "languageExamType": "Typ jazykové zkoušky je povinný.",

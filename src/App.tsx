@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ModalProvider } from '@/components/ModalSystem';
-// import { FormStatus } from '@/components/ProgressIndicator'; // Hidden
+import { ProgressBar } from '@/components/ProgressIndicator';
 import { StickyNavigation } from '@/components/StickyNavigation';
 import { useFormState } from '@/hooks/useFormState';
 import { useTabNavigation } from '@/hooks/useTabNavigation';
@@ -318,15 +318,12 @@ const MainApp: React.FC = () => {
                   {t('app.title')}
                 </h1>
           
-          {/* Progress display hidden */}
-          {/* <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-4 mb-4">
             <ProgressBar progress={navState.progress} className="flex-1" />
-            <FormStatus
-              hasUnsavedChanges={formState.hasUnsavedChanges}
-              lastSaved={formState.lastSaved}
-              progress={navState.progress}
-            />
-          </div> */}
+            <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+              {navState.progress}%
+            </span>
+          </div>
         </div>
       </div>
 

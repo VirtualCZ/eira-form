@@ -14,9 +14,11 @@ const arrayHasData = (arr: unknown[]): boolean => {
 export const hasFieldData = (val: unknown): boolean => {
   if (val === undefined || val === null) return false;
   if (Array.isArray(val)) return arrayHasData(val);
+  // Date objects are valid data if they're valid Date instances
+  if (val instanceof Date) return !isNaN(val.getTime());
   if (isNonNullObject(val)) return Object.values(val).some(hasFieldData);
   if (typeof val === 'string') return isNonEmptyString(val);
-  // numbers, booleans, dates are considered data if present
+  // numbers, booleans are considered data if present
   return true;
 };
 

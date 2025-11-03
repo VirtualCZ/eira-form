@@ -82,7 +82,7 @@ export function FormTable({
 
   return (
     <div className="space-y-2">
-      <FormLabel className={formErrors[name as keyof typeof formErrors] ? "text-red-600" : ""}>
+      <FormLabel className={formErrors[name as string] ? "text-red-600" : ""}>
         {label}
       </FormLabel>
       <div className="overflow-x-auto border border-gray-200 rounded-md bg-white">
@@ -214,14 +214,23 @@ export function FormTable({
         </table>
       </div>
 
-      {formErrors[name as keyof typeof formErrors] && (
+      {formErrors[name as string] && (
         <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-2">
-          <div className="font-medium mb-1">
-            {tableError || t('form.errors.tableIncomplete')}
-          </div>
+          {/* Show top-level error message if it exists (e.g., "at least one required") */}
+          {formErrors[name as string]?.message && (
+            <div className="font-medium mb-1">
+              {formErrors[name as string]?.message as string}
+            </div>
+          )}
+          {/* Show generic error only if no specific message and there are row-level errors */}
+          {!formErrors[name as string]?.message && (tableError || t('form.errors.tableIncomplete')) && (
+            <div className="font-medium mb-1">
+              {tableError || t('form.errors.tableIncomplete')}
+            </div>
+          )}
           <ul className="space-y-1">
-            {Array.isArray(formErrors[name as keyof typeof formErrors]) && 
-             (formErrors[name as keyof typeof formErrors] as any[]).map((rowError: any, rowIdx: number) =>
+            {Array.isArray(formErrors[name as string]) && 
+             ((formErrors[name as string] as unknown) as any[]).map((rowError: any, rowIdx: number) =>
               rowError
                 ? Object.entries(rowError).map(([colName, colError]: [string, any]) =>
                     colError && colError.message ? (

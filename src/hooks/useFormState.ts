@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { FormData, getFormSchema } from '@/schemas/formSchema';
 import { IMAGE_FIELDS, LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates } from '@/services/FormPersistence';
@@ -88,7 +88,7 @@ export const useFormState = () => {
   }, []);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: yupResolver(formSchema),
     mode: 'onChange',
     reValidateMode: 'onChange',
     // Initialize with empty defaults - loadDataForCode will populate if needed

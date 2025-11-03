@@ -76,11 +76,11 @@ export const DocumentsTab = ({ control }: DocumentsTabProps) => {
             {claimChildTaxRelief === "yes" && (
                 <>
                     {numChildren > 0 && [...Array(numChildren)].map((_, index) => {
-                        const fieldName = `childBirthCertificate${index + 1}` as keyof FormData;
+                        const fieldName = `childBirthCertificate${index + 1}` as string;
                         return (
                             <FormPhotoUpload
                                 key={index}
-                                name={fieldName}
+                                name={fieldName as any}
                                 label={t(`form.labels.childBirthCertificate${index + 1}`)}
                                 formControl={control}
                                 required={index === 0}
