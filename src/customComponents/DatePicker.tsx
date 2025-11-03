@@ -56,7 +56,7 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10 }: DatePickerPr
                         {field.value ? (
                             format(field.value, "PPP")
                         ) : (
-                            <span>{t('form.pickDate')}</span>
+                            <span>{t('form.messages.pickDate')}</span>
                         )}
                         <CalendarIcon />
                     </Button>

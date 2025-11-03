@@ -7,3 +7,4 @@ export const isValidCode = (code?: string | null): boolean => {
   return len >= MIN_CODE_LENGTH && len <= MAX_CODE_LENGTH;
 };
 
+

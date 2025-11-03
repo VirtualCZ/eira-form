@@ -2,7 +2,7 @@ import React from 'react';
 import { CheckCircle, Circle, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TabConfig } from '@/hooks/useTabNavigation';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next'; // Not used when progress is hidden
 
 interface ProgressIndicatorProps {
   tabs: TabConfig[];
@@ -115,16 +115,14 @@ interface FormStatusProps {
   className?: string;
 }
 
-export const FormStatus: React.FC<FormStatusProps> = ({
-  progress,
-  className
-}) => {
-  const { t } = useTranslation();
-
-  return (
-    <div className={cn('flex items-center gap-2 text-sm', className)}>
-      <span className="text-gray-600">{t('app.status.progress')}</span>
-      <span className="font-medium text-gray-900">{progress}%</span>
-    </div>
-  );
+export const FormStatus: React.FC<FormStatusProps> = () => {
+  // Progress display hidden
+  return null;
+  
+  // return (
+  //   <div className={cn('flex items-center gap-2 text-sm', className)}>
+  //     <span className="text-gray-600">{t('app.status.progress')}</span>
+  //     <span className="font-medium text-gray-900">{progress}%</span>
+  //   </div>
+  // );
 };
