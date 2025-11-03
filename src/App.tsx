@@ -259,13 +259,13 @@ const MainApp: React.FC = () => {
     
     if (isValidCode(codeFromUrl || undefined)) {
       // Load data for the code from URL - loadDataForCode will set the code field
-      actions.loadDataForCode(codeFromUrl as string).catch(err => console.error('Error loading data for code:', err));
+      actions.loadDataForCode(codeFromUrl as string).catch(() => {});
     } else {
       // Check if code exists in localStorage
       const lastCode = localStorage.getItem('eira-form-last-code');
       if (isValidCode(lastCode || undefined)) {
         // Load data for the last used code - loadDataForCode will set the code field
-        actions.loadDataForCode(lastCode as string).catch(err => console.error('Error loading data for code:', err));
+        actions.loadDataForCode(lastCode as string).catch(() => {});
       } else {
         // No code found - show modal
         setShowCodeModal(true);
@@ -278,7 +278,7 @@ const MainApp: React.FC = () => {
     const trimmedCode = codeInput.trim();
     if (isValidCode(trimmedCode)) {
       // Load data for the entered code - loadDataForCode will set the code field
-      await actions.loadDataForCode(trimmedCode).catch(err => console.error('Error loading data for code:', err));
+      await actions.loadDataForCode(trimmedCode).catch(() => {});
       setShowCodeModal(false);
       setCodeInput('');
     }
@@ -293,7 +293,7 @@ const MainApp: React.FC = () => {
       if (newCode !== currentCode) {
         // IMPORTANT: Save current data to old code BEFORE reloading
         if (isValidCode(currentCode)) {
-          await actions.saveDataForCode(currentCode).catch(err => console.error('Error saving data for current code:', err));
+          await actions.saveDataForCode(currentCode).catch(() => {});
         }
         
         // Update URL with new code and reload the page

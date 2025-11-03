@@ -362,24 +362,12 @@ export const useTabNavigation = (
     if (total === 0) return 0;
 
     let validCount = 0;
-    const missingFields: string[] = [];
     enabled.forEach((field) => {
       const value = (formData as any)[field];
       const hasData = hasFieldData(value);
       const hasError = Boolean(formErrors?.[field as string]);
-      if (hasData && !hasError) {
-        validCount++;
-      } else {
-        missingFields.push(field as string);
-      }
+      if (hasData && !hasError) validCount++;
     });
-
-    // Debug logging
-    if (import.meta.env.DEV && validCount < total) {
-      console.log(`📊 Progress: ${validCount}/${total} = ${Math.round((validCount / total) * 100)}%`);
-      console.log(`❌ Missing fields:`, missingFields);
-      console.log(`✅ Total enabled fields:`, Array.from(enabled));
-    }
 
     return Math.round((validCount / total) * 100);
   }, [visibleTabs, formData, formErrors]);

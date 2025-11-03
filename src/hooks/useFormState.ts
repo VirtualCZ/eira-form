@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { FormData, getFormSchema } from '@/schemas/formSchema';
-import { IMAGE_FIELDS, LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates } from '@/services/FormPersistence';
+import { LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates } from '@/services/FormPersistence';
 import { isValidCode } from '@/lib/codeUtils';
 import { hasFieldData } from '@/lib/formDataUtils';
 
@@ -77,14 +77,15 @@ export const useFormState = () => {
       }
       return {};
     } catch (error) {
-      console.error('Error loading stored data:', error);
       return {};
     }
   }, [reviveDates, currentCode]);
 
   // Clean up old data on mount
   useEffect(() => {
-    cleanupOldData().catch(err => console.error('Error cleaning up old data:', err));
+    cleanupOldData().catch(() => {
+      // Silent error handling
+    });
   }, []);
 
   const form = useForm<FormData>({
@@ -133,26 +134,8 @@ export const useFormState = () => {
           const fieldValue = allFormData[key as keyof typeof allFormData];
           const hasData = hasFieldData(fieldValue);
           
-          // Debug logging for image fields and other specific fields
-          if (IMAGE_FIELDS.includes(key) || ['languageSkills', 'childrenInfo', 'contactStreet', 'contactHouseNumber', 
-               'contactCity', 'contactPostalCode', 'lastEmployer', 'lastJobType',
-               'lastJobPeriodFrom', 'lastJobPeriodTo', 'bannedActivity', 
-               'wageDeductionDetails', 'wageDeductionDate'].includes(key)) {
-            if (Array.isArray(fieldValue)) {
-              if (IMAGE_FIELDS.includes(key)) {
-                if (import.meta.env.DEV) console.log(`📸 Image field check ${key}: array[${fieldValue.length}], hasData=${hasData}`, fieldValue.length > 0 ? fieldValue.slice(0, 1) : 'empty');
-              } else {
-                if (import.meta.env.DEV) console.log(`🔍 Field check ${key}: array[${fieldValue.length}], hasData=${hasData}`, fieldValue.length > 0 ? fieldValue[0] : 'empty');
-              }
-            } else {
-              if (import.meta.env.DEV) console.log(`🔍 Field check ${key}: "${fieldValue}", hasData=${hasData}`);
-            }
-          }
-          
           return hasData;
         });
-        
-        if (import.meta.env.DEV) console.log(`🔍 Total fields with data: ${fieldsWithData.length}`, fieldsWithData.slice(0, 5));
         
         // Only auto-save if there's actual form data (not just the code)
         // Use getValues() to ensure we save ALL form values, just like exportData does
@@ -174,28 +157,11 @@ export const useFormState = () => {
               const dataToSave = JSON.stringify(dataWithTimestamp);
               localStorage.setItem(storageKey, dataToSave);
               localStorage.setItem(LAST_CODE_KEY, code);
-              if (import.meta.env.DEV) console.log(`💾 Saved data with image keys (images stored in IndexedDB) for code: ${code}`);
             } catch (error) {
-              console.error('Error saving to localStorage:', error);
+              // Silent error handling
             }
-            // Debug: Log what's being saved for key array and other fields
-            const debugFields = ['languageSkills', 'childrenInfo', 'contactStreet', 'contactHouseNumber', 
-                                'contactCity', 'contactPostalCode', 'lastEmployer', 'lastJobType',
-                                'lastJobPeriodFrom', 'lastJobPeriodTo', 'bannedActivity', 
-                                'wageDeductionDetails', 'wageDeductionDate'];
-            debugFields.forEach(field => {
-              if (dataWithTimestamp[field]) {
-                const fieldValue = dataWithTimestamp[field];
-                if (Array.isArray(fieldValue)) {
-                  if (import.meta.env.DEV) console.log(`💾 Saving ${field}:`, fieldValue.length, 'items', fieldValue.slice(0, 2));
-                } else {
-                  if (import.meta.env.DEV) console.log(`💾 Saving ${field}:`, fieldValue);
-                }
-              }
-            });
-            if (import.meta.env.DEV) console.log(`💾 Total fields saved: ${Object.keys(dataWithTimestamp).length}`);
-          }).catch(error => {
-            console.error('Error serializing data for storage:', error);
+          }).catch(() => {
+            // Silent error handling
           });
         }
       }
@@ -233,9 +199,8 @@ export const useFormState = () => {
         localStorage.setItem(storageKey, JSON.stringify(dataWithTimestamp));
         setLastSaved(new Date());
         setHasUnsavedChanges(false);
-        if (import.meta.env.DEV) console.log(`💾 Saved data with image paths (images stored in IndexedDB) for code: ${code}`);
       } catch (error) {
-        console.error('Error saving to localStorage:', error);
+        // Silent error handling
       }
     }
   }, [form]);
@@ -399,7 +364,6 @@ export const useFormState = () => {
                 shouldValidate: false
               });
             } catch (error) {
-              console.warn(`Failed to set field ${fieldName} during import:`, error);
             }
           }
         });
@@ -429,9 +393,8 @@ export const useFormState = () => {
             setCurrentCode(currentCode);
             setHasUnsavedChanges(false);
             setLastSaved(new Date());
-            if (import.meta.env.DEV) console.log(`💾 Saved imported data with image keys (images stored in IndexedDB) for code: ${currentCode}`);
           } catch (error) {
-            console.error('Error saving imported data:', error);
+            // Silent error handling
           }
         }
         
@@ -441,7 +404,6 @@ export const useFormState = () => {
 
       setHasUnsavedChanges(true);
     } catch (error) {
-      console.error('Error importing data:', error);
       throw new Error('Invalid data format');
     }
   }, [reset, reviveDates, form, serializeDatesAndKeys, setCurrentCode, setHasUnsavedChanges, setLastSaved]);
@@ -449,7 +411,6 @@ export const useFormState = () => {
   // Save current form data for a specific code
   const saveDataForCode = useCallback(async (code: string) => {
     if (!isValidCode(code)) {
-      console.warn('Invalid code provided to saveDataForCode:', code);
       return;
     }
     
@@ -463,16 +424,14 @@ export const useFormState = () => {
     try {
       const storageKey = getStorageKey(code);
       localStorage.setItem(storageKey, JSON.stringify(dataWithTimestamp));
-      console.log(`💾 Saved data with image paths (images stored in IndexedDB) for code: ${code}`);
     } catch (error) {
-      console.error('Error saving to localStorage:', error);
+      // Silent error handling
     }
   }, [form]);
 
   // Load data for a specific code
   const loadDataForCode = useCallback(async (code: string) => {
     if (!isValidCode(code)) {
-      console.warn('Invalid code provided to loadDataForCode:', code);
       return;
     }
     
@@ -484,7 +443,6 @@ export const useFormState = () => {
     
     // Load new code's data (restore images from IndexedDB using keys)
     const storedData = await getStoredData(code);
-    if (import.meta.env.DEV) console.log(`🔍 Loading data for code: ${code}`, storedData);
     
     // Temporarily disable auto-save during load/clear
     skipAutoSaveRef.current = true;
@@ -493,7 +451,6 @@ export const useFormState = () => {
     const dataWithCode = { ...storedData, givenCode: code };
     
     if (!storedData || Object.keys(storedData).length === 0) {
-      if (import.meta.env.DEV) console.warn(`No data found for code: ${code} - clearing form`);
       // Clear the form completely for new code
       const currentFormData = form.getValues();
       const allFieldNames = Object.keys(currentFormData);
@@ -607,21 +564,9 @@ export const useFormState = () => {
             });
             fieldsToSet.push(fieldName);
           } catch (error) {
-            console.warn(`⚠️ Failed to set field ${fieldName}:`, error, value);
           }
         });
         
-        if (import.meta.env.DEV) console.log(`✅ Set ${fieldsToSet.length} fields for code: ${code}`);
-        if (import.meta.env.DEV) console.log('📋 Sample fields:', fieldsToSet.slice(0, 10).join(', '), fieldsToSet.length > 10 ? '...' : '');
-        // Log specific array fields to debug
-        const arrayFields = ['languageSkills', 'childrenInfo'];
-        arrayFields.forEach(field => {
-          const fieldValue = storedData[field as keyof typeof storedData];
-          if (fieldValue && Array.isArray(fieldValue)) {
-            const arr = fieldValue as any[];
-            if (import.meta.env.DEV) console.log(`  📊 ${field}: ${arr.length} items`);
-          }
-        });
         
         // Clear any validation errors that were triggered during load (multiple times)
         form.clearErrors();
