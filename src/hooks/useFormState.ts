@@ -307,10 +307,9 @@ export const useFormState = () => {
 
   const exportData = useCallback(() => {
     const data = form.getValues();
-    // Exclude givenCode from export - user should enter it separately
-    const { givenCode, ...dataToExport } = data;
     // Export with full base64 data (not compressed) for server/backup
-    const jsonStr = JSON.stringify(dataToExport, null, 2);
+    // Include givenCode in the export
+    const jsonStr = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
