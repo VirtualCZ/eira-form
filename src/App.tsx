@@ -251,7 +251,7 @@ const MainApp: React.FC = () => {
     }
   };
 
-  // Check for code in URL or localStorage on mount
+  // Check for code in URL on mount
   React.useEffect(() => {
     // Check URL params first
     const urlParams = new URLSearchParams(window.location.search);
@@ -261,15 +261,8 @@ const MainApp: React.FC = () => {
       // Load data for the code from URL - loadDataForCode will set the code field
       actions.loadDataForCode(codeFromUrl as string).catch(() => {});
     } else {
-      // Check if code exists in localStorage
-      const lastCode = localStorage.getItem('eira-form-last-code');
-      if (isValidCode(lastCode || undefined)) {
-        // Load data for the last used code - loadDataForCode will set the code field
-        actions.loadDataForCode(lastCode as string).catch(() => {});
-      } else {
-        // No code found - show modal
-        setShowCodeModal(true);
-      }
+      // No code in URL - show modal to ask for code
+      setShowCodeModal(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run on mount
@@ -279,6 +272,12 @@ const MainApp: React.FC = () => {
     if (isValidCode(trimmedCode)) {
       // Load data for the entered code - loadDataForCode will set the code field
       await actions.loadDataForCode(trimmedCode).catch(() => {});
+      
+      // Update URL to include the code
+      const url = new URL(window.location.href);
+      url.searchParams.set('code', trimmedCode);
+      window.history.replaceState({}, '', url.toString());
+      
       setShowCodeModal(false);
       setCodeInput('');
     }
@@ -310,9 +309,9 @@ const MainApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white md:bg-gray-50">
       {/* Header with Progress */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="bg-white border-b border-gray-200 p-4 md:p-4">
         <div className="max-w-4xl mx-auto">
                 <h1 className="text-2xl font-bold text-gray-900 mb-4">
                   {t('app.title')}
@@ -328,12 +327,12 @@ const MainApp: React.FC = () => {
       </div>
 
       {/* Main Form */}
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto p-2 md:p-4">
         <Form {...form} key={clearKey}>
           <form onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}>
           {/* Tab Navigation */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-            <div className="p-4 border-b border-gray-200">
+          <div className="bg-white md:rounded-lg md:shadow-sm md:border md:border-gray-200 mb-6">
+            <div className="p-4 md:border-b md:border-gray-200">
               <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -379,7 +378,7 @@ const MainApp: React.FC = () => {
             </div>
 
             {/* Tab Content */}
-            <div className="p-6 pb-20">
+            <div className="p-4 md:p-6 pb-20">
               <TabContent tabId={navState.activeTab} form={form} />
             </div>
           </div>

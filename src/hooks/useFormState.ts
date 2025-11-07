@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTranslation } from 'react-i18next';
 import { FormData, getFormSchema } from '@/schemas/formSchema';
-import { LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates } from '@/services/FormPersistence';
+import { LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates, serializeDatesForSubmission } from '@/services/FormPersistence';
 import { isValidCode } from '@/lib/codeUtils';
 import { hasFieldData } from '@/lib/formDataUtils';
 
@@ -309,7 +309,9 @@ export const useFormState = () => {
     const data = form.getValues();
     // Export with full base64 data (not compressed) for server/backup
     // Include givenCode in the export
-    const jsonStr = JSON.stringify(data, null, 2);
+    // Serialize dates without timezone for export (same as submission)
+    const serializedData = serializeDatesForSubmission(data);
+    const jsonStr = JSON.stringify(serializedData, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

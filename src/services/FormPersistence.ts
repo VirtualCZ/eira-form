@@ -35,6 +35,17 @@ export const DATE_FIELDS: string[] = [
 
 export const getStorageKey = (code: string) => `${STORAGE_PREFIX}${code}`;
 
+// Format date without timezone (local time format: YYYY-MM-DDTHH:mm:ss)
+const formatDateWithoutTimezone = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
+
 // Convert Date objects to ISO strings; convert images to keys and store in IndexedDB
 export const serializeDatesAndKeys = async (obj: any, code: string): Promise<any> => {
   if (!obj || typeof obj !== 'object') return obj;
@@ -54,6 +65,26 @@ export const serializeDatesAndKeys = async (obj: any, code: string): Promise<any
       result[key] = result[key].toISOString();
     } else if (typeof result[key] === 'object' && result[key] !== null) {
       result[key] = await serializeDatesAndKeys(result[key], code);
+    }
+  }
+  return result;
+};
+
+// Serialize dates without timezone for server submission (local time format)
+export const serializeDatesForSubmission = (obj: any): any => {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(item => serializeDatesForSubmission(item));
+
+  const result: any = { ...obj };
+  for (const key in result) {
+    if (!Object.prototype.hasOwnProperty.call(result, key)) continue;
+
+    if (Array.isArray(result[key])) {
+      result[key] = result[key].map((item: any) => serializeDatesForSubmission(item));
+    } else if (DATE_FIELDS.includes(key) && result[key] instanceof Date) {
+      result[key] = formatDateWithoutTimezone(result[key]);
+    } else if (typeof result[key] === 'object' && result[key] !== null) {
+      result[key] = serializeDatesForSubmission(result[key]);
     }
   }
   return result;

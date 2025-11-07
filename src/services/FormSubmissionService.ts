@@ -1,5 +1,6 @@
 import { FormData } from '@/schemas/formSchema';
 import i18next from 'i18next';
+import { serializeDatesForSubmission } from '@/services/FormPersistence';
 
 export interface SubmissionResult {
   success: boolean;
@@ -27,13 +28,16 @@ export class FormSubmissionService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.config.timeout || 30000);
 
+      // Serialize dates without timezone for submission
+      const serializedData = serializeDatesForSubmission(data);
+
       const response = await fetch(this.config.endpoint, {
         method: this.config.method,
         headers: {
           'Content-Type': 'application/json',
           ...this.config.headers
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(serializedData),
         signal: controller.signal
       });
 
