@@ -1,5 +1,6 @@
 import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
+import FormCountrySelect from "@/customComponents/FormCountrySelect";
 import { FormData } from "@/schemas/formSchema";
 import { Control, useWatch, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -62,10 +63,11 @@ export const AddressesTab = ({ control }: AddressesTabProps) => {
                 formControl={control}
                 inputType='number'
             />
-            <FormInput
+            <FormCountrySelect
                 name="permanentCountry"
                 formLabel={t('form.labels.country')}
                 formControl={control}
+                formTriggerClass="w-full"
             />
             <FormRadio
                 name="contactSameAsPermanentAddress"
@@ -106,10 +108,11 @@ export const AddressesTab = ({ control }: AddressesTabProps) => {
                         formControl={control}
                         inputType='number'
                     />
-                    <FormInput
+                    <FormCountrySelect
                         name="contactCountry"
                         formLabel={t('form.labels.country')}
                         formControl={control}
+                        formTriggerClass="w-full"
                     />
                 </>
             )}

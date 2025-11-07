@@ -99,7 +99,7 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
     passportNumber: yup.string().optional(),
     passportIssuedBy: yup.string().optional(),
 
-    citizenship: yup.string().optional(),
+    citizenship: yup.number().nullable().optional(),
     nationality: yup.string().optional(),
 
     permanentStreet: yup
@@ -126,9 +126,9 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
       .typeError(t('form.validation.required.postalCode')),
 
     permanentCountry: yup
-      .string()
+      .number()
       .required(t('form.validation.required.country'))
-      .min(1, t('form.validation.format.permanentCountry')),
+      .typeError(t('form.validation.required.country')),
 
     contactSameAsPermanentAddress: yup
       .string()
@@ -170,10 +170,11 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
       }),
 
     contactCountry: yup
-      .string()
+      .number()
+      .nullable()
       .when('contactSameAsPermanentAddress', {
         is: 'no',
-        then: (schema) => schema.required(t('form.validation.required.country')).min(1, t('form.validation.format.permanentCountry')),
+        then: (schema) => schema.required(t('form.validation.required.country')).typeError(t('form.validation.required.country')),
         otherwise: (schema) => schema.optional(),
       }),
 

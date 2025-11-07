@@ -3,6 +3,7 @@ import FormDate from "@/customComponents/FormDate";
 import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
 import FormSelect from "@/customComponents/FormSelect";
+import FormCountrySelect from "@/customComponents/FormCountrySelect";
 import { FormData } from "@/schemas/formSchema";
 import { Control } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -150,18 +151,11 @@ export const PersonalInformationTab = ({
                 formLabel={t('form.labels.passportIssuedBy')}
                 formControl={control}
             />
-            <FormSelect
+            <FormCountrySelect
                 name="citizenship"
                 formLabel={t('form.labels.citizenship')}
                 formControl={control}
                 formTriggerClass='w-full'
-                options={[
-                    { value: "cz", label: t('form.options.citizenship.cz') },
-                    { value: "sk", label: t('form.options.citizenship.sk') },
-                    { value: "uk", label: t('form.options.citizenship.uk') },
-                    { value: "br", label: t('form.options.citizenship.br') }
-                ]}
-                placeholder="-"
             />
             <FormSelect
                 name="nationality"
