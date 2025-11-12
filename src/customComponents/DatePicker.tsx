@@ -4,6 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react"
 
 import { format } from "date-fns"
+import { cs, enUS } from "date-fns/locale"
 import { cn } from '../lib/utils'
 import { FormControl } from "@/components/ui/form"
 import { useTranslation } from "react-i18next"
@@ -16,17 +17,25 @@ interface DatePickerProps {
     className?: string;
     disabled?: (date: Date) => boolean;
     yearsBack?: number;
+    yearsForward?: number;
 }
 
-const DatePicker = ({ field, className, disabled, yearsBack = 10 }: DatePickerProps) => {
-    const { t } = useTranslation();
+const DatePicker = ({ field, className, disabled, yearsBack = 10, yearsForward = 0 }: DatePickerProps) => {
+    const { t, i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
     const [selectedYear, setSelectedYear] = useState<number | undefined>(field.value ? new Date(field.value).getFullYear() : undefined);
 
+    // Get locale for date formatting
+    const dateLocale = i18n.language === 'cs' ? cs : enUS;
+
     const years = useMemo(() => {
         const currentYear = new Date().getFullYear();
-        return Array.from({ length: yearsBack + 1 }, (_, i) => currentYear - i);
-    }, [yearsBack]);
+        const backYears = Array.from({ length: yearsBack + 1 }, (_, i) => currentYear - i);
+        const forwardYears = yearsForward > 0 
+            ? Array.from({ length: yearsForward }, (_, i) => currentYear + i + 1)
+            : [];
+        return [...forwardYears.reverse(), ...backYears];
+    }, [yearsBack, yearsForward]);
 
     const [calendarMonth, setCalendarMonth] = useState<Date>(
         field.value ? new Date(field.value) : new Date()
@@ -54,7 +63,7 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10 }: DatePickerPr
                         )}
                     >
                         {field.value ? (
-                            format(field.value, "PPP")
+                            format(field.value, "PPP", { locale: dateLocale })
                         ) : (
                             <span>{t('form.messages.pickDate')}</span>
                         )}
@@ -64,7 +73,7 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10 }: DatePickerPr
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
                 <div className="flex flex-col gap-2 p-2">
-                    {yearsBack !== 0 && (
+                    {(yearsBack !== 0 || yearsForward > 0) && (
                         <select
                             className="border rounded px-2 py-1"
                             value={selectedYear ?? (field.value ? new Date(field.value).getFullYear() : new Date().getFullYear())}
@@ -88,6 +97,7 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10 }: DatePickerPr
                         initialFocus
                         month={calendarMonth}
                         onMonthChange={setCalendarMonth}
+                        locale={dateLocale}
                     />
                 </div>
             </PopoverContent>

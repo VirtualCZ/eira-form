@@ -120,10 +120,10 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
       .min(1, t('form.validation.format.permanentCity')),
 
     permanentPostalCode: yup
-      .number()
+      .string()
       .required(t('form.validation.required.postalCode'))
-      .min(1, t('form.validation.format.permanentPostalCode'))
-      .typeError(t('form.validation.required.postalCode')),
+      .matches(/^\d+$/, t('form.validation.format.postalCodeNumbersOnly'))
+      .min(1, t('form.validation.format.permanentPostalCode')),
 
     permanentCountry: yup
       .number()
@@ -162,10 +162,10 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
       }),
 
     contactPostalCode: yup
-      .number()
+      .string()
       .when('contactSameAsPermanentAddress', {
         is: 'no',
-        then: (schema) => schema.required(t('form.validation.required.postalCode')).min(1, t('form.validation.format.permanentPostalCode')).typeError(t('form.validation.required.postalCode')),
+        then: (schema) => schema.required(t('form.validation.required.postalCode')).matches(/^\d+$/, t('form.validation.format.postalCodeNumbersOnly')).min(1, t('form.validation.format.permanentPostalCode')),
         otherwise: (schema) => schema.optional(),
       }),
 

@@ -35,15 +35,12 @@ export const DATE_FIELDS: string[] = [
 
 export const getStorageKey = (code: string) => `${STORAGE_PREFIX}${code}`;
 
-// Format date without timezone (local time format: YYYY-MM-DDTHH:mm:ss)
+// Format date as YYYY-MM-DD (date only, no time)
 const formatDateWithoutTimezone = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  return `${year}-${month}-${day}`;
 };
 
 // Convert Date objects to ISO strings; convert images to keys and store in IndexedDB
@@ -151,7 +148,7 @@ export const cleanupOldData = async (): Promise<void> => {
   await cleanupOldImages(validImageKeys);
 };
 
-// Revive ISO date strings into Date instances for known date fields
+// Revive date strings (YYYY-MM-DD or ISO format) into Date instances for known date fields
 export const reviveDates = (obj: any): any => {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(item => reviveDates(item));
@@ -169,7 +166,17 @@ export const reviveDates = (obj: any): any => {
       continue;
     }
     if (typeof value === 'string' && DATE_FIELDS.includes(key)) {
-      const d = new Date(value);
+      // Handle both YYYY-MM-DD and ISO format strings
+      // new Date() can parse YYYY-MM-DD, but we need to ensure it's treated as local time
+      let d: Date;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        // YYYY-MM-DD format - parse as local date (no time component)
+        const [year, month, day] = value.split('-').map(Number);
+        d = new Date(year, month - 1, day);
+      } else {
+        // ISO format or other - use standard Date parsing
+        d = new Date(value);
+      }
       if (!isNaN(d.getTime())) {
         result[key] = d;
       }

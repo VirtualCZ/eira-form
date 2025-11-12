@@ -236,6 +236,7 @@
         "permanentHouseNumber": "Číslo popisné musí mít alespoň 1 znak.",
         "permanentCity": "Město/Obec musí mít alespoň 1 znak.",
         "permanentPostalCode": "PSČ musí mít alespoň 1 číslici.",
+        "postalCodeNumbersOnly": "PSČ může obsahovat pouze číslice.",
         "permanentCountry": "Země musí mít alespoň 1 znak.",
         "email": "Emailová adresa musí být platná.",
         "phone": "Musí být v mezinárodním formátu s kódem země (např. +420123456789).",

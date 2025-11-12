@@ -22,6 +22,8 @@ type FormDateFromToProps<T extends FieldValues> = {
   formItemClass?: string
   formFieldClass?: string
   formMessage?: boolean
+  yearsBack?: number
+  yearsForward?: number
 }
 
 export default function FormDateFromTo<T extends FieldValues>({
@@ -32,6 +34,8 @@ export default function FormDateFromTo<T extends FieldValues>({
   formItemClass,
   formFieldClass,
   formMessage = true,
+  yearsBack,
+  yearsForward,
 }: FormDateFromToProps<T>) {
   const { errors } = useFormState({ control: formControl });
 
@@ -58,6 +62,8 @@ export default function FormDateFromTo<T extends FieldValues>({
                     const toDate = formControl._formValues?.[nameTo];
                     return toDate ? date > new Date(toDate) : false;
                   }}
+                  yearsBack={yearsBack}
+                  yearsForward={yearsForward}
                 />
               </FormControl>
             </FormItem>
@@ -76,6 +82,8 @@ export default function FormDateFromTo<T extends FieldValues>({
                     const fromDate = formControl._formValues?.[nameFrom];
                     return fromDate ? date < new Date(fromDate) : false;
                   }}
+                  yearsBack={yearsBack}
+                  yearsForward={yearsForward}
                 />
               </FormControl>
             </FormItem>

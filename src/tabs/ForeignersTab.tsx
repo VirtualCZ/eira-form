@@ -31,6 +31,7 @@ export const ForeignersTab = ({ control }: ForeignersTabProps) => {
                 formControl={control}
                 formFieldClass='w-[100%]'
                 formItemClass="flex-1"
+                yearsForward={10}
             />
             <FormInput
                 name="residencePermitType"

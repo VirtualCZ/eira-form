@@ -61,7 +61,6 @@ export const AddressesTab = ({ control }: AddressesTabProps) => {
                 name="permanentPostalCode"
                 formLabel={t('form.labels.postalCode')}
                 formControl={control}
-                inputType='number'
             />
             <FormCountrySelect
                 name="permanentCountry"
@@ -106,7 +105,6 @@ export const AddressesTab = ({ control }: AddressesTabProps) => {
                         name="contactPostalCode"
                         formLabel={t('form.labels.postalCode')}
                         formControl={control}
-                        inputType='number'
                     />
                     <FormCountrySelect
                         name="contactCountry"

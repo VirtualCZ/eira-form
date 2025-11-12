@@ -9,7 +9,8 @@ interface FormDateProps<T extends FieldValues> {
     formItemClass?: string,
     formFieldClass?: string,
     formMessage?: boolean,
-    yearsBack?: number
+    yearsBack?: number,
+    yearsForward?: number
 }
 
 const FormDate = <T extends FieldValues>({
@@ -20,6 +21,7 @@ const FormDate = <T extends FieldValues>({
     formFieldClass,
     formMessage = true,
     yearsBack,
+    yearsForward,
 }: FormDateProps<T>) => {
     return (
         <FormField
@@ -33,6 +35,7 @@ const FormDate = <T extends FieldValues>({
                             field={field}
                             className={formFieldClass}
                             yearsBack={yearsBack}
+                            yearsForward={yearsForward}
                         />
                     </FormControl>
                     {formMessage && <FormMessage />}

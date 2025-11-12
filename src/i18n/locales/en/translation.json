@@ -233,6 +233,7 @@
         "permanentHouseNumber": "House number must be at least 1 character.",
         "permanentCity": "City/Town must be at least 1 character.",
         "permanentPostalCode": "Postal code must have at least 1 digit.",
+        "postalCodeNumbersOnly": "Postal code must contain only numbers.",
         "permanentCountry": "Country must be at least 1 character.",
         "email": "Email address must be valid.",
         "phone": "Must be in international format with country code (e.g. +420123456789)",
