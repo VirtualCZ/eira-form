@@ -30,6 +30,7 @@ export class FormSubmissionService {
 
       // Serialize dates without timezone for submission
       const serializedData = serializeDatesForSubmission(data);
+      console.log('Serialized data for POST:', serializedData);
 
       const response = await fetch(this.config.endpoint, {
         method: this.config.method,

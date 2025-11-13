@@ -235,6 +235,12 @@ export const useTabNavigation = (
   const progress = useMemo(() => {
     // Helper to check if a field is visible based on conditional logic
     const isFieldVisible = (field: keyof FormData): boolean => {
+      // Foreigner-specific fields only when foreigner === 'yes'
+      const foreignerFields = ['foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy'];
+      if (foreignerFields.includes(field as string)) {
+        return formData.foreigner === 'yes';
+      }
+      
       // Contact address fields only when contactSameAsPermanentAddress === 'no'
       const contactFields = ['contactStreet', 'contactHouseNumber', 'contactOrientationNumber', 'contactCity', 'contactPostalCode', 'contactCountry'];
       if (contactFields.includes(field as string)) {

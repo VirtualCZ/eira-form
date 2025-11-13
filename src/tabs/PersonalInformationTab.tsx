@@ -5,7 +5,7 @@ import FormRadio from "@/customComponents/FormRadio";
 import FormSelect from "@/customComponents/FormSelect";
 import FormCountrySelect from "@/customComponents/FormCountrySelect";
 import { FormData } from "@/schemas/formSchema";
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 interface PersonalInformationTabProps {
@@ -18,6 +18,10 @@ export const PersonalInformationTab = ({
     errors
 }: PersonalInformationTabProps) => {
     const { t } = useTranslation();
+    const isForeigner = useWatch({
+        control,
+        name: "foreigner",
+    });
 
     return (
         <>
@@ -120,17 +124,31 @@ export const PersonalInformationTab = ({
                 formControl={control}
                 formPlaceholder="250411/1234"
             />
-            <FormInput
-                name="foreignBirthNumber"
-                formLabel={t('form.labels.foreignBirthNumber')}
-                formControl={control}
-            />
-            <FormInput
-                name="insuranceBirthNumber"
-                formLabel={t('form.labels.insuranceBirthNumber')}
-                formControl={control}
-                inputType='number'
-            />
+            {isForeigner === "yes" && (
+                <>
+                    <FormInput
+                        name="foreignBirthNumber"
+                        formLabel={t('form.labels.foreignBirthNumber')}
+                        formControl={control}
+                    />
+                    <FormInput
+                        name="insuranceBirthNumber"
+                        formLabel={t('form.labels.insuranceBirthNumber')}
+                        formControl={control}
+                        inputType='number'
+                    />
+                    <FormInput
+                        name="passportNumber"
+                        formLabel={t('form.labels.passportNumber')}
+                        formControl={control}
+                    />
+                    <FormInput
+                        name="passportIssuedBy"
+                        formLabel={t('form.labels.passportIssuedBy')}
+                        formControl={control}
+                    />
+                </>
+            )}
             {/* <FormInput
                     name="idCardNumber"
                     formLabel={t('form.labels.idCardNumber')}
@@ -141,16 +159,6 @@ export const PersonalInformationTab = ({
                     formLabel={t('form.labels.idCardIssuedBy')}
                     formControl={control}
                   /> */}
-            <FormInput
-                name="passportNumber"
-                formLabel={t('form.labels.passportNumber')}
-                formControl={control}
-            />
-            <FormInput
-                name="passportIssuedBy"
-                formLabel={t('form.labels.passportIssuedBy')}
-                formControl={control}
-            />
             <FormCountrySelect
                 name="citizenship"
                 formLabel={t('form.labels.citizenship')}
