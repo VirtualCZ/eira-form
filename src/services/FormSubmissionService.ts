@@ -1,6 +1,7 @@
 import { FormData } from '@/schemas/formSchema';
 import i18next from 'i18next';
 import { serializeDatesForSubmission } from '@/services/FormPersistence';
+import { filterVisibleFields } from '@/lib/formDataUtils';
 
 export interface SubmissionResult {
   success: boolean;
@@ -28,8 +29,11 @@ export class FormSubmissionService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.config.timeout || 30000);
 
+      // Filter out hidden fields (fields that are conditionally hidden based on form state)
+      const visibleData = filterVisibleFields(data);
+      
       // Serialize dates without timezone for submission
-      const serializedData = serializeDatesForSubmission(data);
+      const serializedData = serializeDatesForSubmission(visibleData);
       console.log('Serialized data for POST:', serializedData);
 
       const response = await fetch(this.config.endpoint, {

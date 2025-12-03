@@ -5,7 +5,54 @@ import { useTranslation } from 'react-i18next';
 import { FormData, getFormSchema } from '@/schemas/formSchema';
 import { LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates, serializeDatesForSubmission } from '@/services/FormPersistence';
 import { isValidCode } from '@/lib/codeUtils';
-import { hasFieldData } from '@/lib/formDataUtils';
+import { hasFieldData, filterVisibleFields } from '@/lib/formDataUtils';
+
+// Helper function to fetch code info from API
+const fetchCodeInfo = async (code: string): Promise<Partial<FormData> | null> => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    const response = await fetch(`/rest/sm/gas/v1/getCodeInfo/${code}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa(`${import.meta.env.VITE_GAS_NAME}:${import.meta.env.VITE_GAS_PASS}`)}`
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const result = await response.json();
+    
+    // Check if status is OK
+    if (result.status !== 'OK') {
+      return null;
+    }
+    
+    // Map API response fields to form fields
+    const formData: Partial<FormData> = {};
+    
+    if (result.subFirstName) {
+      formData.firstName = result.subFirstName;
+    }
+    
+    if (result.subLastName) {
+      formData.lastName = result.subLastName;
+    }
+    
+    // Add more mappings here as the API expands
+    
+    return formData;
+  } catch (error) {
+    return null;
+  }
+};
 
 export interface FormState {
   isDirty: boolean;
@@ -21,6 +68,7 @@ export interface FormActions {
   reset: () => Promise<void>;
   clear: () => void;
   exportData: () => void;
+  exportDataForAPI: () => void;
   importData: (data: Record<string, unknown>) => void;
   loadDataForCode: (code: string) => Promise<void>;
   saveDataForCode: (code: string) => Promise<void>;
@@ -30,8 +78,6 @@ const AUTO_SAVE_INTERVAL = 5000; // 5 seconds
 
 // Helper function to serialize dates and convert images to keys for localStorage
 // Keys stored in localStorage, actual image data stored in IndexedDB
-
-// Note: excludeImageFields removed - we now store image paths in localStorage
 
 // Helper function to clean up old data on page load
 
@@ -323,6 +369,24 @@ export const useFormState = () => {
     URL.revokeObjectURL(url);
   }, [form]);
 
+  const exportDataForAPI = useCallback(() => {
+    const data = form.getValues();
+    // Filter out hidden fields (same as what gets sent to API)
+    const visibleData = filterVisibleFields(data);
+    // Serialize dates without timezone for export (same as submission)
+    const serializedData = serializeDatesForSubmission(visibleData);
+    const jsonStr = JSON.stringify(serializedData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `eira-form-api-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [form]);
+
   const importData = useCallback((data: Record<string, unknown>) => {
     try {
       // Keep current code intact
@@ -442,8 +506,23 @@ export const useFormState = () => {
       await saveDataForCode(currentCode);
     }
     
-    // Load new code's data (restore images from IndexedDB using keys)
-    const storedData = await getStoredData(code);
+    // Check if code exists in localStorage
+    const storageKey = getStorageKey(code);
+    const hasStoredData = localStorage.getItem(storageKey) !== null;
+    
+    let storedData: Partial<FormData> = {};
+    
+    if (hasStoredData) {
+      // Code was used before - load from localStorage
+      storedData = await getStoredData(code);
+    } else {
+      // Code is new - fetch from API
+      const apiData = await fetchCodeInfo(code);
+      if (apiData) {
+        // Revive dates from API response
+        storedData = reviveDates(apiData);
+      }
+    }
     
     // Temporarily disable auto-save during load/clear
     skipAutoSaveRef.current = true;
@@ -544,8 +623,9 @@ export const useFormState = () => {
         
         // Set all fields - react-hook-form handles arrays and objects directly
         // IMPORTANT: Set arrays explicitly and preserve empty arrays/strings
-        Object.keys(storedData).forEach(fieldName => {
-          const value = storedData[fieldName as keyof typeof storedData];
+        const storedDataRecord = storedData as Record<string, unknown>;
+        Object.keys(storedDataRecord).forEach(fieldName => {
+          const value = storedDataRecord[fieldName];
           
           // Only skip undefined/null - preserve empty strings, 0, false, and empty arrays
           if (value === undefined || value === null) {
@@ -605,6 +685,7 @@ export const useFormState = () => {
     reset: resetForm,
     clear: clearForm,
     exportData,
+    exportDataForAPI,
     importData,
     loadDataForCode,
     saveDataForCode

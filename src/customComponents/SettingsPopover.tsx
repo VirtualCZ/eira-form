@@ -10,9 +10,10 @@ import { FormData } from '@/schemas/formSchema';
 import { Label } from '@/components/ui/label';
 import { isValidCode, MAX_CODE_LENGTH } from '@/lib/codeUtils';
 
-export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, onCodeChange, formControl, setValue }: {
+export default function SettingsPopover({ onClear, onExportJSON, onExportAPI, onImportJSON, onCodeChange, formControl, setValue }: {
   onClear: () => void,
   onExportJSON: () => void
+  onExportAPI?: () => void
   onImportJSON: (file: File) => void
   onCodeChange?: (value: string) => void
   formControl: Control<FormData>
@@ -99,6 +100,15 @@ export default function SettingsPopover({ onClear, onExportJSON, onImportJSON, o
         >
           {t('form.buttons.exportJSON')}
         </Button>
+        {onExportAPI && (
+          <Button
+            variant="outline"
+            onClick={onExportAPI}
+            className="w-full"
+          >
+            {t('form.buttons.exportAPI')}
+          </Button>
+        )}
         <div>
           <Label className="text-sm font-medium mb-1 block">{t('form.labels.givenCode')}</Label>
           <Input

@@ -16,6 +16,7 @@ interface StickyNavigationProps {
   onSubmit: () => void;
   onClear: () => void;
   onExport: () => void;
+  onExportAPI?: () => void;
   onImport: (file: File) => void;
   onCodeChange?: (value: string) => void;
   formControl: Control<FormData>;
@@ -32,6 +33,7 @@ export const StickyNavigation: React.FC<StickyNavigationProps> = ({
   onSubmit,
   onClear,
   onExport,
+  onExportAPI,
   onImport,
   onCodeChange,
   formControl,
@@ -60,6 +62,7 @@ export const StickyNavigation: React.FC<StickyNavigationProps> = ({
             <SettingsPopover
               onClear={onClear}
               onExportJSON={onExport}
+              onExportAPI={onExportAPI}
               onImportJSON={onImport}
               onCodeChange={onCodeChange}
               formControl={formControl}

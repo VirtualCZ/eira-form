@@ -145,6 +145,7 @@
       "submitting": "Odesílání...",
       "clearForm": "Vyčistit formulář",
       "exportJSON": "Exportovat jako JSON",
+      "exportAPI": "Exportovat data pro API",
       "importJSON": "Importovat data JSON",
       "submitCode": "Uložit kód"
     },

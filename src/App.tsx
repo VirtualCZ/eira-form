@@ -240,6 +240,11 @@ const MainApp: React.FC = () => {
     showSuccess('Export Successful', 'Form data has been exported to your downloads folder.');
   };
 
+  const handleExportAPI = () => {
+    actions.exportDataForAPI();
+    showSuccess('Export Successful', 'API-ready form data has been exported to your downloads folder.');
+  };
+
   const handleImport = async (file: File) => {
     try {
       const text = await file.text();
@@ -397,6 +402,7 @@ const MainApp: React.FC = () => {
         onSubmit={form.handleSubmit(handleSubmit, handleInvalid)}
         onClear={actions.clear}
         onExport={handleExport}
+        onExportAPI={handleExportAPI}
         onImport={handleImport}
         onCodeChange={handleCodeChange}
         formControl={form.control}

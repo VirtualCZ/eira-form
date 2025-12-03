@@ -145,6 +145,7 @@
       "submitting": "Submitting...",
       "clearForm": "Clear form",
       "exportJSON": "Export form JSON",
+      "exportAPI": "Export API data",
       "importJSON": "Import form JSON",
       "submitCode": "Save code"
     },
