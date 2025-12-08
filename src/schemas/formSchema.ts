@@ -28,6 +28,8 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
 
     birthSurname: yup.string().optional(),
 
+    previousSurname: yup.string().optional(),
+
     dateOfBirth: yup
       .date()
       .required(t('form.validation.required.dateOfBirth'))
@@ -52,6 +54,11 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
       .string()
       .oneOf(['yes', 'no'], t('form.validation.required.foreigner'))
       .required(t('form.validation.required.foreigner')),
+
+    taxIdentificationType: yup
+      .string()
+      .oneOf(['resident', 'nonResident'], t('form.validation.format.taxIdentificationType'))
+      .optional(),
 
     birthNumber: yup
       .string()

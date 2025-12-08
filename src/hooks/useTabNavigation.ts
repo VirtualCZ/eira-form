@@ -33,10 +33,10 @@ const TAB_CONFIGS: TabConfig[] = [
     label: 'form.tabs.personalInformation',
     fields: [
       'titleBeforeName', 'titleAfterName', 'honorific', 'firstName', 'lastName', 'birthSurname',
-      'dateOfBirth', 'sex', 'placeOfBirth', 'maritalStatus', 'foreigner', 'birthNumber',
-      'foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy',
-      'citizenship', 'nationality', 'bankingInstitutionName', 'bankAccountNumber',
-      'bankCode', 'healthInsurance', 'insuranceRegistrationNumber'
+      'previousSurname', 'dateOfBirth', 'sex', 'placeOfBirth', 'maritalStatus', 'foreigner',
+      'taxIdentificationType', 'birthNumber', 'foreignBirthNumber', 'insuranceBirthNumber',
+      'passportNumber', 'passportIssuedBy', 'citizenship', 'nationality', 'bankingInstitutionName',
+      'bankAccountNumber', 'bankCode', 'healthInsurance', 'insuranceRegistrationNumber'
     ],
     isVisible: () => true,
     isComplete: (data, errors) => {

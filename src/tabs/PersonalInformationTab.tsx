@@ -77,6 +77,11 @@ export const PersonalInformationTab = ({
                 formLabel={t('form.labels.birthSurname')}
                 formControl={control}
             />
+            <FormInput
+                name="previousSurname"
+                formLabel={t('form.labels.previousSurname')}
+                formControl={control}
+            />
             <FormDate
                 name="dateOfBirth"
                 formLabel={t('form.labels.dateOfBirth')}
@@ -118,6 +123,19 @@ export const PersonalInformationTab = ({
                     { value: "no", label: t('form.options.yesNo.no') },
                 ]}
             />
+            {isForeigner === "yes" && (
+                <FormSelect
+                    name="taxIdentificationType"
+                    formLabel={t('form.labels.taxIdentificationType')}
+                    formControl={control}
+                    formTriggerClass='w-full'
+                    options={[
+                        { value: "resident", label: t('form.options.taxIdentificationType.resident') },
+                        { value: "nonResident", label: t('form.options.taxIdentificationType.nonResident') },
+                    ]}
+                    placeholder="-"
+                />
+            )}
             <FormInput
                 name="birthNumber"
                 formLabel={t('form.labels.birthNumber')}

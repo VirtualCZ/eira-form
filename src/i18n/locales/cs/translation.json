@@ -49,11 +49,13 @@
       "firstName": "Jméno",
       "lastName": "Příjmení",
       "birthSurname": "Rodné příjmení",
+      "previousSurname": "Dřívější příjmení",
       "dateOfBirth": "Datum narození",
       "sex": "Pohlaví",
       "placeOfBirth": "Místo a země narození",
       "maritalStatus": "Rodinný stav",
       "foreigner": "Jste cizinec?",
+      "taxIdentificationType": "Typ daňové identifikace",
       "birthNumber": "Rodné číslo (SSN)",
       "foreignBirthNumber": "Rodné číslo cizince",
       "insuranceBirthNumber": "Rodné číslo přidělené pojišťovnou",
@@ -254,7 +256,8 @@
         "languageExamType": "Typ jazykové zkoušky musí mít alespoň 1 znak.",
         "placeOfBirth": "Místo narození musí mít alespoň 1 znak.",
         "childrenInfoFullName": "Jméno a příjmení dítěte musí mít alespoň 1 znak.",
-        "childrenInfoBirthNumber": "Rodné číslo dítěte musí mít alespoň 1 znak."
+        "childrenInfoBirthNumber": "Rodné číslo dítěte musí mít alespoň 1 znak.",
+        "taxIdentificationType": "Neplatný typ daňové identifikace."
       }
     },
     "options": {
@@ -297,6 +300,10 @@
         "vietnamese": "Vietnamská",
         "hungarian": "Maďarská",
         "khazakh": "Kazašská"
+      },
+      "taxIdentificationType": {
+        "resident": "Rezident",
+        "nonResident": "Nerezident"
       },
       "countries": {
         "1": "Česká republika",

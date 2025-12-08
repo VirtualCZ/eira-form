@@ -49,11 +49,13 @@
       "firstName": "First name",
       "lastName": "Surname",
       "birthSurname": "Birth surname",
+      "previousSurname": "Previous surname",
       "dateOfBirth": "Date of birth",
       "sex": "Gender",
       "placeOfBirth": "Place and country of birth",
       "maritalStatus": "Marital status",
       "foreigner": "Are you a foreigner?",
+      "taxIdentificationType": "Tax identification type",
       "birthNumber": "Birth number (SSN)",
       "foreignBirthNumber": "Foreigner's birth number",
       "insuranceBirthNumber": "Birth number assigned by insurance",
@@ -251,7 +253,8 @@
         "languageExamType": "Type of language exam must be at least 1 character.",
         "placeOfBirth": "Place of birth must be at least 1 character.",
         "childrenInfoFullName": "Child's full name must be at least 1 character.",
-        "childrenInfoBirthNumber": "Child's birth number must be at least 1 character."
+        "childrenInfoBirthNumber": "Child's birth number must be at least 1 character.",
+        "taxIdentificationType": "Invalid tax identification type."
       }
     },
     "options": {
@@ -294,6 +297,10 @@
         "vietnamese": "Vietnamese",
         "hungarian": "Hungarian",
         "khazakh": "Kazakh"
+      },
+      "taxIdentificationType": {
+        "resident": "Resident",
+        "nonResident": "Non-resident"
       },
       "countries": {
         "1": "Czech Rep.",
