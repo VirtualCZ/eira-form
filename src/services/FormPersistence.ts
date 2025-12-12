@@ -26,6 +26,7 @@ export const DATE_FIELDS: string[] = [
   'dateOfBirth',
   'residencePermitValidityFrom',
   'residencePermitValidityUntil',
+  'passportValidityUntil',
   'lastJobPeriodFrom',
   'lastJobPeriodTo',
   'disabilityDecisionDate',
@@ -166,19 +167,38 @@ export const reviveDates = (obj: any): any => {
       continue;
     }
     if (typeof value === 'string' && DATE_FIELDS.includes(key)) {
+      // Skip empty strings, null, or undefined
+      if (!value || value.trim() === '' || value === 'null' || value === 'undefined') {
+        continue;
+      }
+      
       // Handle both YYYY-MM-DD and ISO format strings
       // new Date() can parse YYYY-MM-DD, but we need to ensure it's treated as local time
       let d: Date;
-      if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        // YYYY-MM-DD format - parse as local date (no time component)
-        const [year, month, day] = value.split('-').map(Number);
-        d = new Date(year, month - 1, day);
-      } else {
-        // ISO format or other - use standard Date parsing
-        d = new Date(value);
-      }
-      if (!isNaN(d.getTime())) {
-        result[key] = d;
+      try {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          // YYYY-MM-DD format - parse as local date (no time component)
+          const [year, month, day] = value.split('-').map(Number);
+          // Validate date components
+          if (year > 0 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+            d = new Date(year, month - 1, day);
+            // Verify the date is valid (handles cases like Feb 30)
+            if (d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day) {
+              if (!isNaN(d.getTime())) {
+                result[key] = d;
+              }
+            }
+          }
+        } else {
+          // ISO format or other - use standard Date parsing
+          d = new Date(value);
+          if (!isNaN(d.getTime())) {
+            result[key] = d;
+          }
+        }
+      } catch (error) {
+        // Skip invalid dates - leave them as strings or undefined
+        console.warn(`Invalid date value for field ${key}: ${value}`, error);
       }
     }
   }

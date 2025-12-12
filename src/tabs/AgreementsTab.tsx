@@ -7,10 +7,24 @@ import { FormItem, FormLabel } from "@/components/ui/form"
 
 interface AgreementsTabProps {
     control: Control<FormData>
+    orgUnitName?: string
 }
 
-export const AgreementsTab = ({ control }: AgreementsTabProps) => {
+export const AgreementsTab = ({ control, orgUnitName }: AgreementsTabProps) => {
     const { t } = useTranslation()
+    
+    // Get the translated text
+    const translatedText = t('form.declarations.personalDataProcessing')
+    
+    // Replace placeholder with actual company name
+    // Handle both Czech and English placeholders
+    let personalDataProcessingText = translatedText;
+    if (orgUnitName && orgUnitName.trim()) {
+        // Replace Czech placeholder
+        personalDataProcessingText = personalDataProcessingText.replace(/\[název společnosti\]/g, orgUnitName);
+        // Replace English placeholder
+        personalDataProcessingText = personalDataProcessingText.replace(/\[company name\]/g, orgUnitName);
+    }
 
     return (
         <>
@@ -19,7 +33,7 @@ export const AgreementsTab = ({ control }: AgreementsTabProps) => {
                 <Textarea 
                     readOnly 
                     className='min-h-[200px] w-full resize-y'
-                    value="Prohlašuji a níže svým podpisem potvrzuji a níže svým podpisem potvrzuji, že:
+                value="Prohlašuji a níže svým podpisem potvrzuji a níže svým podpisem potvrzuji, že:
     a) veškeré shora uvedené údaje jsou pravdivé;
     
     b) nejsem v úpadku a není proti mně vedeno exekuční řízení, řízení o výkon rozhodnutí ani insolvenční řízení a mé příjmy z dosavadního pracovněprávního vztahu nebyly a neměly a nemají být postihovány srážkami ze mzdy, a to ani v rámci výkonu rozhodnutí (exekuce) nařízeného soudem, soudním exekutorem, správcem daně, orgánem správního úřadu, jiným státním orgánem nebo orgánem územního správního celku, ani na základě dohody o srážkách ze mzdy uzavřené s třetí osobou (v případě, že by mé příjmy z dosavadního pracovněprávního vztahu byly či měly být postihovány srážkami ze mzdy, zavazuji se to zaměstnavateli oznámit a předložit mu rozhodnutí, případně dohodu o srážkách ze mzdy, na jejichž základě byly či měly být tyto srážky ze mzdy prováděny);
@@ -41,7 +55,7 @@ export const AgreementsTab = ({ control }: AgreementsTabProps) => {
                 <Textarea 
                     readOnly
                     className='min-h-[200px] w-full resize-y'
-                    value="Ve vztahu k mé shora uvedené elektronické adrese (e-mailové adrese) prohlašuji a níže svým podpisem potvrzuji, že:
+                value="Ve vztahu k mé shora uvedené elektronické adrese (e-mailové adrese) prohlašuji a níže svým podpisem potvrzuji, že:
     a) jde o mou soukromou e-mailovou adresu, která není v dispozici zaměstnavatele;
     
     b) jde o mou soukromou e-mailovou adresu, kterou mám zájem užívat ke komunikaci se zaměstnavatelem a kterou mám v odpovídající míře zabezpečenu a pravidelně (zpravidla denně) k ní přistupuji;
@@ -65,7 +79,7 @@ v případě změny mé soukromé e-mailové adresy se zavazuji tuto změnu zam�
                 <Textarea 
                     readOnly 
                     className='min-h-[200px] w-full resize-y'
-                    value={t('form.declarations.personalDataProcessing')} 
+                    value={personalDataProcessingText} 
                 />
             </FormItem>
             

@@ -123,25 +123,25 @@ export const PersonalInformationTab = ({
                     { value: "no", label: t('form.options.yesNo.no') },
                 ]}
             />
-            {isForeigner === "yes" && (
-                <FormSelect
-                    name="taxIdentificationType"
-                    formLabel={t('form.labels.taxIdentificationType')}
+            <FormSelect
+                name="taxIdentificationType"
+                formLabel={t('form.labels.taxIdentificationType')}
+                formControl={control}
+                formTriggerClass='w-full'
+                options={[
+                    { value: "resident", label: t('form.options.taxIdentificationType.resident') },
+                    { value: "nonResident", label: t('form.options.taxIdentificationType.nonResident') },
+                ]}
+                placeholder="-"
+            />
+            {isForeigner !== "yes" && (
+                <FormInput
+                    name="birthNumber"
+                    formLabel={t('form.labels.birthNumber')}
                     formControl={control}
-                    formTriggerClass='w-full'
-                    options={[
-                        { value: "resident", label: t('form.options.taxIdentificationType.resident') },
-                        { value: "nonResident", label: t('form.options.taxIdentificationType.nonResident') },
-                    ]}
-                    placeholder="-"
+                    formPlaceholder="250411/1234"
                 />
             )}
-            <FormInput
-                name="birthNumber"
-                formLabel={t('form.labels.birthNumber')}
-                formControl={control}
-                formPlaceholder="250411/1234"
-            />
             {isForeigner === "yes" && (
                 <>
                     <FormInput
@@ -164,6 +164,12 @@ export const PersonalInformationTab = ({
                         name="passportIssuedBy"
                         formLabel={t('form.labels.passportIssuedBy')}
                         formControl={control}
+                    />
+                    <FormDate
+                        name="passportValidityUntil"
+                        formLabel={t('form.labels.passportValidityUntil')}
+                        formControl={control}
+                        yearsForward={10}
                     />
                 </>
             )}
@@ -301,12 +307,6 @@ export const PersonalInformationTab = ({
                     { value: "747", label: "747 Pojišťovna Maxima" }
                 ]}
                 placeholder="-"
-            />
-            <FormInput
-                name="insuranceRegistrationNumber"
-                formLabel={t('form.labels.insuranceRegistrationNumber')}
-                formControl={control}
-                inputType='number'
             />
         </>
     );

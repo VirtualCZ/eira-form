@@ -60,7 +60,7 @@ const FormRadio = <T extends FieldValues>({
                       id={optionId}
                     />
                     <span className={`text-sm font-normal ${hasError ? 'text-red-700' : ''}`}>
-                      {option.label}
+                    {option.label}
                     </span>
                   </label>
                 );

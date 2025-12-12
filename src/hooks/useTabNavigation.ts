@@ -35,8 +35,8 @@ const TAB_CONFIGS: TabConfig[] = [
       'titleBeforeName', 'titleAfterName', 'honorific', 'firstName', 'lastName', 'birthSurname',
       'previousSurname', 'dateOfBirth', 'sex', 'placeOfBirth', 'maritalStatus', 'foreigner',
       'taxIdentificationType', 'birthNumber', 'foreignBirthNumber', 'insuranceBirthNumber',
-      'passportNumber', 'passportIssuedBy', 'citizenship', 'nationality', 'bankingInstitutionName',
-      'bankAccountNumber', 'bankCode', 'healthInsurance', 'insuranceRegistrationNumber'
+      'passportNumber', 'passportIssuedBy', 'passportValidityUntil', 'citizenship', 'nationality',
+      'bankingInstitutionName', 'bankAccountNumber', 'bankCode', 'healthInsurance'
     ],
     isVisible: () => true,
     isComplete: (data, errors) => {
@@ -99,7 +99,7 @@ const TAB_CONFIGS: TabConfig[] = [
     id: 'employment',
     label: 'form.tabs.employment',
     fields: [
-      'employmentClassification', 'jobPosition', 'firstJobInCz', 'lastEmployer',
+      'jobPosition', 'firstJobInCz', 'lastEmployer',
       'lastJobType', 'lastJobPeriodFrom', 'lastJobPeriodTo'
     ],
     isVisible: () => true,
@@ -236,10 +236,17 @@ export const useTabNavigation = (
     // Helper to check if a field is visible based on conditional logic
     const isFieldVisible = (field: keyof FormData): boolean => {
       // Foreigner-specific fields only when foreigner === 'yes'
-      const foreignerFields = ['foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy'];
+      const foreignerFields = ['foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy', 'passportValidityUntil'];
       if (foreignerFields.includes(field as string)) {
         return formData.foreigner === 'yes';
       }
+      
+      // Birth number (SSN) only when foreigner !== 'yes'
+      if (field === 'birthNumber') {
+        return formData.foreigner !== 'yes';
+      }
+      
+      // taxIdentificationType is always visible (no conditional check needed)
       
       // Contact address fields only when contactSameAsPermanentAddress === 'no'
       const contactFields = ['contactStreet', 'contactHouseNumber', 'contactOrientationNumber', 'contactCity', 'contactPostalCode', 'contactCountry'];
@@ -309,12 +316,12 @@ export const useTabNavigation = (
     // AND never become required through .when() conditions
     const alwaysOptionalFields = new Set([
       'titleBeforeName', 'titleAfterName', 'birthSurname',
-      'foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy',
+      'foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy', 'passportValidityUntil',
       'citizenship', 'nationality', 
       'permanentOrientationNumber', 'contactOrientationNumber',
       'dataBoxId',
       'residencePermitValidityFrom', 'residencePermitValidityUntil', 'residencePermitType', 'residencePermitPurpose',
-      'employmentClassification', 'jobPosition',
+      'jobPosition',
       'childrenInfo',
       'travelDocumentCopy', 'residencePermitCopy', 'highestEducationDocument',
       'childBirthCertificate2', 'childBirthCertificate3', 'childBirthCertificate4',

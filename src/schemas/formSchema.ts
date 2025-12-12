@@ -62,42 +62,46 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
 
     birthNumber: yup
       .string()
-      .required(t('form.validation.required.birthNumber'))
-      .test('czech-ssn-format', t('form.validation.format.birthNumberFormatFail'), function(value) {
-        if (!value) return false;
-        if (!/^\d{6}\/\d{3,4}$/.test(value)) return false;
-        const result = validateCzechSSN(value, t);
-        if (!result.isValid) {
-          // Return the specific error from validateCzechSSN if it exists
-          return this.createError({ message: result.error || t('form.validation.format.birthNumberFormatFail') });
-        }
-        
-        // Cross-check with dateOfBirth and sex if available
-        const dateOfBirth = this.parent.dateOfBirth;
-        const sex = this.parent.sex;
-        
-        if (dateOfBirth && sex && result.parsedData) {
-          const birthYear = dateOfBirth.getFullYear();
-          const birthMonth = dateOfBirth.getMonth() + 1;
-          const birthDay = dateOfBirth.getDate();
-          
-          // Check year
-          if (result.parsedData.fullYear !== birthYear) {
-            return this.createError({ message: t('form.validation.format.birthNumberMatchFail') });
+      .nullable()
+      .when('foreigner', {
+        is: 'no',
+        then: (schema) => schema.required(t('form.validation.required.birthNumber')).test('czech-ssn-format', t('form.validation.format.birthNumberFormatFail'), function(value) {
+          if (!value) return false;
+          if (!/^\d{6}\/\d{3,4}$/.test(value)) return false;
+          const result = validateCzechSSN(value, t);
+          if (!result.isValid) {
+            // Return the specific error from validateCzechSSN if it exists
+            return this.createError({ message: result.error || t('form.validation.format.birthNumberFormatFail') });
           }
           
-          // Check month and day
-          if (result.parsedData.month !== birthMonth || result.parsedData.day !== birthDay) {
-            return this.createError({ message: t('form.validation.format.birthNumberMatchFail') });
+          // Cross-check with dateOfBirth and sex if available
+          const dateOfBirth = this.parent.dateOfBirth;
+          const sex = this.parent.sex;
+          
+          if (dateOfBirth && sex && result.parsedData) {
+            const birthYear = dateOfBirth.getFullYear();
+            const birthMonth = dateOfBirth.getMonth() + 1;
+            const birthDay = dateOfBirth.getDate();
+            
+            // Check year
+            if (result.parsedData.fullYear !== birthYear) {
+              return this.createError({ message: t('form.validation.format.birthNumberMatchFail') });
+            }
+            
+            // Check month and day
+            if (result.parsedData.month !== birthMonth || result.parsedData.day !== birthDay) {
+              return this.createError({ message: t('form.validation.format.birthNumberMatchFail') });
+            }
+            
+            // Check gender
+            if (result.parsedData.gender !== sex) {
+              return this.createError({ message: t('form.validation.format.birthNumberMatchFail') });
+            }
           }
           
-          // Check gender
-          if (result.parsedData.gender !== sex) {
-            return this.createError({ message: t('form.validation.format.birthNumberMatchFail') });
-          }
-        }
-        
-        return true;
+          return true;
+        }),
+        otherwise: (schema) => schema.optional(),
       }),
 
     foreignBirthNumber: yup.string().optional(),
@@ -105,6 +109,7 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
 
     passportNumber: yup.string().optional(),
     passportIssuedBy: yup.string().optional(),
+    passportValidityUntil: yup.date().nullable().optional(),
 
     citizenship: yup.number().nullable().optional(),
     nationality: yup.string().optional(),
@@ -205,7 +210,6 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
     residencePermitType: yup.string().optional(),
     residencePermitPurpose: yup.string().optional(),
 
-    employmentClassification: yup.string().optional(),
     jobPosition: yup.string().optional(),
 
     firstJobInCz: yup
@@ -267,7 +271,6 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
       .oneOf(['-', '111', '201', '205', '207', '208', '211', '213', '333', '747'], t('form.validation.required.healthInsurance'))
       .required(t('form.validation.required.healthInsurance')),
 
-    insuranceRegistrationNumber: yup.number().nullable().optional(),
 
     highestEducation: yup
       .string()

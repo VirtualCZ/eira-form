@@ -141,7 +141,7 @@ export function FormTable({
                         name={`${name}.${rowIdx}.${String(col.name)}` as Path<FormData>}
                         control={control}
                         render={({ field: rhfField, fieldState }) => (
-                          <FormControl>
+                            <FormControl>
                             <Input 
                               {...rhfField} 
                               value={String(rhfField.value)} 
@@ -149,7 +149,7 @@ export function FormTable({
                               className="h-9"
                               aria-invalid={!!fieldState.error}
                             />
-                          </FormControl>
+                            </FormControl>
                         )}
                       />
                     )}
@@ -225,7 +225,7 @@ export function FormTable({
           {/* Show generic error only if no specific message and there are row-level errors */}
           {!formErrors[name as string]?.message && (tableError || t('form.errors.tableIncomplete')) && (
             <div className="font-medium mb-1">
-              {tableError || t('form.errors.tableIncomplete')}
+          {tableError || t('form.errors.tableIncomplete')}
             </div>
           )}
           <ul className="space-y-1">

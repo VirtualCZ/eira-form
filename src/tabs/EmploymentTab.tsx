@@ -16,11 +16,6 @@ export const EmploymentTab = ({ control }: EmploymentTabProps) => {
     return (
         <>
             <FormInput
-                name="employmentClassification"
-                formLabel={t('form.labels.employmentClassification')}
-                formControl={control}
-            />
-            <FormInput
                 name="jobPosition"
                 formLabel={t('form.labels.jobPosition')}
                 formControl={control}

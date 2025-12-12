@@ -30,9 +30,14 @@ export const hasFieldData = (val: unknown): boolean => {
  */
 export const isFieldVisible = (field: keyof FormData, formData: Partial<FormData>): boolean => {
   // Foreigner-specific fields only when foreigner === 'yes'
-  const foreignerFields = ['foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy', 'taxIdentificationType'];
+  const foreignerFields = ['foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy', 'passportValidityUntil'];
   if (foreignerFields.includes(field as string)) {
     return formData.foreigner === 'yes';
+  }
+  
+  // Birth number (SSN) only when foreigner === 'no'
+  if (field === 'birthNumber') {
+    return formData.foreigner !== 'yes';
   }
   
   // Foreigner document fields only when foreigner === 'yes'

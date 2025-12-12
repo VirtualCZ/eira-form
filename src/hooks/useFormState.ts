@@ -8,7 +8,7 @@ import { isValidCode } from '@/lib/codeUtils';
 import { hasFieldData, filterVisibleFields } from '@/lib/formDataUtils';
 
 // Helper function to fetch code info from API
-const fetchCodeInfo = async (code: string): Promise<Partial<FormData> | null> => {
+const fetchCodeInfo = async (code: string): Promise<{ formData: Partial<FormData>; orgUnitName?: string } | null> => {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -46,9 +46,12 @@ const fetchCodeInfo = async (code: string): Promise<Partial<FormData> | null> =>
       formData.lastName = result.subLastName;
     }
     
+    // Extract orgUnitName from API response (can be undefined, null, or empty string)
+    const orgUnitName = result.orgUnitName ? String(result.orgUnitName).trim() : undefined;
+    
     // Add more mappings here as the API expands
     
-    return formData;
+    return { formData, orgUnitName };
   } catch (error) {
     return null;
   }
@@ -61,6 +64,7 @@ export interface FormState {
   hasUnsavedChanges: boolean;
   lastSaved?: Date;
   progress: number;
+  orgUnitName?: string;
 }
 
 export interface FormActions {
@@ -88,6 +92,7 @@ export const useFormState = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [currentCode, setCurrentCode] = useState<string>('');
   const [clearKey, setClearKey] = useState(0); // Key to force re-render on clear
+  const [orgUnitName, setOrgUnitName] = useState<string | undefined>(undefined);
   const skipAutoSaveRef = useRef(false);
 
   const formSchema = useMemo(() => getFormSchema(t), [t]);
@@ -265,7 +270,11 @@ export const useFormState = () => {
     if (isValidCode(code)) {
       const storageKey = getStorageKey(code);
       localStorage.removeItem(storageKey);
+      localStorage.removeItem(`${storageKey}_orgUnitName`);
     }
+    
+    // Clear orgUnitName state
+    setOrgUnitName(undefined);
     
     // Temporarily disable auto-save during clear
     skipAutoSaveRef.current = true;
@@ -512,15 +521,44 @@ export const useFormState = () => {
     
     let storedData: Partial<FormData> = {};
     
+    // Clear orgUnitName first when switching codes
+    setOrgUnitName(undefined);
+    
     if (hasStoredData) {
       // Code was used before - load from localStorage
       storedData = await getStoredData(code);
+      // Try to get orgUnitName from localStorage if it was saved
+      const storedOrgUnitName = localStorage.getItem(`${storageKey}_orgUnitName`);
+      if (storedOrgUnitName) {
+        setOrgUnitName(storedOrgUnitName);
+      } else {
+        // If not in localStorage, try fetching from API to get latest value
+        const apiResult = await fetchCodeInfo(code);
+        if (apiResult?.orgUnitName) {
+          setOrgUnitName(apiResult.orgUnitName);
+          localStorage.setItem(`${storageKey}_orgUnitName`, apiResult.orgUnitName);
+        } else {
+          setOrgUnitName(undefined);
+        }
+      }
     } else {
       // Code is new - fetch from API
-      const apiData = await fetchCodeInfo(code);
-      if (apiData) {
+      const apiResult = await fetchCodeInfo(code);
+      if (apiResult) {
         // Revive dates from API response
-        storedData = reviveDates(apiData);
+        storedData = reviveDates(apiResult.formData);
+        // Store orgUnitName (even if undefined, to clear previous value)
+        const orgUnitNameValue = apiResult.orgUnitName || undefined;
+        setOrgUnitName(orgUnitNameValue);
+        // Also save to localStorage for future loads if it exists
+        if (orgUnitNameValue) {
+          localStorage.setItem(`${storageKey}_orgUnitName`, orgUnitNameValue);
+        } else {
+          // Remove from localStorage if not present in API response
+          localStorage.removeItem(`${storageKey}_orgUnitName`);
+        }
+      } else {
+        setOrgUnitName(undefined);
       }
     }
     
@@ -671,14 +709,15 @@ export const useFormState = () => {
     setHasUnsavedChanges(false);
   }, [form, currentCode, getStoredData, reset, saveDataForCode]);
 
-  const customFormState: FormState = {
+  const customFormState: FormState = useMemo(() => ({
     isDirty: formState.isDirty,
     isValid: formState.isValid,
     isSubmitting,
     hasUnsavedChanges,
     lastSaved,
-    progress
-  };
+    progress,
+    orgUnitName
+  }), [formState.isDirty, formState.isValid, isSubmitting, hasUnsavedChanges, lastSaved, progress, orgUnitName]);
 
   const actions: FormActions = {
     save,

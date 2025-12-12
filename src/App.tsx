@@ -31,7 +31,7 @@ const FamilyAndChildrenTab = React.lazy(() => import('@/tabs/FamilyAndChildrenTa
 const DocumentsTab = React.lazy(() => import('@/tabs/DocumentsTab').then(m => ({ default: m.DocumentsTab })));
 const AgreementsTab = React.lazy(() => import('@/tabs/AgreementsTab').then(m => ({ default: m.AgreementsTab })));
 
-const TabContent: React.FC<{ tabId: string; form: any }> = ({ tabId, form }) => {
+const TabContent: React.FC<{ tabId: string; form: any; formState: any }> = ({ tabId, form, formState }) => {
   const tabComponents = {
     personalInformation: PersonalInformationTab,
     addresses: AddressesTab,
@@ -54,7 +54,7 @@ const TabContent: React.FC<{ tabId: string; form: any }> = ({ tabId, form }) => 
 
   return (
     <Suspense fallback={<div className="flex items-center justify-center p-8">Loading...</div>}>
-      <TabComponent control={form.control} errors={form.formState.errors} />
+      <TabComponent control={form.control} errors={form.formState.errors} orgUnitName={formState.orgUnitName} />
     </Suspense>
   );
 };
@@ -384,7 +384,7 @@ const MainApp: React.FC = () => {
 
             {/* Tab Content */}
             <div className="p-4 md:p-6 pb-20">
-              <TabContent tabId={navState.activeTab} form={form} />
+              <TabContent tabId={navState.activeTab} form={form} formState={formState} />
             </div>
           </div>
             </form>

@@ -87,11 +87,11 @@ export const DocumentsTab = ({ control }: DocumentsTabProps) => {
                             />
                         );
                     })}
-                    <FormPhotoUpload
+            <FormPhotoUpload
                         name="childTaxReliefConfirmation"
                         label={t('form.labels.childTaxReliefConfirmation')}
-                        formControl={control}
-                    />
+                formControl={control}
+            />
                 </>
             )}
         </div>
