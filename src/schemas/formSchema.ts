@@ -58,7 +58,7 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
     taxIdentificationType: yup
       .string()
       .oneOf(['resident', 'nonResident'], t('form.validation.format.taxIdentificationType'))
-      .optional(),
+      .required(t('form.validation.required.taxIdentificationType')),
 
     birthNumber: yup
       .string()
@@ -263,13 +263,17 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
 
     bankCode: yup
       .string()
-      .oneOf(['-', '0100', '0300', '0600', '0710', '0800', '2010', '2060', '2070', '2100', '2200', '2220', '2250', '2260', '2275', '2600', '2700', '3030', '3050', '3060', '3500', '4000', '4300', '5500', '5800', '6000', '6100', '6200', '6210', '6300', '6700', '6800', '7910', '7950', '7960', '7970', '7990', '8030', '8040', '8060', '8090', '8150', '8190', '8198', '8199', '8200', '8220', '8230', '8240', '8250', '8255', '8265', '8270', '8280', '8291', '8293', '8299', '8500'], t('form.validation.required.bankCode'))
-      .required(t('form.validation.required.bankCode')),
+      .transform((v) => (v === '' || v === '-' || v == null ? null : v))
+      .nullable()
+      .oneOf(['0100', '0300', '0600', '0710', '0800', '2010', '2060', '2070', '2100', '2200', '2220', '2250', '2260', '2275', '2600', '2700', '3030', '3050', '3060', '3500', '4000', '4300', '5500', '5800', '6000', '6100', '6200', '6210', '6300', '6700', '6800', '7910', '7950', '7960', '7970', '7990', '8030', '8040', '8060', '8090', '8150', '8190', '8198', '8199', '8200', '8220', '8230', '8240', '8250', '8255', '8265', '8270', '8280', '8291', '8293', '8299', '8500', null], t('form.validation.required.bankCode'))
+      .optional(),
 
     healthInsurance: yup
       .string()
-      .oneOf(['-', '111', '201', '205', '207', '208', '211', '213', '333', '747'], t('form.validation.required.healthInsurance'))
-      .required(t('form.validation.required.healthInsurance')),
+      .transform((v) => (v === '' || v === '-' || v == null ? null : v))
+      .nullable()
+      .oneOf(['111', '201', '205', '207', '208', '211', '213', '333', '747', null], t('form.validation.required.healthInsurance'))
+      .optional(),
 
 
     highestEducation: yup
@@ -359,6 +363,11 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
 
     wageDeductionDetails: yup.string().optional(),
     wageDeductionDate: yup.date().nullable().optional(),
+
+    claimTaxDiscount: yup
+      .string()
+      .oneOf(['yes', 'no'], t('form.validation.required.claimTaxDiscount'))
+      .required(t('form.validation.required.claimTaxDiscount')),
 
     claimChildTaxRelief: yup
       .string()

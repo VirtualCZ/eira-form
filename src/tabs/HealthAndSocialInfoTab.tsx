@@ -79,6 +79,16 @@ export const HealthAndSocialInfoTab = ({ control }: HealthAndSocialInfoTabProps)
                     />
                 </>
             )}
+
+            <FormRadio
+                name="claimTaxDiscount"
+                formLabel={t('form.labels.claimTaxDiscount')}
+                formControl={control}
+                options={[
+                    { value: "yes", label: t('form.options.yesNo.yes') },
+                    { value: "no", label: t('form.options.yesNo.no') },
+                ]}
+            />
         </>
     )
 }

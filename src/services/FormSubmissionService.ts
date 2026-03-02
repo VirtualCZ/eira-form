@@ -32,13 +32,13 @@ export class FormSubmissionService {
       // Filter out hidden fields (fields that are conditionally hidden based on form state)
       const visibleData = filterVisibleFields(data);
       
-      // Serialize dates without timezone for submission
+      // Serialize dates without timezone for submission (schema already transforms "-" / "" to null for select fields)
       const serializedData = serializeDatesForSubmission(visibleData);
 
       const response = await fetch(this.config.endpoint, {
         method: this.config.method,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
           ...this.config.headers
         },
         body: JSON.stringify(serializedData),

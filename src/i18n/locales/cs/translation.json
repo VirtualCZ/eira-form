@@ -116,6 +116,7 @@
       "wageDeductionDetails": "Kým a číslo rozhodnutí",
       "wageDeductionDate": "Datum rozhodnutí",
       "numberOfDependents": "Počet vyživovaných osob (manžel/ka, děti)",
+      "claimTaxDiscount": "Chcete uplatnit slevu na dani?",
       "claimChildTaxRelief": "Chcete uplatnit daňové zvýhodnění na děti?",
       "childrenInfo": "Jména a rodná čísla dětí",
       "childrenInfoFullName": "Jméno a příjmení dítěte",
@@ -212,6 +213,7 @@
         "activityBan": "Vyberte, zda máte zákaz činnosti.",
         "hasWageDeductions": "Vyberte, zda máte srážky ze mzdy.",
         "numberOfDependents": "Počet vyživovaných dětí je povinný.",
+        "claimTaxDiscount": "Vyberte, zda uplatňujete slevu na dani.",
         "claimChildTaxRelief": "Vyberte, zda uplatňujete daňové zvýhodnění na dítě.",
         "childrenInfoFullName": "Jméno dítěte je povinné.",
         "childrenInfoBirthNumber": "Rodné číslo dítěte je povinné.",
@@ -221,7 +223,8 @@
         "pensionDecision": "Rozhodnutí o uznání důchodu je povinné",
         "confirmationReadEmployeeDeclaration": "Musíte potvrdit přečtení prohlášení zaměstnance.",
         "confirmationReadEmailAddressDeclaration": "Musíte potvrdit přečtení prohlášení o emailové adrese.",
-        "confirmationReadPersonalDataProcessing": "Musíte potvrdit přečtení informací o zpracování osobních údajů."
+        "confirmationReadPersonalDataProcessing": "Musíte potvrdit přečtení informací o zpracování osobních údajů.",
+        "taxIdentificationType": "Vyberte typ daňové identifikace."
       },
       "format": {
         "givenCodeLength": "Kód musí mít 5–10 znaků.",

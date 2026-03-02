@@ -206,8 +206,7 @@ export const PersonalInformationTab = ({
                     { value: "ukrainian", label: t('form.options.nationality.ukrainian') },
                     { value: "vietnamese", label: t('form.options.nationality.vietnamese') },
                     { value: "hungarian", label: t('form.options.nationality.hungarian') },
-                    { value: "khazakh", label: t('form.options.nationality.khazakh') }
-
+                    { value: "khazakh", label: t('form.options.nationality.khazakh') },
                 ]}
                 placeholder="-"
             />

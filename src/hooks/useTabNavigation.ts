@@ -40,7 +40,7 @@ const TAB_CONFIGS: TabConfig[] = [
     ],
     isVisible: () => true,
     isComplete: (data, errors) => {
-      const requiredFields = ['honorific', 'firstName', 'lastName', 'dateOfBirth', 'sex', 'placeOfBirth', 'maritalStatus', 'foreigner', 'birthNumber'];
+      const requiredFields = ['honorific', 'firstName', 'lastName', 'dateOfBirth', 'sex', 'placeOfBirth', 'maritalStatus', 'foreigner', 'taxIdentificationType', 'birthNumber'];
       return requiredFields.every(field => {
         const fieldKey = field as string;
         return (data as Record<string, unknown>)[fieldKey] && !errors[field];
@@ -134,11 +134,11 @@ const TAB_CONFIGS: TabConfig[] = [
     label: 'form.tabs.healthAndSocialInfo',
     fields: [
       'hasDisability', 'disabilityType', 'disabilityDecisionDate', 'receivesPension',
-      'pensionType', 'pensionDecisionDate'
+      'pensionType', 'pensionDecisionDate', 'claimTaxDiscount'
     ],
     isVisible: () => true,
     isComplete: (data, errors) => {
-      const baseRequired = ['hasDisability', 'receivesPension'];
+      const baseRequired = ['hasDisability', 'receivesPension', 'claimTaxDiscount'];
       const extraDisability = ['disabilityType', 'disabilityDecisionDate'];
       const extraPension = ['pensionType', 'pensionDecisionDate'];
       const requiredWhenYes: string[] = [];

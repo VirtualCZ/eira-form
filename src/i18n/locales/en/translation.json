@@ -116,6 +116,7 @@
       "wageDeductionDetails": "By whom and decision number",
       "wageDeductionDate": "Decision date",
       "numberOfDependents": "Number of dependents (spouse, children)",
+      "claimTaxDiscount": "Do you want to claim tax discount?",
       "claimChildTaxRelief": "Do you want to claim child tax relief?",
       "childrenInfo": "Children's names and birth numbers",
       "childrenInfoFullName": "Child's full name",
@@ -209,6 +210,7 @@
         "activityBan": "Please select if you have an activity ban.",
         "hasWageDeductions": "Please select if you have wage deductions.",
         "numberOfDependents": "Number of dependents is required.",
+        "claimTaxDiscount": "Please select if you claim tax discount.",
         "claimChildTaxRelief": "Please select if you claim child tax relief.",
         "childrenInfoFullName": "Child's full name is required.",
         "childrenInfoBirthNumber": "Child's birth number is required.",
@@ -218,7 +220,8 @@
         "pensionDecision": "Pension decision document is required.",
         "confirmationReadEmployeeDeclaration": "You must confirm reading the employee declaration.",
         "confirmationReadEmailAddressDeclaration": "You must confirm reading the email address declaration.",
-        "confirmationReadPersonalDataProcessing": "You must confirm reading the personal data processing information."
+        "confirmationReadPersonalDataProcessing": "You must confirm reading the personal data processing information.",
+        "taxIdentificationType": "Please select tax identification type."
       },
       "format": {
         "givenCodeLength": "Code must be 5–10 characters.",
