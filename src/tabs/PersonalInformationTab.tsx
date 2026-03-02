@@ -227,7 +227,7 @@ export const PersonalInformationTab = ({
                 formControl={control}
                 formTriggerClass='w-full'
                 options={[
-                    { value: "-", label: "-" },
+                    { value: "0", label: "-" },
                     { value: "0100", label: "0100" },
                     { value: "0300", label: "0300" },
                     { value: "0600", label: "0600" },
@@ -294,7 +294,7 @@ export const PersonalInformationTab = ({
                 formControl={control}
                 formTriggerClass='w-full'
                 options={[
-                    { value: "-", label: "-" },
+                    { value: "0", label: "-" },
                     { value: "111", label: "111 Všeobecná zdravotní pojišťovna České republiky" },
                     { value: "201", label: "201 Vojenská zdravotní pojišťovna České republiky" },
                     { value: "205", label: "205 Česká průmyslová zdravotní pojišťovna" },
