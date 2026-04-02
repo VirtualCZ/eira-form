@@ -188,6 +188,7 @@ export const PersonalInformationTab = ({
                 formLabel={t('form.labels.citizenship')}
                 formControl={control}
                 formTriggerClass='w-full'
+                valueMode="label"
             />
             <FormSelect
                 name="nationality"

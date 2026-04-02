@@ -111,7 +111,7 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
     passportIssuedBy: yup.string().optional(),
     passportValidityUntil: yup.date().nullable().optional(),
 
-    citizenship: yup.number().nullable().optional(),
+    citizenship: yup.string().nullable().optional(),
     nationality: yup.string().optional(),
 
     permanentStreet: yup
