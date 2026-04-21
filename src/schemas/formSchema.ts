@@ -201,7 +201,10 @@ export const getFormSchema = (t: (key: string) => string): yup.ObjectSchema<any>
       .required(t('form.validation.required.phone'))
       .matches(/^\+\d{1,3}\d{6,}$/, t('form.validation.format.phone')),
 
-    dataBoxId: yup.string().optional(),
+    dataBoxId: yup
+      .string()
+      .max(12, t('form.validation.format.dataBoxIdMaxLength'))
+      .optional(),
 
     foreignPermanentAddress: yup.string().optional(),
     residencePermitNumber: yup.number().nullable().optional(),

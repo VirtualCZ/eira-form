@@ -258,7 +258,8 @@
         "placeOfBirth": "Místo narození musí mít alespoň 1 znak.",
         "childrenInfoFullName": "Jméno a příjmení dítěte musí mít alespoň 1 znak.",
         "childrenInfoBirthNumber": "Rodné číslo dítěte musí mít alespoň 1 znak.",
-        "taxIdentificationType": "Neplatný typ daňové identifikace."
+        "taxIdentificationType": "Neplatný typ daňové identifikace.",
+        "dataBoxIdMaxLength": "ID datové schránky může mít maximálně 12 znaků."
       }
     },
     "options": {
