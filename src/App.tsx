@@ -139,16 +139,7 @@ const MainApp: React.FC = () => {
     try {
       setIsSubmitting(true);
       
-      // Validate form before submission
-      const validation = await submissionService.validateForm(data);
-      if (!validation.success) {
-        hideModal(loadingId);
-        showValidationErrors(validation.errors || [], t('form.modal.validationErrorTitle'));
-        return;
-      }
-
-      // Submit form
-      const result = await submissionService.submitForm(data);
+      const result = await submissionService.submitForm(data, formState.orgUnitName);
       
       hideModal(loadingId);
       
@@ -249,10 +240,20 @@ const MainApp: React.FC = () => {
     try {
       const text = await file.text();
       const data = JSON.parse(text);
-      actions.importData(data);
-      showSuccess('Import Successful', 'Form data has been imported successfully.');
+      await actions.importData(data);
+      showSuccess(t('form.import.successTitle'), t('form.import.successMessage'));
     } catch (error) {
-      showError('Import Failed', 'Invalid file format. Please select a valid JSON file.');
+      const isValidation =
+        error != null &&
+        typeof error === 'object' &&
+        'name' in error &&
+        (error as { name: string }).name === 'ValidationError';
+      const message = isValidation
+        ? t('form.import.validationFailed')
+        : error instanceof Error && error.message
+          ? error.message
+          : t('form.import.invalidFile');
+      showError(t('form.import.errorTitle'), message);
     }
   };
 

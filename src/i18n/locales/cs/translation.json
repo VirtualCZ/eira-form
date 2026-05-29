@@ -429,6 +429,13 @@
         "selectLevel": "-- Vyberte úroveň --"
       }
     },
+    "import": {
+      "successTitle": "Import dokončen",
+      "successMessage": "Data formuláře byla úspěšně naimportována.",
+      "errorTitle": "Import se nezdařil",
+      "invalidFile": "Neplatný soubor. Vyberte platný JSON export z tohoto formuláře.",
+      "validationFailed": "Importovaná data neprošla validací. Zkontrolujte soubor a variantu formuláře (GAS/ICUK)."
+    },
     "modal": {
       "givenCodeDescription": "Prosím zadejte kód.",
       "success": "Úspěch",

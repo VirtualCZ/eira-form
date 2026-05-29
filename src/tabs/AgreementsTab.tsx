@@ -4,8 +4,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { FormData } from "@/schemas/formSchema"
 import FormCheckbox from "@/customComponents/FormCheckbox"
 import { FormItem, FormLabel } from "@/components/ui/form"
-import { ICUK_DATA_CONTROLLER_NAME, isIcuk } from "@/config/formVariants"
-
 interface AgreementsTabProps {
     control: Control<FormData>
     orgUnitName?: string
@@ -17,8 +15,7 @@ export const AgreementsTab = ({ control, orgUnitName }: AgreementsTabProps) => {
     // Get the translated text
     const translatedText = t('form.declarations.personalDataProcessing')
     
-    const controllerName = orgUnitName?.trim()
-        || (isIcuk() ? ICUK_DATA_CONTROLLER_NAME : undefined);
+    const controllerName = orgUnitName?.trim();
 
     let personalDataProcessingText = translatedText;
     if (controllerName) {

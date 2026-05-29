@@ -427,6 +427,13 @@
         "selectLevel": "-- Select level --"
       }
     },
+    "import": {
+      "successTitle": "Import successful",
+      "successMessage": "Form data has been imported successfully.",
+      "errorTitle": "Import failed",
+      "invalidFile": "Invalid file. Please select a valid JSON export from this form.",
+      "validationFailed": "Imported data failed validation. Check the file and form variant (GAS/ICUK)."
+    },
     "modal": {
       "givenCodeDescription": "Please enter a provided code.",
       "success": "Success",

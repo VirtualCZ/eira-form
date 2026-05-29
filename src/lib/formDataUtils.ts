@@ -15,8 +15,12 @@ const arrayHasData = (arr: unknown[]): boolean => {
   return arr.some((item) => hasFieldData(item));
 };
 
+/** UI placeholder value for unset bank / health insurance selects. */
+export const SELECT_PLACEHOLDER = '0';
+
 export const hasFieldData = (val: unknown): boolean => {
   if (val === undefined || val === null) return false;
+  if (val === SELECT_PLACEHOLDER) return false;
   if (Array.isArray(val)) return arrayHasData(val);
   // Date objects are valid data if they're valid Date instances
   if (val instanceof Date) return !isNaN(val.getTime());
@@ -24,6 +28,13 @@ export const hasFieldData = (val: unknown): boolean => {
   if (typeof val === 'string') return isNonEmptyString(val);
   // numbers, booleans are considered data if present
   return true;
+};
+
+export const hasMeaningfulFieldData = (field: keyof FormData | string, val: unknown): boolean => {
+  if ((field === 'bankCode' || field === 'healthInsurance') && val === SELECT_PLACEHOLDER) {
+    return false;
+  }
+  return hasFieldData(val);
 };
 
 /**
@@ -231,7 +242,7 @@ export const calculateFormProgress = (
   required.forEach((field) => {
     const value = (formData as Record<string, unknown>)[field as string];
     const hasError = Boolean(formErrors?.[field as string]);
-    if (hasFieldData(value) && !hasError) validCount++;
+    if (hasMeaningfulFieldData(field as string, value) && !hasError) validCount++;
   });
 
   return Math.round((validCount / total) * 100);

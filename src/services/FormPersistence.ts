@@ -86,6 +86,10 @@ export const serializeDatesForSubmission = (obj: any): any => {
       result[key] = formatDateWithoutTimezone(result[key]);
     } else if (typeof result[key] === 'object' && result[key] !== null) {
       result[key] = serializeDatesForSubmission(result[key]);
+    } else if (key === 'bankCode' && result[key] === '0') {
+      result[key] = null;
+    } else if (key === 'healthInsurance' && (result[key] === '0' || result[key] === 0)) {
+      result[key] = null;
     }
   }
   return result;

@@ -7,56 +7,7 @@ import { LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromK
 import { isValidCode } from '@/lib/codeUtils';
 import { calculateFormProgress, filterVisibleFields, hasFieldData } from '@/lib/formDataUtils';
 import { getTabConfigs } from '@/config/tabConfigs';
-
-// Helper function to fetch code info from API
-const fetchCodeInfo = async (code: string): Promise<{ formData: Partial<FormData>; orgUnitName?: string } | null> => {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-    const response = await fetch(`/rest/sm/gas/v1/getCodeInfo/${code}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${btoa(`${import.meta.env.VITE_GAS_NAME}:${import.meta.env.VITE_GAS_PASS}`)}`
-      },
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const result = await response.json();
-    
-    // Check if status is OK
-    if (result.status !== 'OK') {
-      return null;
-    }
-    
-    // Map API response fields to form fields
-    const formData: Partial<FormData> = {};
-    
-    if (result.subFirstName) {
-      formData.firstName = result.subFirstName;
-    }
-    
-    if (result.subLastName) {
-      formData.lastName = result.subLastName;
-    }
-    
-    // Extract orgUnitName from API response (can be undefined, null, or empty string)
-    const orgUnitName = result.orgUnitName ? String(result.orgUnitName).trim() : undefined;
-    
-    // Add more mappings here as the API expands
-    
-    return { formData, orgUnitName };
-  } catch (error) {
-    return null;
-  }
-};
+import { getCodeInfo } from '@/services/hrFormApi';
 
 export interface FormState {
   isDirty: boolean;
@@ -74,7 +25,7 @@ export interface FormActions {
   clear: () => void;
   exportData: () => void;
   exportDataForAPI: () => void;
-  importData: (data: Record<string, unknown>) => void;
+  importData: (data: Record<string, unknown>) => Promise<void>;
   loadDataForCode: (code: string) => Promise<void>;
   saveDataForCode: (code: string) => Promise<void>;
 }
@@ -390,19 +341,24 @@ export const useFormState = () => {
     URL.revokeObjectURL(url);
   }, [form]);
 
-  const importData = useCallback((data: Record<string, unknown>) => {
-    try {
-      // Keep current code intact
-      const currentCode = form.getValues('givenCode');
-      // Exclude givenCode from imported data
-      const { givenCode, ...dataWithoutCode } = data;
-      const revivedData = reviveDates(dataWithoutCode);
+  const importData = useCallback(async (data: Record<string, unknown>) => {
+    const currentCode = form.getValues('givenCode');
+    const { givenCode: _importedCode, _timestamp, ...dataWithoutMeta } = data;
+    const revivedData = reviveDates(dataWithoutMeta);
+    const withImages = await restoreImagesFromKeys(revivedData);
 
-      // Temporarily disable auto-save to avoid interference
+    const schema = getFormSchema(t);
+    const validated = (await schema.validate(
+      { ...withImages, givenCode: currentCode },
+      { abortEarly: false, stripUnknown: true }
+    )) as Record<string, unknown>;
+
+    const { givenCode: _validatedCode, ...validatedFields } = validated;
+
+    try {
       skipAutoSaveRef.current = true;
 
-      // Reset with imported data while preserving the current code value
-      reset({ ...revivedData, givenCode: currentCode }, {
+      reset({ ...validatedFields, givenCode: currentCode }, {
         keepDefaultValues: false,
         keepErrors: false,
         keepDirty: false,
@@ -422,8 +378,8 @@ export const useFormState = () => {
       // Explicitly set all fields including arrays (especially image arrays) after reset
       // This ensures FormPhotoUpload and FormTable components get their data
       setTimeout(() => {
-        Object.keys(revivedData).forEach(fieldName => {
-          const value = revivedData[fieldName as keyof typeof revivedData];
+        Object.keys(validatedFields).forEach(fieldName => {
+          const value = validatedFields[fieldName];
           if (value !== undefined && value !== null) {
             try {
               form.setValue(fieldName as any, value as any, {
@@ -472,9 +428,10 @@ export const useFormState = () => {
 
       setHasUnsavedChanges(true);
     } catch (error) {
-      throw new Error('Invalid data format');
+      skipAutoSaveRef.current = false;
+      throw error;
     }
-  }, [reset, reviveDates, form, serializeDatesAndKeys, setCurrentCode, setHasUnsavedChanges, setLastSaved]);
+  }, [reset, reviveDates, form, serializeDatesAndKeys, setCurrentCode, setHasUnsavedChanges, setLastSaved, t]);
 
   // Save current form data for a specific code
   const saveDataForCode = useCallback(async (code: string) => {
@@ -527,7 +484,7 @@ export const useFormState = () => {
         setOrgUnitName(storedOrgUnitName);
       } else {
         // If not in localStorage, try fetching from API to get latest value
-        const apiResult = await fetchCodeInfo(code);
+        const apiResult = await getCodeInfo(code);
         if (apiResult?.orgUnitName) {
           setOrgUnitName(apiResult.orgUnitName);
           localStorage.setItem(`${storageKey}_orgUnitName`, apiResult.orgUnitName);
@@ -537,7 +494,7 @@ export const useFormState = () => {
       }
     } else {
       // Code is new - fetch from API
-      const apiResult = await fetchCodeInfo(code);
+      const apiResult = await getCodeInfo(code);
       if (apiResult) {
         // Revive dates from API response
         storedData = reviveDates(apiResult.formData);
