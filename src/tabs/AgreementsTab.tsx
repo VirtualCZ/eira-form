@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { FormData } from "@/schemas/formSchema"
 import FormCheckbox from "@/customComponents/FormCheckbox"
 import { FormItem, FormLabel } from "@/components/ui/form"
+import { ICUK_DATA_CONTROLLER_NAME, isIcuk } from "@/config/formVariants"
 
 interface AgreementsTabProps {
     control: Control<FormData>
@@ -16,14 +17,14 @@ export const AgreementsTab = ({ control, orgUnitName }: AgreementsTabProps) => {
     // Get the translated text
     const translatedText = t('form.declarations.personalDataProcessing')
     
-    // Replace placeholder with actual company name
-    // Handle both Czech and English placeholders
+    const controllerName = orgUnitName?.trim()
+        || (isIcuk() ? ICUK_DATA_CONTROLLER_NAME : undefined);
+
     let personalDataProcessingText = translatedText;
-    if (orgUnitName && orgUnitName.trim()) {
-        // Replace Czech placeholder
-        personalDataProcessingText = personalDataProcessingText.replace(/\[název společnosti\]/g, orgUnitName);
-        // Replace English placeholder
-        personalDataProcessingText = personalDataProcessingText.replace(/\[company name\]/g, orgUnitName);
+    if (controllerName) {
+        personalDataProcessingText = personalDataProcessingText
+            .replace(/\[název společnosti\]/g, controllerName)
+            .replace(/\[company name\]/g, controllerName);
     }
 
     return (

@@ -13,3 +13,6 @@ export const getFormVariant = (): FormVariant => {
 
 export const isGas = (): boolean => getFormVariant() === 'gas';
 export const isIcuk = (): boolean => getFormVariant() === 'icuk';
+
+/** Default data-controller name in GDPR text when API does not provide orgUnitName (ICUK build). */
+export const ICUK_DATA_CONTROLLER_NAME = 'Inovační centrum Ústeckého kraje';
