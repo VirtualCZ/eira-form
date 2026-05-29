@@ -1,14 +1,10 @@
 import { useCallback, useMemo, useState, useRef, useEffect } from 'react';
 import { FormData } from '@/schemas/formSchema';
-import { hasFieldData } from '@/lib/formDataUtils';
+import { hasFieldData, isFieldVisible as isFormFieldVisible } from '@/lib/formDataUtils';
+import { getTabConfigs, type TabConfig } from '@/config/tabConfigs';
+import { isIcuk } from '@/config/formVariants';
 
-export interface TabConfig {
-  id: string;
-  label: string;
-  fields: string[]; // Changed from (keyof FormData)[] to string[] for Yup compatibility
-  isVisible: (data: Partial<FormData>) => boolean;
-  isComplete: (data: Partial<FormData>, errors: any) => boolean;
-}
+export type { TabConfig };
 
 export interface TabNavigationState {
   activeTab: string;
@@ -27,197 +23,6 @@ export interface TabNavigationActions {
   scrollTabs: (direction: 'left' | 'right') => void;
 }
 
-const TAB_CONFIGS: TabConfig[] = [
-  {
-    id: 'personalInformation',
-    label: 'form.tabs.personalInformation',
-    fields: [
-      'titleBeforeName', 'titleAfterName', 'honorific', 'firstName', 'lastName', 'birthSurname',
-      'previousSurname', 'dateOfBirth', 'sex', 'placeOfBirth', 'maritalStatus', 'foreigner',
-      'taxIdentificationType', 'birthNumber', 'foreignBirthNumber', 'insuranceBirthNumber',
-      'passportNumber', 'passportIssuedBy', 'passportValidityUntil', 'citizenship', 'nationality',
-      'bankingInstitutionName', 'bankAccountNumber', 'bankCode', 'healthInsurance'
-    ],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const requiredFields = ['honorific', 'firstName', 'lastName', 'dateOfBirth', 'sex', 'placeOfBirth', 'maritalStatus', 'foreigner', 'taxIdentificationType', 'birthNumber'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'addresses',
-    label: 'form.tabs.addresses',
-    fields: [
-      'permanentStreet', 'permanentHouseNumber', 'permanentOrientationNumber', 'permanentCity',
-      'permanentPostalCode', 'permanentCountry', 'contactSameAsPermanentAddress',
-      'contactStreet', 'contactHouseNumber', 'contactOrientationNumber', 'contactCity',
-      'contactPostalCode', 'contactCountry'
-    ],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const requiredFields = ['permanentStreet', 'permanentHouseNumber', 'permanentCity', 'permanentPostalCode', 'permanentCountry', 'contactSameAsPermanentAddress'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'contacts',
-    label: 'form.tabs.contacts',
-    fields: ['email', 'phone', 'dataBoxId'],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const requiredFields = ['email', 'phone'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'foreigners',
-    label: 'form.tabs.foreigners',
-    fields: [
-      'foreignPermanentAddress', 'residencePermitNumber', 'residencePermitValidityFrom',
-      'residencePermitValidityUntil', 'residencePermitType', 'residencePermitPurpose'
-    ],
-    isVisible: (data) => data.foreigner === 'yes',
-    isComplete: (data, errors) => {
-      if (data.foreigner !== 'yes') return true;
-      const requiredFields = ['foreignPermanentAddress', 'residencePermitNumber'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'employment',
-    label: 'form.tabs.employment',
-    fields: [
-      'jobPosition', 'firstJobInCz', 'lastEmployer',
-      'lastJobType', 'lastJobPeriodFrom', 'lastJobPeriodTo'
-    ],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const baseRequired = ['firstJobInCz'];
-      const extraIfNo = ['lastEmployer', 'lastJobType', 'lastJobPeriodFrom', 'lastJobPeriodTo'];
-      const requiredFields = data.firstJobInCz === 'no' ? [...baseRequired, ...extraIfNo] : baseRequired;
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'educationAndLanguages',
-    label: 'form.tabs.educationAndLanguages',
-    fields: [
-      'highestEducation', 'highestEducationSchool', 'fieldOfStudy',
-      'graduationYear', 'studyCity', 'languageSkills'
-    ],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const requiredFields = ['highestEducation', 'highestEducationSchool', 'fieldOfStudy', 'graduationYear', 'studyCity'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'healthAndSocialInfo',
-    label: 'form.tabs.healthAndSocialInfo',
-    fields: [
-      'hasDisability', 'disabilityType', 'disabilityDecisionDate', 'receivesPension',
-      'pensionType', 'pensionDecisionDate', 'claimTaxDiscount'
-    ],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const baseRequired = ['hasDisability', 'receivesPension', 'claimTaxDiscount'];
-      const extraDisability = ['disabilityType', 'disabilityDecisionDate'];
-      const extraPension = ['pensionType', 'pensionDecisionDate'];
-      const requiredWhenYes: string[] = [];
-      if (data.hasDisability === 'yes') requiredWhenYes.push(...extraDisability);
-      if (data.receivesPension === 'yes') requiredWhenYes.push(...extraPension);
-      const requiredFields = [...baseRequired, ...requiredWhenYes];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'legalInfo',
-    label: 'form.tabs.legalInfo',
-    fields: [
-      'activityBan', 'bannedActivity', 'hasWageDeductions', 'wageDeductionDetails', 'wageDeductionDate'
-    ],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const requiredFields = ['activityBan', 'hasWageDeductions'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'familyAndChildren',
-    label: 'form.tabs.familyAndChildren',
-    fields: ['claimChildTaxRelief', 'childrenInfo'],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const requiredFields = ['claimChildTaxRelief'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] && !errors[field];
-      });
-    }
-  },
-  {
-    id: 'documents',
-    label: 'form.tabs.documents',
-    fields: [
-      'visaPassport', 'travelDocumentCopy', 'residencePermitCopy', 'highestEducationDocument',
-      'childBirthCertificate1', 'childBirthCertificate2', 'childBirthCertificate3', 'childBirthCertificate4',
-      'childTaxReliefConfirmation', 'pensionDecision', 'employmentConfirmation'
-    ],
-    isVisible: () => true,
-    isComplete: (data, _errors) => {
-      // Documents are conditionally required based on other fields
-      if (data.foreigner === 'yes' && (!data.visaPassport || data.visaPassport.length === 0)) return false;
-      if (data.receivesPension === 'yes' && (!data.pensionDecision || data.pensionDecision.length === 0)) return false;
-      if (data.claimChildTaxRelief === 'yes') {
-        const numChildren = data.childrenInfo?.length || 0;
-        if (numChildren > 0) {
-          // Check if at least the first certificate is uploaded
-          const hasChildCertificate = (data.childBirthCertificate1?.length ?? 0) > 0;
-          if (!hasChildCertificate) return false;
-        }
-      }
-      return true;
-    }
-  },
-  {
-    id: 'agreements',
-    label: 'form.tabs.agreements',
-    fields: ['confirmationReadEmployeeDeclaration', 'confirmationReadEmailAddressDeclaration'],
-    isVisible: () => true,
-    isComplete: (data, errors) => {
-      const requiredFields = ['confirmationReadEmployeeDeclaration', 'confirmationReadEmailAddressDeclaration'];
-      return requiredFields.every(field => {
-        const fieldKey = field as string;
-        return (data as Record<string, unknown>)[fieldKey] === true && !errors[field];
-      });
-    }
-  }
-];
-
 export const useTabNavigation = (
   formData: Partial<FormData>,
   formErrors: any,
@@ -227,61 +32,16 @@ export const useTabNavigation = (
   const [canScroll, setCanScroll] = useState({ left: false, right: true });
   const tabsListRef = useRef<HTMLDivElement>(null);
 
-  const visibleTabs = useMemo(() => 
-    TAB_CONFIGS.filter(tab => tab.isVisible(formData)),
-    [formData]
+  const tabConfigs = useMemo(() => getTabConfigs(), []);
+
+  const visibleTabs = useMemo(
+    () => tabConfigs.filter((tab) => tab.isVisible(formData)),
+    [formData, tabConfigs]
   );
 
   const progress = useMemo(() => {
     // Helper to check if a field is visible based on conditional logic
-    const isFieldVisible = (field: keyof FormData): boolean => {
-      // Foreigner-specific fields only when foreigner === 'yes'
-      const foreignerFields = ['foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy', 'passportValidityUntil'];
-      if (foreignerFields.includes(field as string)) {
-        return formData.foreigner === 'yes';
-      }
-      
-      // Birth number (SSN) only when foreigner !== 'yes'
-      if (field === 'birthNumber') {
-        return formData.foreigner !== 'yes';
-      }
-      
-      // taxIdentificationType is always visible (no conditional check needed)
-      
-      // Contact address fields only when contactSameAsPermanentAddress === 'no'
-      const contactFields = ['contactStreet', 'contactHouseNumber', 'contactOrientationNumber', 'contactCity', 'contactPostalCode', 'contactCountry'];
-      if (contactFields.includes(field as string)) {
-        return formData.contactSameAsPermanentAddress === 'no';
-      }
-      
-      // Disability fields only when hasDisability === 'yes'
-      if (field === 'disabilityType' || field === 'disabilityDecisionDate') {
-        return formData.hasDisability === 'yes';
-      }
-      
-      // Pension fields only when receivesPension === 'yes'
-      if (field === 'pensionType' || field === 'pensionDecisionDate') {
-        return formData.receivesPension === 'yes';
-      }
-      
-      // Last job fields only when firstJobInCz === 'no'
-      if (field === 'lastEmployer' || field === 'lastJobType' || field === 'lastJobPeriodFrom' || field === 'lastJobPeriodTo') {
-        return formData.firstJobInCz === 'no';
-      }
-      
-      // Banned activity only when activityBan === 'yes'
-      if (field === 'bannedActivity') {
-        return formData.activityBan === 'yes';
-      }
-      
-      // Wage deduction fields only when hasWageDeductions === 'yes'
-      if (field === 'wageDeductionDetails' || field === 'wageDeductionDate') {
-        return formData.hasWageDeductions === 'yes';
-      }
-      
-      // Default: field is visible
-      return true;
-    };
+    const isFieldVisible = (field: keyof FormData): boolean => isFormFieldVisible(field, formData);
 
     // Helper to check if a field is conditionally required (becomes required based on other fields)
     const isConditionallyRequiredField = (field: keyof FormData): boolean => {
@@ -295,6 +55,13 @@ export const useTabNavigation = (
       const lastJobFields = ['lastEmployer', 'lastJobType', 'lastJobPeriodFrom', 'lastJobPeriodTo'];
       if (lastJobFields.includes(field as string)) {
         return formData.firstJobInCz === 'no';
+      }
+
+      if (isIcuk()) {
+        if ((field === 'idCardNumber' || field === 'idCardIssuedBy') && formData.foreigner === 'no') return true;
+        if ((field === 'otherEmployerName' || field === 'otherEmployerSeat') && formData.hasOtherEmployment === 'yes') {
+          return true;
+        }
       }
       
       // languageExamType - required when languageProficiency is set and not 'none' or 'native'
@@ -325,7 +92,8 @@ export const useTabNavigation = (
       'childrenInfo',
       'travelDocumentCopy', 'residencePermitCopy', 'highestEducationDocument',
       'childBirthCertificate2', 'childBirthCertificate3', 'childBirthCertificate4',
-      'childTaxReliefConfirmation', 'employmentConfirmation'
+      'childTaxReliefConfirmation', 'employmentConfirmation',
+      ...(isIcuk() ? ['spouseFullName'] : []),
     ]);
 
     // Helper to check if a document field is conditionally required
@@ -335,6 +103,21 @@ export const useTabNavigation = (
       if (field === 'childBirthCertificate1' && formData.claimChildTaxRelief === 'yes') {
         const numChildren = (formData.childrenInfo as any[])?.length || 0;
         return numChildren > 0;
+      }
+      if (isIcuk()) {
+        if (
+          field === 'highestEducationDocument' ||
+          field === 'employmentConfirmation' ||
+          field === 'criminalRecordExtract'
+        ) {
+          return true;
+        }
+        if (field === 'travelDocumentCopy' || field === 'residencePermitCopy') {
+          return formData.foreigner === 'yes';
+        }
+        if (field === 'childTaxReliefConfirmation' && formData.claimChildTaxRelief === 'yes') return true;
+        if (field === 'laborOfficeEvidenceConfirmation' && formData.registeredAtLaborOffice === 'yes') return true;
+        if (field === 'studyConfirmation' && formData.isStudent === 'yes') return true;
       }
       return false;
     };
@@ -424,11 +207,11 @@ export const useTabNavigation = (
   }, []);
 
   const goToTab = useCallback(async (tabId: string): Promise<boolean> => {
-    const targetTab = TAB_CONFIGS.find(tab => tab.id === tabId);
+    const targetTab = tabConfigs.find(tab => tab.id === tabId);
     if (!targetTab || !targetTab.isVisible(formData)) return false;
 
     // Always allow tab switching, but trigger validation to show errors
-    const currentTab = TAB_CONFIGS.find(tab => tab.id === activeTab);
+    const currentTab = tabConfigs.find(tab => tab.id === activeTab);
     if (currentTab) {
       await triggerValidation(currentTab.fields);
     }
@@ -441,7 +224,7 @@ export const useTabNavigation = (
   const goNext = useCallback(async (): Promise<boolean> => {
     if (!canGoNext) return false;
     
-    const currentTab = TAB_CONFIGS.find(tab => tab.id === activeTab);
+    const currentTab = tabConfigs.find(tab => tab.id === activeTab);
     if (currentTab) {
       await triggerValidation(currentTab.fields);
     }
@@ -455,7 +238,7 @@ export const useTabNavigation = (
   const goPrevious = useCallback(async (): Promise<boolean> => {
     if (!canGoPrevious) return false;
     
-    const currentTab = TAB_CONFIGS.find(tab => tab.id === activeTab);
+    const currentTab = tabConfigs.find(tab => tab.id === activeTab);
     if (currentTab) {
       await triggerValidation(currentTab.fields);
     }
@@ -485,7 +268,7 @@ export const useTabNavigation = (
 
   const state: TabNavigationState = {
     activeTab,
-    tabs: TAB_CONFIGS,
+    tabs: tabConfigs,
     visibleTabs,
     canGoNext,
     canGoPrevious,

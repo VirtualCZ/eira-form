@@ -1,4 +1,5 @@
 import FormPhotoUpload from "@/customComponents/FormPhotoUpload"
+import { isIcuk } from "@/config/formVariants"
 import { FormData } from "@/schemas/formSchema"
 import { Control, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -9,25 +10,19 @@ interface DocumentsTabProps {
 
 export const DocumentsTab = ({ control }: DocumentsTabProps) => {
     const { t } = useTranslation()
-    const isForeigner = useWatch({
-        control,
-        name: "foreigner",
-    });
-    const receivesPension = useWatch({
-        control,
-        name: "receivesPension",
-    });
-    const claimChildTaxRelief = useWatch({
-        control,
-        name: "claimChildTaxRelief",
-    });
-    const childrenInfo = useWatch({
-        control,
-        name: "childrenInfo",
-    });
+    const icuk = isIcuk()
+    const isForeigner = useWatch({ control, name: "foreigner" })
+    const receivesPension = useWatch({ control, name: "receivesPension" })
+    const claimChildTaxRelief = useWatch({ control, name: "claimChildTaxRelief" })
+    const childrenInfo = useWatch({ control, name: "childrenInfo" })
+    const registeredAtLaborOffice = useWatch({ control, name: "registeredAtLaborOffice" })
+    const isStudent = useWatch({ control, name: "isStudent" })
 
-    // Count how many children were added
-    const numChildren = childrenInfo?.length || 0;
+    const numChildren = childrenInfo?.length || 0
+
+    const childTaxReliefLabel = icuk
+        ? t('form.labels.childTaxReliefConfirmationIcuk')
+        : t('form.labels.childTaxReliefConfirmation')
 
     return (
         <div className="grid grid-cols-1 gap-4 mb-4">
@@ -43,27 +38,40 @@ export const DocumentsTab = ({ control }: DocumentsTabProps) => {
                         name="travelDocumentCopy"
                         label={t('form.labels.travelDocumentCopy')}
                         formControl={control}
+                        required={icuk}
                     />
                     <FormPhotoUpload
                         name="residencePermitCopy"
                         label={t('form.labels.residencePermitCopy')}
                         formControl={control}
+                        required={icuk}
                     />
                 </>
             )}
-            
+
             <FormPhotoUpload
                 name="highestEducationDocument"
                 label={t('form.labels.highestEducationDocument')}
                 formControl={control}
+                required={icuk}
             />
-            
+
             <FormPhotoUpload
                 name="employmentConfirmation"
                 label={t('form.labels.employmentConfirmation')}
                 formControl={control}
+                required={icuk}
             />
-            
+
+            {icuk && (
+                <FormPhotoUpload
+                    name="criminalRecordExtract"
+                    label={t('form.labels.criminalRecordExtract')}
+                    formControl={control}
+                    required={true}
+                />
+            )}
+
             {receivesPension === "yes" && (
                 <FormPhotoUpload
                     name="pensionDecision"
@@ -72,11 +80,11 @@ export const DocumentsTab = ({ control }: DocumentsTabProps) => {
                     required={true}
                 />
             )}
-            
+
             {claimChildTaxRelief === "yes" && (
                 <>
                     {numChildren > 0 && [...Array(numChildren)].map((_, index) => {
-                        const fieldName = `childBirthCertificate${index + 1}` as string;
+                        const fieldName = `childBirthCertificate${index + 1}` as string
                         return (
                             <FormPhotoUpload
                                 key={index}
@@ -85,14 +93,33 @@ export const DocumentsTab = ({ control }: DocumentsTabProps) => {
                                 formControl={control}
                                 required={index === 0}
                             />
-                        );
+                        )
                     })}
-            <FormPhotoUpload
+                    <FormPhotoUpload
                         name="childTaxReliefConfirmation"
-                        label={t('form.labels.childTaxReliefConfirmation')}
-                formControl={control}
-            />
+                        label={childTaxReliefLabel}
+                        formControl={control}
+                        required={icuk}
+                    />
                 </>
+            )}
+
+            {icuk && registeredAtLaborOffice === "yes" && (
+                <FormPhotoUpload
+                    name="laborOfficeEvidenceConfirmation"
+                    label={t('form.labels.laborOfficeEvidenceConfirmation')}
+                    formControl={control}
+                    required={true}
+                />
+            )}
+
+            {icuk && isStudent === "yes" && (
+                <FormPhotoUpload
+                    name="studyConfirmation"
+                    label={t('form.labels.studyConfirmation')}
+                    formControl={control}
+                    required={true}
+                />
             )}
         </div>
     )

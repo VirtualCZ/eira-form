@@ -5,6 +5,7 @@ import FormRadio from "@/customComponents/FormRadio";
 import FormSelect from "@/customComponents/FormSelect";
 import FormCountrySelect from "@/customComponents/FormCountrySelect";
 import { FormData } from "@/schemas/formSchema";
+import { isGas, isIcuk } from "@/config/formVariants";
 import { Control, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -123,24 +124,42 @@ export const PersonalInformationTab = ({
                     { value: "no", label: t('form.options.yesNo.no') },
                 ]}
             />
-            <FormSelect
-                name="taxIdentificationType"
-                formLabel={t('form.labels.taxIdentificationType')}
-                formControl={control}
-                formTriggerClass='w-full'
-                options={[
-                    { value: "resident", label: t('form.options.taxIdentificationType.resident') },
-                    { value: "nonResident", label: t('form.options.taxIdentificationType.nonResident') },
-                ]}
-                placeholder="-"
-            />
-            {isForeigner !== "yes" && (
-                <FormInput
-                    name="birthNumber"
-                    formLabel={t('form.labels.birthNumber')}
+            {isGas() && (
+                <FormSelect
+                    name="taxIdentificationType"
+                    formLabel={t('form.labels.taxIdentificationType')}
                     formControl={control}
-                    formPlaceholder="250411/1234"
+                    formTriggerClass='w-full'
+                    options={[
+                        { value: "resident", label: t('form.options.taxIdentificationType.resident') },
+                        { value: "nonResident", label: t('form.options.taxIdentificationType.nonResident') },
+                    ]}
+                    placeholder="-"
                 />
+            )}
+            {isForeigner !== "yes" && (
+                <>
+                    <FormInput
+                        name="birthNumber"
+                        formLabel={t('form.labels.birthNumber')}
+                        formControl={control}
+                        formPlaceholder="250411/1234"
+                    />
+                    {isIcuk() && (
+                        <>
+                            <FormInput
+                                name="idCardNumber"
+                                formLabel={t('form.labels.idCardNumber')}
+                                formControl={control}
+                            />
+                            <FormInput
+                                name="idCardIssuedBy"
+                                formLabel={t('form.labels.idCardIssuedBy')}
+                                formControl={control}
+                            />
+                        </>
+                    )}
+                </>
             )}
             {isForeigner === "yes" && (
                 <>
@@ -173,16 +192,6 @@ export const PersonalInformationTab = ({
                     />
                 </>
             )}
-            {/* <FormInput
-                    name="idCardNumber"
-                    formLabel={t('form.labels.idCardNumber')}
-                    formControl={control}
-                  />
-                  <FormInput
-                    name="idCardIssuedBy"
-                    formLabel={t('form.labels.idCardIssuedBy')}
-                    formControl={control}
-                  /> */}
             <FormCountrySelect
                 name="citizenship"
                 formLabel={t('form.labels.citizenship')}

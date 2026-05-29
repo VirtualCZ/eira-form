@@ -1,5 +1,7 @@
+import FormInput from "@/customComponents/FormInput"
 import FormRadio from "@/customComponents/FormRadio"
 import { FormTable } from "@/customComponents/FormTable"
+import { isIcuk } from "@/config/formVariants"
 import { FormData } from "@/schemas/formSchema"
 import { Control } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -22,6 +24,13 @@ export const FamilyAndChildrenTab = ({ control }: FamilyAndChildrenTabProps) => 
                     { value: "no", label: t('form.options.yesNo.no') },
                 ]}
             />
+            {isIcuk() && (
+                <FormInput
+                    name="spouseFullName"
+                    formLabel={t('form.labels.spouseFullName')}
+                    formControl={control}
+                />
+            )}
             <FormTable
                 name="childrenInfo"
                 label={t('form.headlines.childrenInfo')}

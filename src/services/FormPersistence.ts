@@ -18,7 +18,10 @@ export const IMAGE_FIELDS: string[] = [
   'childBirthCertificate4',
   'childTaxReliefConfirmation',
   'pensionDecision',
-  'employmentConfirmation'
+  'employmentConfirmation',
+  'criminalRecordExtract',
+  'laborOfficeEvidenceConfirmation',
+  'studyConfirmation',
 ];
 
 // Date fields that need serialization

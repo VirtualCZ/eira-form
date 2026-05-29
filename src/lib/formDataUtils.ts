@@ -1,6 +1,7 @@
 // Utilities for checking if a field/value contains meaningful data
 
 import { FormData } from '@/schemas/formSchema';
+import { isIcuk } from '@/config/formVariants';
 
 const isNonEmptyString = (val: unknown): boolean =>
   typeof val === 'string' && val.trim() !== '' && val.trim() !== 'none';
@@ -29,6 +30,39 @@ export const hasFieldData = (val: unknown): boolean => {
  * This matches the logic used in useTabNavigation.ts
  */
 export const isFieldVisible = (field: keyof FormData, formData: Partial<FormData>): boolean => {
+  if (field === 'taxIdentificationType' && isIcuk()) {
+    return false;
+  }
+
+  const icukOnlyFields = [
+    'idCardNumber', 'idCardIssuedBy', 'hasOtherEmployment', 'otherEmployerName', 'otherEmployerSeat',
+    'registeredAtLaborOffice', 'isStudent', 'spouseFullName',
+    'criminalRecordExtract', 'laborOfficeEvidenceConfirmation', 'studyConfirmation',
+  ];
+  if (icukOnlyFields.includes(field as string) && !isIcuk()) {
+    return false;
+  }
+
+  if (field === 'idCardNumber' || field === 'idCardIssuedBy') {
+    return isIcuk() && formData.foreigner !== 'yes';
+  }
+
+  if (field === 'otherEmployerName' || field === 'otherEmployerSeat') {
+    return isIcuk() && formData.hasOtherEmployment === 'yes';
+  }
+
+  if (field === 'laborOfficeEvidenceConfirmation') {
+    return isIcuk() && formData.registeredAtLaborOffice === 'yes';
+  }
+
+  if (field === 'studyConfirmation') {
+    return isIcuk() && formData.isStudent === 'yes';
+  }
+
+  if (field === 'criminalRecordExtract') {
+    return isIcuk();
+  }
+
   // Foreigner-specific fields only when foreigner === 'yes'
   const foreignerFields = ['foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy', 'passportValidityUntil'];
   if (foreignerFields.includes(field as string)) {
