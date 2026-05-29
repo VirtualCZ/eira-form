@@ -154,10 +154,18 @@ const GAS_TAB_CONFIGS: TabConfig[] = [
   {
     id: 'agreements',
     label: 'form.tabs.agreements',
-    fields: ['confirmationReadEmployeeDeclaration', 'confirmationReadEmailAddressDeclaration'],
+    fields: [
+      'confirmationReadEmployeeDeclaration',
+      'confirmationReadEmailAddressDeclaration',
+      'confirmationReadPersonalDataProcessing',
+    ],
     isVisible: () => true,
     isComplete: (data, errors) => {
-      const requiredFields = ['confirmationReadEmployeeDeclaration', 'confirmationReadEmailAddressDeclaration'];
+      const requiredFields = [
+        'confirmationReadEmployeeDeclaration',
+        'confirmationReadEmailAddressDeclaration',
+        'confirmationReadPersonalDataProcessing',
+      ];
       return requiredFields.every((field) => (data as Record<string, unknown>)[field] === true && !errors[field]);
     },
   },

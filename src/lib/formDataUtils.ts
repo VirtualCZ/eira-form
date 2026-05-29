@@ -1,7 +1,8 @@
 // Utilities for checking if a field/value contains meaningful data
 
 import { FormData } from '@/schemas/formSchema';
-import { isIcuk } from '@/config/formVariants';
+import type { TabConfig } from '@/config/tabConfigs';
+import { isGas, isIcuk } from '@/config/formVariants';
 
 const isNonEmptyString = (val: unknown): boolean =>
   typeof val === 'string' && val.trim() !== '' && val.trim() !== 'none';
@@ -125,6 +126,117 @@ export const isFieldVisible = (field: keyof FormData, formData: Partial<FormData
 /**
  * Filters out hidden fields from form data based on conditional visibility logic
  */
+/** Fields that stay optional in all variants (never counted toward progress). */
+const ALWAYS_OPTIONAL_FIELDS = new Set<string>([
+  'titleBeforeName', 'titleAfterName', 'birthSurname', 'previousSurname',
+  'foreignBirthNumber', 'insuranceBirthNumber', 'passportNumber', 'passportIssuedBy', 'passportValidityUntil',
+  'citizenship', 'nationality',
+  'permanentOrientationNumber', 'contactOrientationNumber',
+  'dataBoxId',
+  'residencePermitValidityFrom', 'residencePermitValidityUntil', 'residencePermitType', 'residencePermitPurpose',
+  'jobPosition',
+  'childrenInfo',
+  'childBirthCertificate2', 'childBirthCertificate3', 'childBirthCertificate4',
+  'spouseFullName',
+  // Optional in GAS; ICUK may require some of these via isDocumentRequiredForProgress
+  'highestEducationDocument', 'employmentConfirmation', 'childTaxReliefConfirmation',
+  'travelDocumentCopy', 'residencePermitCopy',
+]);
+
+const isDocumentRequiredForProgress = (field: keyof FormData, formData: Partial<FormData>): boolean => {
+  if (field === 'visaPassport' && formData.foreigner === 'yes') return true;
+  if (field === 'pensionDecision' && formData.receivesPension === 'yes') return true;
+  if (field === 'childBirthCertificate1' && formData.claimChildTaxRelief === 'yes') {
+    const numChildren = (formData.childrenInfo as unknown[])?.length || 0;
+    return numChildren > 0;
+  }
+  if (!isIcuk()) return false;
+  if (field === 'highestEducationDocument' || field === 'employmentConfirmation' || field === 'criminalRecordExtract') {
+    return true;
+  }
+  if ((field === 'travelDocumentCopy' || field === 'residencePermitCopy') && formData.foreigner === 'yes') {
+    return true;
+  }
+  if (field === 'childTaxReliefConfirmation' && formData.claimChildTaxRelief === 'yes') return true;
+  if (field === 'laborOfficeEvidenceConfirmation' && formData.registeredAtLaborOffice === 'yes') return true;
+  if (field === 'studyConfirmation' && formData.isStudent === 'yes') return true;
+  return false;
+};
+
+/**
+ * Whether a field counts toward form completion progress (visible + currently required).
+ */
+export const isFieldRequiredForProgress = (field: keyof FormData, formData: Partial<FormData>): boolean => {
+  if (!isFieldVisible(field, formData)) return false;
+
+  if (ALWAYS_OPTIONAL_FIELDS.has(field as string)) {
+    return isDocumentRequiredForProgress(field, formData);
+  }
+
+  if (field === 'taxIdentificationType') {
+    return isGas();
+  }
+
+  if (isDocumentRequiredForProgress(field, formData)) return true;
+
+  if (field === 'bannedActivity') return formData.activityBan === 'yes';
+  if (field === 'wageDeductionDetails' || field === 'wageDeductionDate') {
+    return formData.hasWageDeductions === 'yes';
+  }
+
+  if (field === 'disabilityType' || field === 'disabilityDecisionDate') {
+    return formData.hasDisability === 'yes';
+  }
+  if (field === 'pensionType' || field === 'pensionDecisionDate') {
+    return formData.receivesPension === 'yes';
+  }
+
+  if (field === 'idCardNumber' || field === 'idCardIssuedBy') {
+    return isIcuk() && formData.foreigner === 'no';
+  }
+  if (field === 'otherEmployerName' || field === 'otherEmployerSeat') {
+    return isIcuk() && formData.hasOtherEmployment === 'yes';
+  }
+
+  if (typeof field === 'string' && field.startsWith('confirmationRead')) {
+    return true;
+  }
+
+  return true;
+};
+
+export const calculateFormProgress = (
+  formData: Partial<FormData>,
+  formErrors: Record<string, unknown> | undefined,
+  visibleTabs: TabConfig[]
+): number => {
+  const required = new Set<keyof FormData>();
+
+  visibleTabs.forEach((tab) => {
+    tab.fields.forEach((f) => {
+      const field = f as keyof FormData;
+      if (isFieldRequiredForProgress(field, formData)) {
+        required.add(field);
+      }
+    });
+  });
+
+  required.delete('givenCode' as keyof FormData);
+  required.delete('_timestamp' as keyof FormData);
+
+  const total = required.size;
+  if (total === 0) return 0;
+
+  let validCount = 0;
+  required.forEach((field) => {
+    const value = (formData as Record<string, unknown>)[field as string];
+    const hasError = Boolean(formErrors?.[field as string]);
+    if (hasFieldData(value) && !hasError) validCount++;
+  });
+
+  return Math.round((validCount / total) * 100);
+};
+
 export const filterVisibleFields = (data: Partial<FormData>): Partial<FormData> => {
   const filtered: Partial<FormData> = {};
   

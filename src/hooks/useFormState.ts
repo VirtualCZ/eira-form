@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { FormData, getFormSchema } from '@/schemas/formSchema';
 import { LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates, serializeDatesForSubmission } from '@/services/FormPersistence';
 import { isValidCode } from '@/lib/codeUtils';
-import { hasFieldData, filterVisibleFields } from '@/lib/formDataUtils';
+import { calculateFormProgress, filterVisibleFields, hasFieldData } from '@/lib/formDataUtils';
+import { getTabConfigs } from '@/config/tabConfigs';
 
 // Helper function to fetch code info from API
 const fetchCodeInfo = async (code: string): Promise<{ formData: Partial<FormData>; orgUnitName?: string } | null> => {
@@ -152,18 +153,11 @@ export const useFormState = () => {
   // Watch all form values so progress recalculates on any change
   const watchedValues = watch();
 
-  // Calculate form progress
   const progress = useMemo(() => {
-    const formData = watchedValues as Record<string, unknown>;
-    const excludedFields = ['givenCode', '_timestamp'];
-    const fieldsToCount = Object.entries(formData).filter(([key]) => !excludedFields.includes(key));
-    const totalFields = fieldsToCount.length;
-    if (totalFields === 0) return 0;
-    const filledFields = fieldsToCount.filter(([, value]) => hasFieldData(value)).length;
-    const percentage = Math.round((filledFields / totalFields) * 100);
-    // Cap at 100% to prevent showing 150%
-    return Math.min(100, percentage);
-  }, [watchedValues]);
+    const formData = watchedValues as Partial<FormData>;
+    const visibleTabs = getTabConfigs().filter((tab) => tab.isVisible(formData));
+    return calculateFormProgress(formData, formState.errors as Record<string, unknown>, visibleTabs);
+  }, [watchedValues, formState.errors]);
 
   // Auto-save functionality (only saves non-image fields)
   useEffect(() => {
