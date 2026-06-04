@@ -6,6 +6,7 @@ import { FormData, getFormSchema } from '@/schemas/formSchema';
 import { LAST_CODE_KEY, getStorageKey, serializeDatesAndKeys, restoreImagesFromKeys, cleanupOldData, reviveDates, serializeDatesForSubmission } from '@/services/FormPersistence';
 import { isValidCode } from '@/lib/codeUtils';
 import { calculateFormProgress, filterVisibleFields, hasFieldData } from '@/lib/formDataUtils';
+import { trimStringValuesDeep } from '@/lib/trimFormValues';
 import { getTabConfigs } from '@/config/tabConfigs';
 import { getCodeInfo } from '@/services/hrFormApi';
 
@@ -76,7 +77,7 @@ export const useFormState = () => {
         const { _timestamp, ...data } = parsed;
         // Restore images from IndexedDB using keys and revive dates
         const restored = await restoreImagesFromKeys(data);
-        return reviveDates(restored);
+        return trimStringValuesDeep(reviveDates(restored));
       }
       return {};
     } catch (error) {
@@ -120,7 +121,7 @@ export const useFormState = () => {
       
       // Use getValues() instead of watch() value to ensure we get ALL current form values
       // This matches exportData behavior and ensures no fields are missed
-      const allFormData = form.getValues();
+      const allFormData = trimStringValuesDeep(form.getValues());
       const code = allFormData.givenCode;
       
       if (isValidCode(code)) {
@@ -181,7 +182,7 @@ export const useFormState = () => {
   }, [hasUnsavedChanges]);
 
   const save = useCallback(async () => {
-    const data = form.getValues();
+    const data = trimStringValuesDeep(form.getValues());
     const code = data.givenCode;
     if (isValidCode(code)) {
       // Convert images to keys for localStorage, store actual data in IndexedDB
@@ -306,11 +307,9 @@ export const useFormState = () => {
   }, [form, reset]);
 
   const exportData = useCallback(() => {
-    const data = form.getValues();
-    // Export with full base64 data (not compressed) for server/backup
-    // Include givenCode in the export
-    // Serialize dates without timezone for export (same as submission)
-    const serializedData = serializeDatesForSubmission(data);
+    const serializedData = trimStringValuesDeep(
+      serializeDatesForSubmission(form.getValues()),
+    );
     const jsonStr = JSON.stringify(serializedData, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -324,11 +323,10 @@ export const useFormState = () => {
   }, [form]);
 
   const exportDataForAPI = useCallback(() => {
-    const data = form.getValues();
-    // Filter out hidden fields (same as what gets sent to API)
-    const visibleData = filterVisibleFields(data);
-    // Serialize dates without timezone for export (same as submission)
-    const serializedData = serializeDatesForSubmission(visibleData);
+    const visibleData = filterVisibleFields(form.getValues());
+    const serializedData = trimStringValuesDeep(
+      serializeDatesForSubmission(visibleData),
+    );
     const jsonStr = JSON.stringify(serializedData, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -344,12 +342,12 @@ export const useFormState = () => {
   const importData = useCallback(async (data: Record<string, unknown>) => {
     const currentCode = form.getValues('givenCode');
     const { givenCode: _importedCode, _timestamp, ...dataWithoutMeta } = data;
-    const revivedData = reviveDates(dataWithoutMeta);
+    const revivedData = trimStringValuesDeep(reviveDates(dataWithoutMeta));
     const withImages = await restoreImagesFromKeys(revivedData);
 
     const schema = getFormSchema(t);
     const validated = (await schema.validate(
-      { ...withImages, givenCode: currentCode },
+      trimStringValuesDeep({ ...withImages, givenCode: currentCode }),
       { abortEarly: false, stripUnknown: true }
     )) as Record<string, unknown>;
 
@@ -402,7 +400,7 @@ export const useFormState = () => {
       setTimeout(async () => {
         if (currentCode && currentCode.length >= 5 && currentCode.length <= 10) {
           try {
-            const allFormData = form.getValues();
+            const allFormData = trimStringValuesDeep(form.getValues());
             // Convert images to keys for localStorage, store actual data in IndexedDB
             const serializedData = await serializeDatesAndKeys(allFormData, currentCode);
             const dataWithTimestamp = {
@@ -439,7 +437,7 @@ export const useFormState = () => {
       return;
     }
     
-    const data = form.getValues();
+    const data = trimStringValuesDeep(form.getValues());
     // Convert images to keys for localStorage, store actual data in IndexedDB
     const serializedData = await serializeDatesAndKeys(data, code);
     const dataWithTimestamp = {
@@ -497,7 +495,7 @@ export const useFormState = () => {
       const apiResult = await getCodeInfo(code);
       if (apiResult) {
         // Revive dates from API response
-        storedData = reviveDates(apiResult.formData);
+        storedData = trimStringValuesDeep(reviveDates(apiResult.formData));
         // Store orgUnitName (even if undefined, to clear previous value)
         const orgUnitNameValue = apiResult.orgUnitName || undefined;
         setOrgUnitName(orgUnitNameValue);

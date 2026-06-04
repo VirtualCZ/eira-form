@@ -170,6 +170,11 @@ export const reviveDates = (obj: any): any => {
       continue;
     }
     if (typeof value === 'object' && value !== null) {
+      // Corrupted save: Date was turned into {} by trimStringValuesDeep (fixed); drop so field is empty
+      if (DATE_FIELDS.includes(key) && !(value instanceof Date) && Object.keys(value).length === 0) {
+        delete result[key];
+        continue;
+      }
       result[key] = reviveDates(value);
       continue;
     }

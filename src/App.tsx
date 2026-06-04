@@ -138,7 +138,14 @@ const MainApp: React.FC = () => {
 
     try {
       setIsSubmitting(true);
-      
+
+      const validation = await submissionService.validateForm(data);
+      if (!validation.success) {
+        hideModal(loadingId);
+        showValidationErrors(validation.errors || [], t('form.modal.validationErrorTitle'));
+        return;
+      }
+
       const result = await submissionService.submitForm(data, formState.orgUnitName);
       
       hideModal(loadingId);

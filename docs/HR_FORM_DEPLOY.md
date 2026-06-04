@@ -1,43 +1,55 @@
 # HR form deployment
 
-Employees open: **`/forms/hr/?code=INVITE_CODE`** (email link from `CoreActionService`).
+Employees open: **`/forms/hr/?code=INVITE_CODE`**.
 
-The SPA calls **`/rest/sm/{gas|icuk}/v1/*`** on the same host (public on **rest-war** — no HTTP login, no proxy servlet).
+## How API calls work
 
-| Variant | Browser path | Handler |
-|---------|--------------|---------|
-| GAS | `/rest/sm/gas/v1/getCodeInfo/{code}` | `SMRest` → `SmSubjectServiceBean` |
-| GAS | `/rest/sm/gas/v1/createHrRequest` | same |
-| ICUK | `/rest/sm/icuk/v1/...` | delegates to GAS handlers |
+| Environment | URL in the app | What happens |
+|-------------|----------------|--------------|
+| **Production** (`forms.war/hr/`) | `/rest/sm/{gas\|icuk}/v1/...` (relative) | Browser calls the **same JBoss host** — no Vite, no proxy |
+| **Local `yarn dev`** | Same relative paths | **Vite dev proxy** forwards `/rest/sm` → `HR_REST_TARGET` (e.g. `http://localhost:8880`) |
 
-## Static app (existing forms.war)
+There is **no proxy in production**. Only `yarn dev` uses `vite.config.ts` proxy.
 
-`forms.war` is **not** built from this repo. Copy **eira-form** `dist/*` into the deployed WAR:
+## Auth (temporary)
 
-```text
-standalone/deployments/forms.war/hr/
-  index.html
-  assets/...
+HTTP Basic with a limited service user, set at **build time**:
+
+- `VITE_GAS_NAME` / `VITE_GAS_PASS` (GAS build)
+- `VITE_ICUK_NAME` / `VITE_ICUK_PASS` (ICUK build; falls back to GAS if unset)
+
+Credentials are inlined into `dist`. Planned replacement: one-time invite codes.
+
+## Build & deploy
+
+```bash
+# ICUK example
+VITE_FORM_VARIANT=icuk
+VITE_ICUK_NAME=icuk_test
+VITE_ICUK_PASS=***
+yarn build
 ```
 
-Rebuild the React app (`yarn build`), copy output into `hr/`, redeploy or touch the deployment.
+Copy `dist/*` → `standalone/deployments/forms.war/hr/`.
 
-## Backend (eira repo)
+`.env` is for **local dev + build machine** only (not shipped in `forms.war`).
 
-Redeploy **rest-war** so HR URLs are in the public security constraint (`rest-war/WEB-INF/web.xml`).
+## Local dev
 
-No servlet on **impl-war** or a new **forms-war** — REST already accepts HR payloads.
+```env
+VITE_FORM_VARIANT=icuk
+VITE_ICUK_NAME=icuk_test
+VITE_ICUK_PASS=***
+HR_REST_TARGET=http://localhost:8880
+```
 
-## Local development
+```bash
+yarn dev
+# http://localhost:5173/?code=SUBJECT_ID
+```
 
-1. JBoss + **rest-war** running.
-2. `.env`: `VITE_FORM_VARIANT=gas` or `icuk`, `HR_REST_TARGET=http://localhost:8880` (JBoss HTTP root; Vite proxies `/rest/sm` there).
-3. `yarn dev` → `http://localhost:5173/?code=INVITE_CODE`.
+Restart dev server after `.env` changes.
 
-Optional: `VITE_HR_API_BASE=/rest/sm/icuk/v1` to override the API base.
+## Backend
 
-Do not set `HR_REST_USER` / `HR_REST_PASS` unless REST still requires Basic auth on other paths.
-
-## orgUnitName
-
-`getCodeInfo` returns `orgUnitName` from the subject’s team. The form uses it in GDPR text and sends it on `createHrRequest`.
+**rest-war** requires Basic auth on `/*`. Redeploy **sm-jar** for ICUK path aliases on `SMRest`.

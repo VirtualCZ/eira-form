@@ -7,10 +7,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const restTarget = env.HR_REST_TARGET ?? env.GAS_REST_TARGET ?? 'http://localhost:8080'
-  const restUser = env.HR_REST_USER ?? env.GAS_REST_USER ?? ''
-  const restPass = env.HR_REST_PASS ?? env.GAS_REST_PASS ?? ''
 
-  console.info(`[eira-form] REST proxy → ${restTarget}/rest/sm/... (public HR endpoints)`)
+  console.info(`[eira-form] dev proxy: /rest/sm → ${restTarget}/rest/sm/...`)
 
   return {
     plugins: [react(), tailwindcss()],
@@ -29,12 +27,6 @@ export default defineConfig(({ mode }) => {
             proxy.on('proxyRes', (proxyRes) => {
               if (proxyRes.headers['www-authenticate']) {
                 delete proxyRes.headers['www-authenticate']
-              }
-            })
-            proxy.on('proxyReq', (proxyReq) => {
-              if (restUser && restPass) {
-                const token = Buffer.from(`${restUser}:${restPass}`).toString('base64')
-                proxyReq.setHeader('Authorization', `Basic ${token}`)
               }
             })
           },

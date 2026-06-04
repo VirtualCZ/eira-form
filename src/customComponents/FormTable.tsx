@@ -7,6 +7,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { useTranslation } from 'react-i18next';  // Replace i18next import
 import { Trash2 } from "lucide-react";
 import { FormData } from "@/schemas/formSchema";
+import { trimStringValuesDeep, trimTextInputValue } from "@/lib/trimFormValues";
 
 interface Column<T> {
   name: keyof T;
@@ -64,7 +65,7 @@ export function FormTable({
       const hasData = Object.values(updated).some((val) => val.trim() !== "");
       if (hasData) {
         isSubmitting.current = true;
-        append(updated as any, { shouldFocus: false });
+        append(trimStringValuesDeep(updated) as any, { shouldFocus: false });
         setNewRow(Object.fromEntries(columns.map((col) => [col.name as string, ""])));
 
         setTimeout(() => {
@@ -148,6 +149,13 @@ export function FormTable({
                               placeholder={col.placeholder}
                               className="h-9"
                               aria-invalid={!!fieldState.error}
+                              onBlur={(e) => {
+                                const trimmed = trimTextInputValue(e.target.value);
+                                if (trimmed !== rhfField.value) {
+                                  rhfField.onChange(trimmed);
+                                }
+                                rhfField.onBlur();
+                              }}
                             />
                             </FormControl>
                         )}

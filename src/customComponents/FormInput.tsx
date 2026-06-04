@@ -1,6 +1,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { FormData } from "@/schemas/formSchema";
+import { trimTextInputValue } from "@/lib/trimFormValues";
 import { Control, FieldPath } from "react-hook-form";
 
 interface FormInputProps {
@@ -49,6 +50,15 @@ const FormInput = ({
                                 } else {
                                     field.onChange(value);
                                 }
+                            }}
+                            onBlur={(e) => {
+                                if (inputType !== "number") {
+                                    const trimmed = trimTextInputValue(e.target.value);
+                                    if (trimmed !== field.value) {
+                                        field.onChange(trimmed);
+                                    }
+                                }
+                                field.onBlur();
                             }}
                             value={
                                 typeof field.value === "string" || typeof field.value === "number"
