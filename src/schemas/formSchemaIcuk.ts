@@ -407,6 +407,11 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
 
     bannedActivity: yup.string().optional(),
 
+    inInsolvency: yup
+      .string()
+      .oneOf(['yes', 'no'], t('form.validation.required.inInsolvency'))
+      .required(t('form.validation.required.inInsolvency')),
+
     hasWageDeductions: yup
       .string()
       .oneOf(['yes', 'no'], t('form.validation.required.hasWageDeductions'))
@@ -426,6 +431,10 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
       .required(t('form.validation.required.claimChildTaxRelief')),
 
     spouseFullName: yup.string().optional(),
+
+    spouseDateOfBirth: yup.date().nullable().optional(),
+    spouseResidence: yup.string().optional(),
+    spouseEmployer: yup.string().optional(),
 
     childrenInfo: yup
       .array()

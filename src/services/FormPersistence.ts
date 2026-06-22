@@ -37,7 +37,8 @@ export const DATE_FIELDS: string[] = [
   'lastJobPeriodTo',
   'disabilityDecisionDate',
   'pensionDecisionDate',
-  'wageDeductionDate'
+  'wageDeductionDate',
+  'spouseDateOfBirth',
 ];
 
 export const getStorageKey = (code: string) => `${STORAGE_PREFIX}${code}`;

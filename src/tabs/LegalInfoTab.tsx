@@ -38,6 +38,20 @@ export const LegalInfoTab = ({ control }: LegalInfoTabProps) => {
                 </>
             )}
 
+            {icuk && (
+                <>
+                    <FormRadio
+                        name="inInsolvency"
+                        formLabel={t('form.labels.inInsolvency')}
+                        formControl={control}
+                        options={[
+                            { value: "yes", label: t('form.options.yesNo.yes') },
+                            { value: "no", label: t('form.options.yesNo.no') },
+                        ]}
+                    />
+                </>
+            )}
+
             <FormRadio
                 name="hasWageDeductions"
                 formLabel={t('form.labels.hasWageDeductions')}

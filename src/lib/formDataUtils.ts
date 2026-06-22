@@ -64,7 +64,8 @@ export const isFieldVisible = (field: keyof FormData, formData: Partial<FormData
 
   const icukOnlyFields = [
     'idCardNumber', 'idCardIssuedBy', 'hasOtherEmployment', 'otherEmployerName', 'otherEmployerSeat',
-    'registeredAtLaborOffice', 'isStudent', 'spouseFullName',
+    'registeredAtLaborOffice', 'isStudent', 'inInsolvency',
+    'spouseFullName', 'spouseDateOfBirth', 'spouseResidence', 'spouseEmployer',
     'criminalRecordExtract', 'laborOfficeEvidenceConfirmation', 'studyConfirmation',
   ];
   if (icukOnlyFields.includes(field as string) && !isIcuk()) {
@@ -164,7 +165,7 @@ const ALWAYS_OPTIONAL_FIELDS = new Set<string>([
   'jobPosition',
   'childrenInfo',
   'childBirthCertificate2', 'childBirthCertificate3', 'childBirthCertificate4',
-  'spouseFullName',
+  'spouseFullName', 'spouseDateOfBirth', 'spouseResidence', 'spouseEmployer',
   // Optional in GAS; ICUK may require some of these via isDocumentRequiredForProgress
   'highestEducationDocument', 'employmentConfirmation', 'childTaxReliefConfirmation',
   'travelDocumentCopy', 'residencePermitCopy',

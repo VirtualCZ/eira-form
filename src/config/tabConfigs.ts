@@ -229,17 +229,17 @@ const ICUK_TAB_CONFIGS: TabConfig[] = [
   {
     id: 'legalInfo',
     label: 'form.tabs.legalInfo',
-    fields: ['hasWageDeductions', 'wageDeductionDetails', 'wageDeductionDate'],
+    fields: ['inInsolvency', 'hasWageDeductions', 'wageDeductionDetails', 'wageDeductionDate'],
     isVisible: () => true,
     isComplete: (data, errors) => {
-      const requiredFields = ['hasWageDeductions'];
+      const requiredFields = ['inInsolvency', 'hasWageDeductions'];
       return requiredFields.every((field) => (data as Record<string, unknown>)[field] && !errors[field]);
     },
   },
   {
     id: 'familyAndChildren',
     label: 'form.tabs.familyAndChildren',
-    fields: ['claimChildTaxRelief', 'spouseFullName', 'childrenInfo'],
+    fields: ['claimChildTaxRelief', 'spouseFullName', 'spouseDateOfBirth', 'spouseResidence', 'spouseEmployer', 'childrenInfo'],
     isVisible: () => true,
     isComplete: (data, errors) =>
       Boolean((data as Record<string, unknown>).claimChildTaxRelief && !errors.claimChildTaxRelief),

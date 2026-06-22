@@ -1,4 +1,5 @@
 import FormInput from "@/customComponents/FormInput"
+import FormDate from "@/customComponents/FormDate"
 import FormRadio from "@/customComponents/FormRadio"
 import { FormTable } from "@/customComponents/FormTable"
 import { isIcuk } from "@/config/formVariants"
@@ -25,11 +26,29 @@ export const FamilyAndChildrenTab = ({ control }: FamilyAndChildrenTabProps) => 
                 ]}
             />
             {isIcuk() && (
-                <FormInput
-                    name="spouseFullName"
-                    formLabel={t('form.labels.spouseFullName')}
-                    formControl={control}
-                />
+                <>
+                    <FormInput
+                        name="spouseFullName"
+                        formLabel={t('form.labels.spouseFullName')}
+                        formControl={control}
+                    />
+                    <FormDate
+                        name="spouseDateOfBirth"
+                        formLabel={t('form.labels.spouseDateOfBirth')}
+                        formControl={control}
+                        yearsBack={100}
+                    />
+                    <FormInput
+                        name="spouseResidence"
+                        formLabel={t('form.labels.spouseResidence')}
+                        formControl={control}
+                    />
+                    <FormInput
+                        name="spouseEmployer"
+                        formLabel={t('form.labels.spouseEmployer')}
+                        formControl={control}
+                    />
+                </>
             )}
             <FormTable
                 name="childrenInfo"
