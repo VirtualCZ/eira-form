@@ -1,6 +1,7 @@
 import FormDate from "@/customComponents/FormDate";
 import FormInput from "@/customComponents/FormInput";
 import FormRadio from "@/customComponents/FormRadio";
+import { isIcuk } from "@/config/formVariants";
 import { Control, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -10,25 +11,31 @@ interface LegalInfoTabProps {
 
 export const LegalInfoTab = ({ control }: LegalInfoTabProps) => {
     const { t } = useTranslation();
+    const icuk = isIcuk();
     const activityBan = useWatch({ name: "activityBan", control });
     const hasWageDeductions = useWatch({ name: "hasWageDeductions", control });
 
     return (
         <>
-            <FormRadio
-                name="activityBan"
-                formLabel={t('form.labels.activityBan')}
-                formControl={control}
-                options={[
-                    { value: "yes", label: t('form.options.yesNo.yes') },
-                    { value: "no", label: t('form.options.yesNo.no') },
-                ]}
-            />
-            {activityBan === "yes" && (<FormInput
-                name="bannedActivity"
-                formLabel={t('form.labels.bannedActivity')}
-                formControl={control}
-            />
+            {!icuk && (
+                <>
+                    <FormRadio
+                        name="activityBan"
+                        formLabel={t('form.labels.activityBan')}
+                        formControl={control}
+                        options={[
+                            { value: "yes", label: t('form.options.yesNo.yes') },
+                            { value: "no", label: t('form.options.yesNo.no') },
+                        ]}
+                    />
+                    {activityBan === "yes" && (
+                        <FormInput
+                            name="bannedActivity"
+                            formLabel={t('form.labels.bannedActivity')}
+                            formControl={control}
+                        />
+                    )}
+                </>
             )}
 
             <FormRadio

@@ -2,8 +2,11 @@ import FormInput from "@/customComponents/FormInput"
 import FormSelect from "@/customComponents/FormSelect"
 import { FormTable } from "@/customComponents/FormTable"
 import { FormData } from "@/schemas/formSchema"
+import { GAS_HIGHEST_EDUCATION_OPTIONS, ICUK_HIGHEST_EDUCATION_OPTIONS } from "@/config/educationOptions"
+import { isIcuk } from "@/config/formVariants"
 import { Control } from "react-hook-form"
 import { useTranslation } from "react-i18next"
+import { useMemo } from "react"
 
 interface EducationAndLanguagesTabProps {
     control: Control<FormData>
@@ -11,6 +14,15 @@ interface EducationAndLanguagesTabProps {
 
 export const EducationAndLanguagesTab = ({ control }: EducationAndLanguagesTabProps) => {
     const { t } = useTranslation()
+    const icuk = isIcuk()
+
+    const highestEducationOptions = useMemo(() => {
+        const options = icuk ? ICUK_HIGHEST_EDUCATION_OPTIONS : GAS_HIGHEST_EDUCATION_OPTIONS;
+        return options.map(({ value, labelKey }) => ({
+            value,
+            label: t(labelKey),
+        }));
+    }, [icuk, t]);
 
     return (
         <>
@@ -19,15 +31,7 @@ export const EducationAndLanguagesTab = ({ control }: EducationAndLanguagesTabPr
                 formLabel={t('form.labels.highestEducation')}
                 formControl={control}
                 formTriggerClass='w-full'
-                options={[
-                    { value: "basicEducation", label: t('form.options.highestEducation.basicEducation') },
-                    { value: "vocationalWithoutMatura", label: t('form.options.highestEducation.vocationalWithoutMatura') },
-                    { value: "secondaryOrVocationalWithMatura", label: t('form.options.highestEducation.secondaryOrVocationalWithMatura') },
-                    { value: "higherVocational", label: t('form.options.highestEducation.higherVocational') },
-                    { value: "bachelor", label: t('form.options.highestEducation.bachelor') },
-                    { value: "universityOrHigher", label: t('form.options.highestEducation.universityOrHigher') },
-                    { value: "mbaOrPostgraduate", label: t('form.options.highestEducation.mbaOrPostgraduate') },
-                ]}
+                options={highestEducationOptions}
             />
             <FormInput
                 name="highestEducationSchool"

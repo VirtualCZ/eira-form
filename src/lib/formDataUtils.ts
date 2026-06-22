@@ -46,6 +46,22 @@ export const isFieldVisible = (field: keyof FormData, formData: Partial<FormData
     return false;
   }
 
+  if ((field === 'activityBan' || field === 'bannedActivity') && isIcuk()) {
+    return false;
+  }
+
+  if (field === 'confirmationReadPersonalDataProcessing' && isIcuk()) {
+    return false;
+  }
+
+  const foreignerTabFields = [
+    'foreignPermanentAddress', 'residencePermitNumber', 'residencePermitValidityFrom',
+    'residencePermitValidityUntil', 'residencePermitType', 'residencePermitPurpose',
+  ];
+  if (foreignerTabFields.includes(field as string) && isIcuk()) {
+    return false;
+  }
+
   const icukOnlyFields = [
     'idCardNumber', 'idCardIssuedBy', 'hasOtherEmployment', 'otherEmployerName', 'otherEmployerSeat',
     'registeredAtLaborOffice', 'isStudent', 'spouseFullName',
@@ -190,7 +206,7 @@ export const isFieldRequiredForProgress = (field: keyof FormData, formData: Part
 
   if (isDocumentRequiredForProgress(field, formData)) return true;
 
-  if (field === 'bannedActivity') return formData.activityBan === 'yes';
+  if (field === 'bannedActivity') return !isIcuk() && formData.activityBan === 'yes';
   if (field === 'wageDeductionDetails' || field === 'wageDeductionDate') {
     return formData.hasWageDeductions === 'yes';
   }

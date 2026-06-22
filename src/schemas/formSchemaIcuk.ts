@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { ICUK_HIGHEST_EDUCATION_VALUES } from '@/config/educationOptions';
 import { validateCzechSSN } from '@/lib/czechSSNValidation';
 
 /** GAS HR form – frozen schema; do not change for ICUK requirements. */
@@ -331,7 +332,7 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
 
     highestEducation: yup
       .string()
-      .oneOf(['basicEducation', 'vocationalWithoutMatura', 'secondaryOrVocationalWithMatura', 'higherVocational', 'bachelor', 'universityOrHigher', 'mbaOrPostgraduate'], t('form.validation.required.highestEducation'))
+      .oneOf([...ICUK_HIGHEST_EDUCATION_VALUES], t('form.validation.required.highestEducation'))
       .required(t('form.validation.required.highestEducation')),
 
     highestEducationSchool: yup
@@ -402,10 +403,7 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
 
     pensionDecisionDate: yup.date().nullable().optional(),
 
-    activityBan: yup
-      .string()
-      .oneOf(['yes', 'no'], t('form.validation.required.activityBan'))
-      .required(t('form.validation.required.activityBan')),
+    activityBan: yup.string().oneOf(['yes', 'no']).optional(),
 
     bannedActivity: yup.string().optional(),
 
@@ -570,10 +568,7 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
       .required(t('form.validation.required.confirmationReadEmailAddressDeclaration'))
       .oneOf([true], t('form.validation.required.confirmationReadEmailAddressDeclaration')),
 
-    confirmationReadPersonalDataProcessing: yup
-      .boolean()
-      .required(t('form.validation.required.confirmationReadPersonalDataProcessing'))
-      .oneOf([true], t('form.validation.required.confirmationReadPersonalDataProcessing')),
+    confirmationReadPersonalDataProcessing: yup.boolean().optional(),
   });
 };
 

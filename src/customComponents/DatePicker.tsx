@@ -9,8 +9,8 @@ import { cn } from '../lib/utils'
 import { FormControl } from "@/components/ui/form"
 import { useTranslation } from "react-i18next"
 import { ControllerRenderProps } from "react-hook-form"
-import { useState } from "react"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
+import { coerceFormDate } from "@/services/FormPersistence"
 
 interface DatePickerProps {
     field: ControllerRenderProps<any, any>,
@@ -22,8 +22,9 @@ interface DatePickerProps {
 
 const DatePicker = ({ field, className, disabled, yearsBack = 10, yearsForward = 0 }: DatePickerProps) => {
     const { t, i18n } = useTranslation();
+    const dateValue = useMemo(() => coerceFormDate(field.value), [field.value]);
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedYear, setSelectedYear] = useState<number | undefined>(field.value ? new Date(field.value).getFullYear() : undefined);
+    const [selectedYear, setSelectedYear] = useState<number | undefined>(dateValue?.getFullYear());
 
     // Get locale for date formatting
     const dateLocale = i18n.language === 'cs' ? cs : enUS;
@@ -37,14 +38,12 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10, yearsForward =
         return [...forwardYears.reverse(), ...backYears];
     }, [yearsBack, yearsForward]);
 
-    const [calendarMonth, setCalendarMonth] = useState<Date>(
-        field.value ? new Date(field.value) : new Date()
-    );
+    const [calendarMonth, setCalendarMonth] = useState<Date>(dateValue ?? new Date());
 
     const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const year = parseInt(e.target.value, 10);
         setSelectedYear(year);
-        let newDate = field.value ? new Date(field.value) : new Date();
+        let newDate = dateValue ? new Date(dateValue) : new Date();
         newDate.setFullYear(year);
         field.onChange(newDate);
         setCalendarMonth(new Date(newDate));
@@ -58,12 +57,12 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10, yearsForward =
                         variant={"outline"}
                         className={cn(
                             "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground",
+                            !dateValue && "text-muted-foreground",
                             className
                         )}
                     >
-                        {field.value ? (
-                            format(field.value, "PPP", { locale: dateLocale })
+                        {dateValue ? (
+                            format(dateValue, "PPP", { locale: dateLocale })
                         ) : (
                             <span>{t('form.messages.pickDate')}</span>
                         )}
@@ -76,7 +75,7 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10, yearsForward =
                     {(yearsBack !== 0 || yearsForward > 0) && (
                         <select
                             className="border rounded px-2 py-1"
-                            value={selectedYear ?? (field.value ? new Date(field.value).getFullYear() : new Date().getFullYear())}
+                            value={selectedYear ?? (dateValue?.getFullYear() ?? new Date().getFullYear())}
                             onChange={handleYearChange}
                         >
                             {years.map(year => (
@@ -86,7 +85,7 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10, yearsForward =
                     )}
                     <Calendar
                         mode="single"
-                        selected={field.value}
+                        selected={dateValue}
                         onSelect={(date) => {
                             field.onChange(date);
                             setSelectedYear(date ? date.getFullYear() : undefined);

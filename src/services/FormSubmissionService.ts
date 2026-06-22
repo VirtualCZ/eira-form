@@ -2,9 +2,7 @@ import { getFormVariant } from '@/config/formVariants';
 import { FormData } from '@/schemas/formSchema';
 import { getHrBasicAuthHeader } from '@/services/hrAuth';
 import i18next from 'i18next';
-import { trimStringValuesDeep } from '@/lib/trimFormValues';
-import { serializeDatesForSubmission } from '@/services/FormPersistence';
-import { filterVisibleFields } from '@/lib/formDataUtils';
+import { buildSubmitPayload } from '@/services/FormPersistence';
 
 export interface SubmissionResult {
   success: boolean;
@@ -32,14 +30,7 @@ export class FormSubmissionService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.config.timeout || 30000);
 
-      const visibleData = filterVisibleFields(data);
-      const serializedData = trimStringValuesDeep(
-        serializeDatesForSubmission(visibleData),
-      ) as Record<string, unknown>;
-
-      if (orgUnitName != null) {
-        serializedData.orgUnitName = String(orgUnitName).trim();
-      }
+      const serializedData = buildSubmitPayload(data, orgUnitName);
 
       const response = await fetch(this.config.endpoint, {
         method: this.config.method,

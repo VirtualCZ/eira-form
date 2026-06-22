@@ -412,6 +412,23 @@
         "universityOrHigher": "University/higher education",
         "mbaOrPostgraduate": "MBA, MBT, postgraduate studies"
       },
+      "highestEducationIcuk": {
+        "A": "A No education",
+        "B": "B Incomplete primary education",
+        "C": "C Primary education",
+        "D": "D Lower secondary education",
+        "E": "E Lower secondary vocational education",
+        "H": "H Secondary vocational education with apprenticeship certificate",
+        "J": "J Secondary or secondary vocational education without matura or apprenticeship certificate",
+        "K": "K Full general secondary education",
+        "L": "L Full secondary vocational education with apprenticeship and matura",
+        "M": "M Full secondary vocational education with matura (without apprenticeship)",
+        "N": "N Higher vocational education",
+        "P": "P Higher vocational education at conservatory",
+        "R": "R University bachelor's degree",
+        "T": "T University master's degree",
+        "V": "V University doctoral degree"
+      },
       "pensionType": {
         "none": "None",
         "oldAgePension": "Old-age pension",
@@ -448,7 +465,15 @@
       "pickDate": "Pick a date"
     },
     "declarations": {
-      "personalDataProcessing": "Your personal data is processed by [company name] as the data controller. The data is processed for the purpose of managing personnel and payroll, fulfilling obligations arising from the employment relationship, and meeting legal requirements (e.g., towards health insurance companies, CSSZ or tax offices).\n\nThe legal basis for processing is the fulfillment of the employment contract and compliance with the employer's legal obligations. Your data may only be made available to authorized persons, such as personnel department staff, company management, and relevant state authorities.\n\nThe data will be stored for the duration of the employment relationship and subsequently for the period specified by applicable legal regulations.\n\nYou have the right to access your data, correct or delete it, limit processing, or object to processing or file a complaint with the Office for Personal Data Protection."
+      "gas": {
+        "employeeDeclarationText": "I declare and confirm by my signature below that:\n    a) all of the above information is true;\n    \n    b) I am not insolvent and no enforcement, execution or insolvency proceedings are pending against me, and my income from my existing employment relationship has not been, is not and shall not be subject to wage deductions, including court-ordered enforcement, tax administrator, administrative authority or other public body, nor under a wage deduction agreement with a third party (if my income were or should be subject to wage deductions, I undertake to notify the employer and provide the relevant decision or agreement);\n    \n    c) I am not aware that my income from the employment relationship with the current employer has been or should be subject to wage deductions (if it were or should be in the future, I undertake to notify the employer and provide the relevant decision or agreement);\n    \n    I have not concealed any material circumstances and the information provided is complete and true as of the stated date. I acknowledge that if any of the above information changes during my employment, I must report it to the employer without delay, at the latest within 8 days.",
+        "emailDeclarationText": "With regard to my electronic (e-mail) address stated above, I declare and confirm by my signature below that:\n    a) it is my private e-mail address not available to the employer;\n    \n    b) it is my private e-mail address that I wish to use for communication with the employer and which I keep adequately secured and access regularly (usually daily);\n\n    c) I provide this e-mail address to the employer voluntarily for purposes including delivery of documents under Section 21(1) of the Labour Code;\n\n    d) I agree that other documents and information relating to my employment may be delivered electronically to this e-mail address (or my data box);\n\nif my private e-mail address changes, I undertake to notify the employer in writing without undue delay.",
+        "personalDataProcessingText": "Your personal data is processed by [company name] as the data controller. The data is processed for the purpose of managing personnel and payroll, fulfilling obligations arising from the employment relationship, and meeting legal requirements (e.g., towards health insurance companies, CSSZ or tax offices).\n\nThe legal basis for processing is the fulfillment of the employment contract and compliance with the employer's legal obligations. Your data may only be made available to authorized persons, such as personnel department staff, company management, and relevant state authorities.\n\nThe data will be stored for the duration of the employment relationship and subsequently for the period specified by applicable legal regulations.\n\nYou have the right to access your data, correct or delete it, limit processing, or object to processing or file a complaint with the Office for Personal Data Protection."
+      },
+      "icuk": {
+        "employeeDeclarationText": "I declare that I have not concealed anything and that all information provided is true. In the event of any change to the data, I shall report this change to the employer without delay.\n\nThe employee acknowledges by signature that, in accordance with the relevant provisions of Act No. 110/2019 Coll., on personal data processing, as amended, and in accordance with Regulation (EU) 2016/679 of the European Parliament and of the Council on the protection of natural persons with regard to the processing of personal data and on the free movement of such data (General Data Protection Regulation), the employer processes and stores the above personal data of the Employee for internal and HR purposes in its capacity as employer, and for the purpose of fulfilling legal obligations, for the duration of the employment relationship, unless a longer period is stipulated by applicable law.\n\nI hereby express my consent to my salary being paid to the bank account stated above.",
+        "emailDeclarationText": "With regard to my electronic (e-mail) address stated above, I declare and confirm by my signature below that:\n    a) it is my private e-mail address that is not available to the employer;\n    \n    b) it is my private e-mail address that I wish to use for communication with the employer and which I keep adequately secured and access regularly (usually daily);\n\n    c) I provide this e-mail address to the employer voluntarily for purposes including delivery of documents under Section 21(1) of the Labour Code, including the employment contract, agreement to perform work, agreement on work activity or their amendments, agreement on termination of employment, and agreement on termination of a legal relationship established by an agreement to perform work or agreement on work activity, where such documents are concluded via electronic communications networks/services;\n\n    d) I agree that all other documents and information relating to my employment with the employer, to which special delivery conditions (in particular those under the Labour Code) do not apply, may be delivered via electronic communications networks/services to my e-mail address stated above (or via my data box); if my private e-mail address changes, I undertake to notify the employer in writing without undue delay."
+      }
     }
   }
 }

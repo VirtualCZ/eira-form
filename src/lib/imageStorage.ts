@@ -17,6 +17,10 @@ export const generateImageKey = (code: string, fieldName: string, index: number)
   return key;
 };
 
+/** IndexedDB key from auto-save — not base64 from JSON export. */
+export const isImageStorageKey = (value: string): boolean =>
+  /^\d{5,10}_[a-zA-Z][a-zA-Z0-9]*_\d+$/.test(value);
+
 /**
  * Converts array of base64 images to array of key strings
  * Stores actual image data in IndexedDB using keys

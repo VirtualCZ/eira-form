@@ -1,4 +1,7 @@
-import { imagesToKeys, keysToImages, cleanupOldImages } from '@/lib/imageStorage';
+import { filterVisibleFields } from '@/lib/formDataUtils';
+import { imagesToKeys, keysToImages, cleanupOldImages, isImageStorageKey } from '@/lib/imageStorage';
+import { trimStringValuesDeep } from '@/lib/trimFormValues';
+import type { FormData } from '@/schemas/formSchema';
 
 export const STORAGE_PREFIX = 'eira-form-data-';
 export const LAST_CODE_KEY = 'eira-form-last-code';
@@ -40,7 +43,7 @@ export const DATE_FIELDS: string[] = [
 export const getStorageKey = (code: string) => `${STORAGE_PREFIX}${code}`;
 
 // Format date as YYYY-MM-DD (date only, no time)
-const formatDateWithoutTimezone = (date: Date): string => {
+export const formatDateWithoutTimezone = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -62,8 +65,10 @@ export const serializeDatesAndKeys = async (obj: any, code: string): Promise<any
       } else {
         result[key] = await Promise.all(result[key].map((item: any) => serializeDatesAndKeys(item, code)));
       }
-    } else if (DATE_FIELDS.includes(key) && result[key] instanceof Date) {
-      result[key] = result[key].toISOString();
+    } else if (result[key] instanceof Date) {
+      result[key] = DATE_FIELDS.includes(key)
+        ? result[key].toISOString()
+        : result[key];
     } else if (typeof result[key] === 'object' && result[key] !== null) {
       result[key] = await serializeDatesAndKeys(result[key], code);
     }
@@ -82,8 +87,10 @@ export const serializeDatesForSubmission = (obj: any): any => {
 
     if (Array.isArray(result[key])) {
       result[key] = result[key].map((item: any) => serializeDatesForSubmission(item));
-    } else if (DATE_FIELDS.includes(key) && result[key] instanceof Date) {
-      result[key] = formatDateWithoutTimezone(result[key]);
+    } else if (result[key] instanceof Date) {
+      result[key] = DATE_FIELDS.includes(key)
+        ? formatDateWithoutTimezone(result[key])
+        : result[key];
     } else if (typeof result[key] === 'object' && result[key] !== null) {
       result[key] = serializeDatesForSubmission(result[key]);
     } else if (key === 'bankCode' && result[key] === '0') {
@@ -93,6 +100,43 @@ export const serializeDatesForSubmission = (obj: any): any => {
     }
   }
   return result;
+};
+
+/** Form JSON export: keep all fields, dates as local YYYY-MM-DD (not UTC ISO). */
+export const serializeDatesForFormJson = (obj: any): any => {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map((item) => serializeDatesForFormJson(item));
+
+  const result: any = { ...obj };
+  for (const key in result) {
+    if (!Object.prototype.hasOwnProperty.call(result, key)) continue;
+
+    if (Array.isArray(result[key])) {
+      result[key] = result[key].map((item: any) => serializeDatesForFormJson(item));
+    } else if (result[key] instanceof Date) {
+      result[key] = DATE_FIELDS.includes(key)
+        ? formatDateWithoutTimezone(result[key])
+        : result[key];
+    } else if (typeof result[key] === 'object' && result[key] !== null) {
+      result[key] = serializeDatesForFormJson(result[key]);
+    }
+  }
+  return result;
+};
+
+/** Exact JSON body sent to createHrRequest (visible fields, YYYY-MM-DD dates, trimmed). */
+export const buildSubmitPayload = (
+  data: Partial<FormData>,
+  orgUnitName?: string,
+): Record<string, unknown> => {
+  const visibleData = filterVisibleFields(data);
+  const payload = trimStringValuesDeep(
+    serializeDatesForSubmission(visibleData),
+  ) as Record<string, unknown>;
+  if (orgUnitName != null && String(orgUnitName).trim()) {
+    payload.orgUnitName = String(orgUnitName).trim();
+  }
+  return payload;
 };
 
 // Restore images (keys -> base64) recursively
@@ -105,11 +149,19 @@ export const restoreImagesFromKeys = async (obj: any): Promise<any> => {
     if (!Object.prototype.hasOwnProperty.call(result, key)) continue;
 
     if (Array.isArray(result[key])) {
-      if (IMAGE_FIELDS.includes(key) && result[key].length > 0 && typeof result[key][0] === 'string') {
+      if (
+        IMAGE_FIELDS.includes(key) &&
+        result[key].length > 0 &&
+        typeof result[key][0] === 'string' &&
+        isImageStorageKey(result[key][0])
+      ) {
         result[key] = await keysToImages(result[key]);
       } else {
         result[key] = await Promise.all(result[key].map((item: any) => restoreImagesFromKeys(item)));
       }
+    } else if (result[key] instanceof Date) {
+      // Date is typeof 'object' — spreading it would yield {} and wipe the value
+      continue;
     } else if (typeof result[key] === 'object' && result[key] !== null) {
       result[key] = await restoreImagesFromKeys(result[key]);
     }
@@ -156,7 +208,52 @@ export const cleanupOldData = async (): Promise<void> => {
   await cleanupOldImages(validImageKeys);
 };
 
-// Revive date strings (YYYY-MM-DD or ISO format) into Date instances for known date fields
+/** ISO / YYYY-MM-DD / Date → valid Date for form fields, or undefined. */
+export const coerceFormDate = (value: unknown): Date | undefined => {
+  if (value == null || value === '') return undefined;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? undefined : value;
+  if (typeof value === 'object') return undefined;
+  if (typeof value !== 'string') return undefined;
+
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === 'null' || trimmed === 'undefined') return undefined;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    const [year, month, day] = trimmed.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
+    if (
+      d.getFullYear() === year &&
+      d.getMonth() === month - 1 &&
+      d.getDate() === day &&
+      !Number.isNaN(d.getTime())
+    ) {
+      return d;
+    }
+    return undefined;
+  }
+
+  const d = new Date(trimmed);
+  return Number.isNaN(d.getTime()) ? undefined : d;
+};
+
+const coerceAllFormDates = (obj: Record<string, unknown>): Record<string, unknown> => {
+  const result = { ...obj };
+  for (const key of DATE_FIELDS) {
+    if (!(key in result)) continue;
+    const d = coerceFormDate(result[key]);
+    if (d) result[key] = d;
+    else delete result[key];
+  }
+  return result;
+};
+
+/** Restore images first (while dates are still strings), then parse dates. */
+export const parseStoredFormData = async (data: Record<string, unknown>): Promise<Record<string, unknown>> => {
+  const restored = await restoreImagesFromKeys(data);
+  return coerceAllFormDates(trimStringValuesDeep(restored) as Record<string, unknown>);
+};
+
+// Revive date strings in nested structures (e.g. API responses)
 export const reviveDates = (obj: any): any => {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(item => reviveDates(item));
@@ -170,7 +267,6 @@ export const reviveDates = (obj: any): any => {
       continue;
     }
     if (typeof value === 'object' && value !== null) {
-      // Corrupted save: Date was turned into {} by trimStringValuesDeep (fixed); drop so field is empty
       if (DATE_FIELDS.includes(key) && !(value instanceof Date) && Object.keys(value).length === 0) {
         delete result[key];
         continue;
@@ -178,43 +274,19 @@ export const reviveDates = (obj: any): any => {
       result[key] = reviveDates(value);
       continue;
     }
-    if (typeof value === 'string' && DATE_FIELDS.includes(key)) {
-      // Skip empty strings, null, or undefined
-      if (!value || value.trim() === '' || value === 'null' || value === 'undefined') {
-        continue;
-      }
-      
-      // Handle both YYYY-MM-DD and ISO format strings
-      // new Date() can parse YYYY-MM-DD, but we need to ensure it's treated as local time
-      let d: Date;
-      try {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-          // YYYY-MM-DD format - parse as local date (no time component)
-          const [year, month, day] = value.split('-').map(Number);
-          // Validate date components
-          if (year > 0 && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-            d = new Date(year, month - 1, day);
-            // Verify the date is valid (handles cases like Feb 30)
-            if (d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day) {
-              if (!isNaN(d.getTime())) {
-                result[key] = d;
-              }
-            }
-          }
-        } else {
-          // ISO format or other - use standard Date parsing
-          d = new Date(value);
-          if (!isNaN(d.getTime())) {
-            result[key] = d;
-          }
-        }
-      } catch (error) {
-        // Skip invalid dates - leave them as strings or undefined
-        console.warn(`Invalid date value for field ${key}: ${value}`, error);
-      }
+    if (DATE_FIELDS.includes(key)) {
+      const d = coerceFormDate(value);
+      if (d) result[key] = d;
     }
   }
   return result;
 };
 
+/** Form JSON file → in-memory form state (Date objects, base64 images). */
+export const importJsonToFormState = async (
+  data: Record<string, unknown>,
+): Promise<Record<string, unknown>> => {
+  const { givenCode: _importedCode, _timestamp, orgUnitName: _orgUnitName, ...rest } = data;
+  return parseStoredFormData(trimStringValuesDeep(rest) as Record<string, unknown>);
+};
 

@@ -202,7 +202,7 @@ const ICUK_TAB_CONFIGS: TabConfig[] = [
       return true;
     },
   },
-  ...GAS_TAB_CONFIGS.slice(1, 4),
+  ...GAS_TAB_CONFIGS.slice(1, 3),
   {
     id: 'employment',
     label: 'form.tabs.employment',
@@ -225,7 +225,17 @@ const ICUK_TAB_CONFIGS: TabConfig[] = [
       return true;
     },
   },
-  ...GAS_TAB_CONFIGS.slice(5, 8),
+  ...GAS_TAB_CONFIGS.slice(5, 7),
+  {
+    id: 'legalInfo',
+    label: 'form.tabs.legalInfo',
+    fields: ['hasWageDeductions', 'wageDeductionDetails', 'wageDeductionDate'],
+    isVisible: () => true,
+    isComplete: (data, errors) => {
+      const requiredFields = ['hasWageDeductions'];
+      return requiredFields.every((field) => (data as Record<string, unknown>)[field] && !errors[field]);
+    },
+  },
   {
     id: 'familyAndChildren',
     label: 'form.tabs.familyAndChildren',
@@ -264,7 +274,22 @@ const ICUK_TAB_CONFIGS: TabConfig[] = [
       return true;
     },
   },
-  GAS_TAB_CONFIGS[GAS_TAB_CONFIGS.length - 1],
+  {
+    id: 'agreements',
+    label: 'form.tabs.agreements',
+    fields: [
+      'confirmationReadEmployeeDeclaration',
+      'confirmationReadEmailAddressDeclaration',
+    ],
+    isVisible: () => true,
+    isComplete: (data, errors) => {
+      const requiredFields = [
+        'confirmationReadEmployeeDeclaration',
+        'confirmationReadEmailAddressDeclaration',
+      ];
+      return requiredFields.every((field) => (data as Record<string, unknown>)[field] === true && !errors[field]);
+    },
+  },
 ];
 
 export const getTabConfigs = (): TabConfig[] => (isIcuk() ? ICUK_TAB_CONFIGS : GAS_TAB_CONFIGS);
