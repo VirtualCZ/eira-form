@@ -403,10 +403,6 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
 
     pensionDecisionDate: yup.date().nullable().optional(),
 
-    activityBan: yup.string().oneOf(['yes', 'no']).optional(),
-
-    bannedActivity: yup.string().optional(),
-
     inInsolvency: yup
       .string()
       .oneOf(['yes', 'no'], t('form.validation.required.inInsolvency'))

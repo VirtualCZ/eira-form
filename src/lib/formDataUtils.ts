@@ -278,5 +278,12 @@ export const filterVisibleFields = (data: Partial<FormData>): Partial<FormData> 
   return filtered;
 };
 
+/** Drop validation errors for fields hidden in the current variant / form state. */
+export const filterVisibleFieldErrors = <T extends { field: string }>(
+  errors: T[],
+  formData: Partial<FormData>,
+): T[] =>
+  errors.filter((error) => isFieldVisible(error.field.split('.')[0] as keyof FormData, formData));
+
 
 

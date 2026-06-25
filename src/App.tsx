@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { isValidCode, MAX_CODE_LENGTH } from '@/lib/codeUtils';
+import { filterVisibleFieldErrors } from '@/lib/formDataUtils';
 
 // Lazy load tab components for better performance
 const PersonalInformationTab = React.lazy(() => import('@/tabs/PersonalInformationTab').then(m => ({ default: m.PersonalInformationTab })));
@@ -117,17 +118,29 @@ const MainApp: React.FC = () => {
   } = useAccessibility();
 
   // Calculate validation state
-  const validationResult = getValidationResult(
-    form.formState.errors,
-    navState.tabs.reduce((acc, tab) => {
-      acc[tab.id] = tab.fields;
-      return acc;
-    }, {} as Record<string, string[]>)
+  const tabFieldsMap = React.useMemo(
+    () =>
+      navState.tabs.reduce((acc, tab) => {
+        acc[tab.id] = tab.fields;
+        return acc;
+      }, {} as Record<string, string[]>),
+    [navState.tabs],
   );
 
-  const errorTabs = Object.entries(validationResult.tabErrors)
-    .filter(([, errors]) => errors.length > 0)
-    .map(([tabId]) => tabId);
+  const formValues = form.watch();
+
+  const validationResult = React.useMemo(
+    () => getValidationResult(form.formState.errors, tabFieldsMap),
+    [form.formState.errors, tabFieldsMap, getValidationResult],
+  );
+
+  const errorTabs = React.useMemo(
+    () =>
+      Object.entries(validationResult.tabErrors)
+        .filter(([, errors]) => filterVisibleFieldErrors(errors, formValues).length > 0)
+        .map(([tabId]) => tabId),
+    [validationResult.tabErrors, formValues],
+  );
 
   // Handle form submission
   const handleSubmit = async (data: any) => {
@@ -175,16 +188,12 @@ const MainApp: React.FC = () => {
   };
 
   const handleInvalid = (errors: any) => {
-    // Create tab fields map for error grouping
-    const tabFieldsMap = navState.tabs.reduce((acc, tab) => {
-      acc[tab.id] = tab.fields;
-      return acc;
-    }, {} as Record<string, string[]>);
-    
+    const formData = form.getValues();
     const validationResult = getValidationResult(errors, tabFieldsMap);
+    const visibleErrors = filterVisibleFieldErrors(validationResult.errors, formData);
     
     // Format errors with tab information
-    const errorMessages = validationResult.errors.map(error => {
+    const errorMessages = visibleErrors.map(error => {
       // Find which tab this error belongs to
       const tabId = Object.entries(tabFieldsMap).find(([, fields]) =>
         fields.some(field => error.field.startsWith(field))
@@ -205,7 +214,7 @@ const MainApp: React.FC = () => {
     
     // Focus on first error field
     if (errorMessages.length > 0) {
-      const firstErrorField = validationResult.errors[0]?.field;
+      const firstErrorField = visibleErrors[0]?.field;
       if (firstErrorField) {
         setFocusToFirstError([firstErrorField]);
       }
