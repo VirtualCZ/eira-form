@@ -5,8 +5,10 @@ import FormRadio from "@/customComponents/FormRadio";
 import FormSelect from "@/customComponents/FormSelect";
 import FormCountrySelect from "@/customComponents/FormCountrySelect";
 import { FormData } from "@/schemas/formSchema";
+import { getHonorificOptions } from "@/config/honorificOptions";
 import { isGas, isIcuk } from "@/config/formVariants";
 import { Control, useWatch } from "react-hook-form";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 interface PersonalInformationTabProps {
@@ -18,7 +20,15 @@ export const PersonalInformationTab = ({
     control,
     errors
 }: PersonalInformationTabProps) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const honorificOptions = useMemo(
+        () =>
+            getHonorificOptions(i18n.language).map((option) => ({
+                value: option.value,
+                label: t(option.labelKey),
+            })),
+        [i18n.language, t],
+    );
     const isForeigner = useWatch({
         control,
         name: "foreigner",
@@ -43,12 +53,7 @@ export const PersonalInformationTab = ({
                     formControl={control}
                     formItemClass="flex-none"
                     formMessage={false}
-                    options={[
-                        { value: "mr", label: t('form.options.honorific.mr') },
-                        { value: "mrs", label: t('form.options.honorific.mrs') },
-                        { value: "ms", label: t('form.options.honorific.ms') },
-                        { value: "miss", label: t('form.options.honorific.miss') }
-                    ]}
+                    options={honorificOptions}
                     placeholder="--."
                 />
                 <FormInput

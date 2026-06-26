@@ -1,5 +1,8 @@
 import * as yup from 'yup';
+import { HONORIFIC_VALUES } from '@/config/honorificOptions';
+import { PENSION_TYPE_VALUES } from '@/config/pensionOptions';
 import { validateCzechSSN } from '@/lib/czechSSNValidation';
+import { isValidInternationalPhone } from '@/lib/phoneValidation';
 
 /** GAS HR form – frozen schema; do not change for ICUK requirements. */
 export const getGasFormSchema = (t: (key: string) => string): yup.ObjectSchema<any> => {
@@ -15,6 +18,7 @@ export const getGasFormSchema = (t: (key: string) => string): yup.ObjectSchema<a
 
     honorific: yup
       .string()
+      .oneOf([...HONORIFIC_VALUES], t('form.validation.required.honorary'))
       .required(t('form.validation.required.honorary')),
 
     firstName: yup
@@ -200,7 +204,7 @@ export const getGasFormSchema = (t: (key: string) => string): yup.ObjectSchema<a
     phone: yup
       .string()
       .required(t('form.validation.required.phone'))
-      .matches(/^\+\d{1,3}\d{6,}$/, t('form.validation.format.phone')),
+      .test('phone-format', t('form.validation.format.phone'), (value) => isValidInternationalPhone(value)),
 
     dataBoxId: yup
       .string()
@@ -344,7 +348,7 @@ export const getGasFormSchema = (t: (key: string) => string): yup.ObjectSchema<a
 
     pensionType: yup
       .string()
-      .oneOf(['-', 'oldAgePension', 'earlyOldAgePension', 'fullDisabilityPension', 'partialDisabilityPension', 'widowsPension', 'widowersPension', 'orphansPension'], t('form.validation.required.pensionType'))
+      .oneOf([...PENSION_TYPE_VALUES], t('form.validation.required.pensionType'))
       .optional(),
 
     pensionDecisionDate: yup.date().nullable().optional(),

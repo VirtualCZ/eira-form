@@ -272,7 +272,7 @@
         "postalCodeNumbersOnly": "PSČ může obsahovat pouze číslice.",
         "permanentCountry": "Země musí mít alespoň 1 znak.",
         "email": "Emailová adresa musí být platná.",
-        "phone": "Musí být v mezinárodním formátu s kódem země (např. +420123456789).",
+        "phone": "Zadejte telefon v mezinárodním formátu s kódem země (např. +420123456789) a alespoň 7 číslicemi.",
         "jobPosition": "Pracovní pozice musí mít alespoň 2 znaky.",
         "lastJobType": "Typ poslední práce musí mít alespoň 2 znaky.",
         "bankingInstitutionName": "Název banky musí mít alespoň 2 znaky.",
@@ -298,8 +298,7 @@
       "honorific": {
         "mr": "Pan",
         "mrs": "Paní",
-        "ms": "Slečna",
-        "miss": "Slečna"
+        "ms": "Slečna"
       },
       "sex": {
         "male": "Muž",

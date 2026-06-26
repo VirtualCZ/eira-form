@@ -1,4 +1,5 @@
 import { filterVisibleFields } from '@/lib/formDataUtils';
+import { normalizePensionType } from '@/config/pensionOptions';
 import { imagesToKeys, keysToImages, cleanupOldImages, isImageStorageKey } from '@/lib/imageStorage';
 import { trimStringValuesDeep } from '@/lib/trimFormValues';
 import type { FormData } from '@/schemas/formSchema';
@@ -244,6 +245,11 @@ const coerceAllFormDates = (obj: Record<string, unknown>): Record<string, unknow
     const d = coerceFormDate(result[key]);
     if (d) result[key] = d;
     else delete result[key];
+  }
+  if ('pensionType' in result) {
+    const normalized = normalizePensionType(result.pensionType);
+    if (normalized) result.pensionType = normalized;
+    else delete result.pensionType;
   }
   return result;
 };

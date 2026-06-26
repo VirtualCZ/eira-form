@@ -270,7 +270,7 @@
         "postalCodeNumbersOnly": "Postal code must contain only numbers.",
         "permanentCountry": "Country must be at least 1 character.",
         "email": "Email address must be valid.",
-        "phone": "Must be in international format with country code (e.g. +420123456789)",
+        "phone": "Use international format with country code (e.g. +420123456789) and at least 7 digits.",
         "jobPosition": "Job position must be at least 2 characters.",
         "lastJobType": "Type of last job must be at least 2 characters.",
         "bankingInstitutionName": "Bank name must be at least 2 characters.",

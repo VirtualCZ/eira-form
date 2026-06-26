@@ -3,6 +3,7 @@
 import { FormData } from '@/schemas/formSchema';
 import type { TabConfig } from '@/config/tabConfigs';
 import { isGas, isIcuk } from '@/config/formVariants';
+import { isValidInternationalPhone } from '@/lib/phoneValidation';
 
 const isNonEmptyString = (val: unknown): boolean =>
   typeof val === 'string' && val.trim() !== '' && val.trim() !== 'none';
@@ -31,6 +32,9 @@ export const hasFieldData = (val: unknown): boolean => {
 };
 
 export const hasMeaningfulFieldData = (field: keyof FormData | string, val: unknown): boolean => {
+  if (field === 'phone') {
+    return isValidInternationalPhone(val);
+  }
   if ((field === 'bankCode' || field === 'healthInsurance') && val === SELECT_PLACEHOLDER) {
     return false;
   }

@@ -2,6 +2,7 @@ import FormDate from "@/customComponents/FormDate"
 import FormInput from "@/customComponents/FormInput"
 import FormRadio from "@/customComponents/FormRadio"
 import FormSelect from "@/customComponents/FormSelect"
+import { PENSION_TYPE_OPTIONS } from "@/config/pensionOptions"
 import { FormData } from "@/schemas/formSchema"
 import { Control, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
@@ -59,16 +60,10 @@ export const HealthAndSocialInfoTab = ({ control }: HealthAndSocialInfoTabProps)
                         formLabel={t('form.labels.pensionType')}
                         formControl={control}
                         formTriggerClass='w-full'
-                        options={[
-                            { value: "-", label: t('form.options.pensionType.none') },
-                            { value: "oldAgePension", label: t('form.options.pensionType.oldAgePension') },
-                            { value: "earlyOldAgePension", label: t('form.options.pensionType.earlyOldAgePension') },
-                            { value: "fullDisabilityPension", label: t('form.options.pensionType.fullDisabilityPension') },
-                            { value: "partialDisabilityPension", label: t('form.options.pensionType.partialDisabilityPension') },
-                            { value: "widowsPension", label: t('form.options.pensionType.widowsPension') },
-                            { value: "widowersPension", label: t('form.options.pensionType.widowersPension') },
-                            { value: "orphansPension", label: t('form.options.pensionType.orphansPension') }
-                        ]}
+                        options={PENSION_TYPE_OPTIONS.map((opt) => ({
+                            value: opt.value,
+                            label: t(opt.labelKey),
+                        }))}
                         placeholder="--."
                         formMessage={false}
                     />

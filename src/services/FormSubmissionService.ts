@@ -1,6 +1,7 @@
 import { getFormVariant } from '@/config/formVariants';
 import { FormData } from '@/schemas/formSchema';
 import { getHrBasicAuthHeader } from '@/services/hrAuth';
+import { isValidInternationalPhone } from '@/lib/phoneValidation';
 import i18next from 'i18next';
 import { buildSubmitPayload } from '@/services/FormPersistence';
 
@@ -106,6 +107,9 @@ export class FormSubmissionService {
     if (!data.lastName) errors.push('Last name is required');
     if (!data.email) errors.push('Email is required');
     if (!data.phone) errors.push('Phone is required');
+    else if (!isValidInternationalPhone(data.phone)) {
+      errors.push(i18next.t('form.validation.format.phone'));
+    }
 
     if (data.foreigner === 'yes' && (!data.visaPassport || data.visaPassport.length === 0)) {
       errors.push(i18next.t('form.validation.required.visaPassport'));
