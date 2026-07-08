@@ -54,6 +54,7 @@ export const EmploymentTab = ({ control }: EmploymentTabProps) => {
                         formControl={control}
                         formFieldClass='w-[100%]'
                         formItemClass="flex-1"
+                        minDaysApart={14}
                     />
                 </>
             )}

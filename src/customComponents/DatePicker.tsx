@@ -9,7 +9,7 @@ import { cn } from '../lib/utils'
 import { FormControl } from "@/components/ui/form"
 import { useTranslation } from "react-i18next"
 import { ControllerRenderProps } from "react-hook-form"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { coerceFormDate } from "@/services/FormPersistence"
 
 interface DatePickerProps {
@@ -39,6 +39,11 @@ const DatePicker = ({ field, className, disabled, yearsBack = 10, yearsForward =
     }, [yearsBack, yearsForward]);
 
     const [calendarMonth, setCalendarMonth] = useState<Date>(dateValue ?? new Date());
+
+    useEffect(() => {
+        setSelectedYear(dateValue?.getFullYear());
+        setCalendarMonth(dateValue ? new Date(dateValue) : new Date());
+    }, [dateValue]);
 
     const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const year = parseInt(e.target.value, 10);

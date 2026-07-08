@@ -7,6 +7,28 @@ import { isValidInternationalPhone } from '@/lib/phoneValidation';
 
 /** GAS HR form – frozen schema; do not change for ICUK requirements. */
 /** ICUK HR form schema. */
+const isValidDateRange = (from: unknown, to: unknown, minDaysApart?: number): boolean => {
+  if (!(from instanceof Date) || !(to instanceof Date)) return true;
+  const fromValue = new Date(from);
+  const toValue = new Date(to);
+  fromValue.setHours(0, 0, 0, 0);
+  toValue.setHours(0, 0, 0, 0);
+
+  if (fromValue > toValue) return false;
+  if (minDaysApart === undefined) return true;
+
+  const minMs = minDaysApart * 24 * 60 * 60 * 1000;
+  return toValue.getTime() - fromValue.getTime() >= minMs;
+};
+
+const hasSuspiciousBankAccountEnding = (accountNumber: unknown, bankCode: unknown): boolean => {
+  if (typeof bankCode !== 'string' || bankCode.length === 0) return false;
+  if (typeof accountNumber !== 'number' || Number.isNaN(accountNumber)) return false;
+
+  const normalizedAccount = String(Math.trunc(accountNumber));
+  return normalizedAccount.length > 10 && normalizedAccount.endsWith(bankCode);
+};
+
 export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<any> => {
   return yup.object({
     givenCode: yup
@@ -275,7 +297,23 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
       .date()
       .when('firstJobInCz', {
         is: 'no',
-        then: (schema) => schema.required(t('form.validation.required.lastJobPeriodTo')).typeError(t('form.validation.required.lastJobPeriodTo')),
+        then: (schema) =>
+          schema
+            .required(t('form.validation.required.lastJobPeriodTo'))
+            .typeError(t('form.validation.required.lastJobPeriodTo'))
+            .test('last-job-period-rules', t('form.validation.format.dateRangeInvalid'), function(value) {
+              const from = this.parent.lastJobPeriodFrom;
+              const to = value;
+              if (!(from instanceof Date) || !(to instanceof Date)) return true;
+
+              if (!isValidDateRange(from, to)) {
+                return this.createError({ message: t('form.validation.format.dateRangeInvalid') });
+              }
+              if (!isValidDateRange(from, to, 14)) {
+                return this.createError({ message: t('form.validation.format.dateRangeTooShort') });
+              }
+              return true;
+            }),
         otherwise: (schema) => schema.optional(),
       }),
 
@@ -321,6 +359,9 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
       .number()
       .required(t('form.validation.required.bankAccountNumber'))
       .min(8, t('form.validation.format.bankAccountNumber'))
+      .test('bank-account-ending', t('form.validation.format.bankAccountNumberBankCodeSuffix'), function(value) {
+        return !hasSuspiciousBankAccountEnding(value, this.parent.bankCode);
+      })
       .typeError(t('form.validation.required.bankAccountNumber')),
 
     bankCode: yup
@@ -377,11 +418,7 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
             ),
           languageExamType: yup
             .string()
-            .when('languageProficiency', {
-              is: (val: string) => val && val !== 'none' && val !== 'native' && ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(val),
-              then: (schema) => schema.required(t('form.validation.required.languageExamType')).trim().min(1, t('form.validation.required.languageExamType')),
-              otherwise: (schema) => schema.optional(),
-            }),
+            .optional(),
         })
       )
       .required(t('form.validation.required.languageSkills'))
@@ -578,6 +615,23 @@ export const getIcukFormSchema = (t: (key: string) => string): yup.ObjectSchema<
       .oneOf([true], t('form.validation.required.confirmationReadEmailAddressDeclaration')),
 
     confirmationReadPersonalDataProcessing: yup.boolean().optional(),
+  }).test('residence-permit-validity-rules', t('form.validation.format.dateRangeInvalid'), function(values) {
+    if (!values) return true;
+    const { residencePermitValidityFrom, residencePermitValidityUntil } = values;
+
+    if (!isValidDateRange(residencePermitValidityFrom, residencePermitValidityUntil)) {
+      return this.createError({
+        path: 'residencePermitValidityUntil',
+        message: t('form.validation.format.dateRangeInvalid'),
+      });
+    }
+    if (!isValidDateRange(residencePermitValidityFrom, residencePermitValidityUntil, 14)) {
+      return this.createError({
+        path: 'residencePermitValidityUntil',
+        message: t('form.validation.format.dateRangeTooShort'),
+      });
+    }
+    return true;
   });
 };
 
